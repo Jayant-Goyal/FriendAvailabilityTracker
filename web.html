@@ -1,0 +1,888 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Friend Availability Tracker</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        /* Custom scrollbar for a more modern look */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #1f2937; /* dark:bg-gray-800 */
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #4b5563; /* dark:bg-gray-600 */
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #6b7280; /* dark:bg-gray-500 */
+        }
+        .progress-bar-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            z-index: -1;
+            transition: width 1s linear; /* Smoother transition for real-time update */
+            border-radius: 0.75rem; /* rounded-xl */
+        }
+        /* Animation for cards */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .card-fade-in {
+            animation: fadeIn 0.5s ease-out forwards;
+        }
+    </style>
+    <script>
+        // Tailwind dark mode configuration
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                },
+            },
+        }
+    </script>
+</head>
+<body class="bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100 transition-colors duration-300">
+
+    <!-- Main Container -->
+    <div class="container mx-auto p-4 max-w-4xl">
+
+        <!-- Header -->
+        <header class="flex justify-between items-center mb-6">
+            <div>
+                <h1 class="text-2xl font-bold text-gray-800 dark:text-white">Availability</h1>
+                <p id="real-time-clock" class="text-sm text-gray-500 dark:text-gray-400">Loading time...</p>
+            </div>
+            <button id="settings-btn" class="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                </svg>
+            </button>
+        </header>
+
+        <!-- Status Dashboard -->
+        <main id="dashboard" class="flex flex-col space-y-4">
+            <!-- Status cards will be injected here by JavaScript -->
+        </main>
+        <div id="no-sections-message" class="hidden text-center py-10 px-4">
+            <svg xmlns="http://www.w3.org/2000/svg" class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <h3 class="mt-2 text-sm font-medium text-gray-900 dark:text-white">No sections added</h3>
+            <p class="mt-1 text-sm text-gray-500">Get started by adding a section and uploading a timetable in the settings.</p>
+            <div class="mt-6">
+              <button id="add-section-shortcut" type="button" class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                <svg xmlns="http://www.w3.org/2000/svg" class="-ml-1 mr-2 h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                  <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
+                </svg>
+                Add Section
+              </button>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Settings Panel (Modal) -->
+    <div id="settings-panel" class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm z-40 hidden">
+        <div id="settings-content" class="absolute top-0 right-0 h-full w-full max-w-sm bg-white dark:bg-gray-800 shadow-2xl transform translate-x-full transition-transform duration-300 ease-in-out p-6 flex flex-col">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-xl font-bold">Settings</h2>
+                <button id="close-settings-btn" class="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+
+            <div class="flex-grow overflow-y-auto pr-2 -mr-2">
+                <!-- Theme Toggle -->
+                <div class="flex justify-between items-center p-3 bg-gray-100 dark:bg-gray-700 rounded-lg mb-6">
+                    <label for="dark-mode-toggle" class="font-medium">Dark Mode</label>
+                    <button id="dark-mode-toggle" class="relative inline-flex items-center h-6 rounded-full w-11 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-gray-800">
+                        <span class="sr-only">Enable dark mode</span>
+                        <span class="inline-block w-4 h-4 transform bg-white rounded-full transition-transform"></span>
+                    </button>
+                </div>
+
+                <!-- Manage Sections -->
+                <div class="mb-6">
+                    <h3 class="font-semibold mb-2 border-b border-gray-200 dark:border-gray-600 pb-1">Manage Sections</h3>
+                    <form id="add-section-form" class="space-y-3 mt-3">
+                        <input type="text" id="new-section-name" placeholder="Section Name (e.g., DF)" required class="w-full bg-gray-100 dark:bg-gray-700 border-gray-300 dark:border-gray-600 rounded-md p-2 focus:ring-indigo-500 focus:border-indigo-500">
+                        <input type="file" id="timetable-file" accept=".json" required class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 dark:file:bg-indigo-900 file:text-indigo-700 dark:file:text-indigo-300 hover:file:bg-indigo-100 dark:hover:file:bg-indigo-800">
+                        <button type="submit" class="w-full bg-indigo-600 text-white py-2 rounded-md hover:bg-indigo-700 transition-colors font-semibold">Add Section</button>
+                    </form>
+                    <div id="sections-list" class="mt-4 space-y-2"></div>
+                </div>
+
+                <!-- Manage Friends -->
+                <div class="mb-6">
+                    <h3 class="font-semibold mb-2 border-b border-gray-200 dark:border-gray-600 pb-1">Manage Friends</h3>
+                    <form id="add-friend-form" class="space-y-3 mt-3">
+                        <input type="text" id="new-friend-name" placeholder="Friend's Name" required class="w-full bg-gray-100 dark:bg-gray-700 border-gray-300 dark:border-gray-600 rounded-md p-2 focus:ring-indigo-500 focus:border-indigo-500">
+                        <select id="friend-section-select" required class="w-full bg-gray-100 dark:bg-gray-700 border-gray-300 dark:border-gray-600 rounded-md p-2 focus:ring-indigo-500 focus:border-indigo-500">
+                            <option value="">Select a section</option>
+                        </select>
+                        <button type="submit" class="w-full bg-indigo-600 text-white py-2 rounded-md hover:bg-indigo-700 transition-colors font-semibold">Add Friend</button>
+                    </form>
+                </div>
+
+                <!-- Time Debugging -->
+                <div class="mb-6">
+                    <h3 class="font-semibold mb-2 border-b border-gray-200 dark:border-gray-600 pb-1">Time Debugging</h3>
+                    <div class="space-y-3 mt-3">
+                        <p class="text-xs text-gray-500 dark:text-gray-400">Manually set the current time to test the schedule.</p>
+                        <input type="datetime-local" id="debug-time-input" class="w-full bg-gray-100 dark:bg-gray-700 border-gray-300 dark:border-gray-600 rounded-md p-2 focus:ring-indigo-500 focus:border-indigo-500">
+                        <button id="reset-time-btn" class="w-full bg-gray-500 text-white py-2 rounded-md hover:bg-gray-600 transition-colors font-semibold">Reset to Real-Time</button>
+                    </div>
+                </div>
+
+                <!-- Advanced Settings -->
+                <div>
+                    <h3 class="font-semibold mb-2 border-b border-gray-200 dark:border-gray-600 pb-1">Advanced</h3>
+                    <div class="space-y-3 mt-3">
+                        <div class="flex justify-between items-center">
+                            <label for="debug-mode-toggle" class="font-medium">Enable Debugging</label>
+                            <input type="checkbox" id="debug-mode-toggle" class="rounded text-indigo-600 focus:ring-indigo-500 h-5 w-5">
+                        </div>
+                        <div class="grid grid-cols-2 gap-2">
+                             <button id="export-data-btn" class="w-full bg-gray-500 text-white py-2 rounded-md hover:bg-gray-600 transition-colors font-semibold">Export Data</button>
+                             <label class="w-full bg-gray-500 text-white py-2 px-4 rounded-md hover:bg-gray-600 transition-colors font-semibold text-center cursor-pointer">
+                                Import Data
+                                <input type="file" id="import-data-file" accept=".json" class="hidden">
+                             </label>
+                        </div>
+                        <button id="clear-data-btn" class="w-full bg-red-600 text-white py-2 rounded-md hover:bg-red-700 transition-colors font-semibold">Clear All Data</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="fixed bottom-5 right-5 bg-gray-800 text-white py-2 px-4 rounded-lg shadow-lg opacity-0 translate-y-2 transition-all duration-300">
+        <p id="toast-message"></p>
+    </div>
+
+    <!-- Confirmation Modal -->
+    <div id="confirm-modal" class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl p-6 w-full max-w-sm">
+            <h3 id="confirm-title" class="text-lg font-bold mb-4">Are you sure?</h3>
+            <p id="confirm-message" class="text-sm text-gray-600 dark:text-gray-300 mb-6">This action cannot be undone.</p>
+            <div class="flex justify-end space-x-4">
+                <button id="confirm-cancel-btn" class="px-4 py-2 rounded-md bg-gray-200 dark:bg-gray-600 hover:bg-gray-300 dark:hover:bg-gray-500 font-semibold transition-colors">Cancel</button>
+                <button id="confirm-ok-btn" class="px-4 py-2 rounded-md bg-red-600 text-white hover:bg-red-700 font-semibold transition-colors">Confirm</button>
+            </div>
+        </div>
+    </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    // --- STATE MANAGEMENT ---
+    let state = {
+        sections: {}, // { sectionName: { timetable: {}, friends: [] } }
+        settings: {
+            darkMode: true,
+            debugMode: false
+        },
+        debugTime: null, // Stores the manual time as a Date object
+    };
+
+    // --- DOM ELEMENTS ---
+    const clockElement = document.getElementById('real-time-clock');
+    const dashboard = document.getElementById('dashboard');
+    const settingsBtn = document.getElementById('settings-btn');
+    const closeSettingsBtn = document.getElementById('close-settings-btn');
+    const settingsPanel = document.getElementById('settings-panel');
+    const settingsContent = document.getElementById('settings-content');
+    const darkModeToggle = document.getElementById('dark-mode-toggle');
+    const addSectionForm = document.getElementById('add-section-form');
+    const newSectionNameInput = document.getElementById('new-section-name');
+    const timetableFileInput = document.getElementById('timetable-file');
+    const sectionsList = document.getElementById('sections-list');
+    const addFriendForm = document.getElementById('add-friend-form');
+    const newFriendNameInput = document.getElementById('new-friend-name');
+    const friendSectionSelect = document.getElementById('friend-section-select');
+    const debugTimeInput = document.getElementById('debug-time-input');
+    const resetTimeBtn = document.getElementById('reset-time-btn');
+    const debugModeToggle = document.getElementById('debug-mode-toggle');
+    const clearDataBtn = document.getElementById('clear-data-btn');
+    const noSectionsMessage = document.getElementById('no-sections-message');
+    const addSectionShortcut = document.getElementById('add-section-shortcut');
+    const toast = document.getElementById('toast');
+    const toastMessage = document.getElementById('toast-message');
+    const confirmModal = document.getElementById('confirm-modal');
+    const confirmTitle = document.getElementById('confirm-title');
+    const confirmMessage = document.getElementById('confirm-message');
+    const confirmCancelBtn = document.getElementById('confirm-cancel-btn');
+    const confirmOkBtn = document.getElementById('confirm-ok-btn');
+    const exportDataBtn = document.getElementById('export-data-btn');
+    const importDataFile = document.getElementById('import-data-file');
+
+    // --- CONSTANTS ---
+    const DAYS = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+    
+    // --- LOGGING UTILITY ---
+    const logger = (message, ...args) => {
+        if (state.settings.debugMode) {
+            console.log(`[Tracker] ${message}`, ...args);
+        }
+    };
+
+    // --- LOCAL STORAGE ---
+    const saveState = () => {
+        try {
+            localStorage.setItem('friendTrackerState', JSON.stringify(state));
+            logger("State saved to localStorage.");
+        } catch (error) {
+            console.error("Failed to save state to localStorage:", error);
+            showToast("Could not save data. Your browser might be in private mode or storage is full.", "error");
+        }
+    };
+
+    const loadState = () => {
+        const savedState = localStorage.getItem('friendTrackerState');
+        if (savedState) {
+            try {
+                const parsedState = JSON.parse(savedState);
+                if (parsedState && typeof parsedState.sections === 'object' && !Array.isArray(parsedState.sections)) {
+                    Object.assign(state, parsedState);
+                    if (state.debugTime) {
+                        state.debugTime = new Date(state.debugTime);
+                    }
+                    logger("State loaded from localStorage.", state);
+                } else {
+                    logger("Corrupted data found in localStorage. Starting fresh.");
+                    saveState();
+                }
+            } catch (error) {
+                logger("Failed to parse state from localStorage. Starting fresh.", error);
+                saveState();
+            }
+        }
+    };
+
+    // --- UI/DOM MANIPULATION ---
+    const applyTheme = () => {
+        if (state.settings.darkMode) {
+            document.documentElement.classList.add('dark');
+            darkModeToggle.classList.add('bg-indigo-600');
+            darkModeToggle.firstElementChild.classList.add('translate-x-5');
+        } else {
+            document.documentElement.classList.remove('dark');
+            darkModeToggle.classList.remove('bg-indigo-600');
+            darkModeToggle.firstElementChild.classList.remove('translate-x-5');
+        }
+    };
+
+    const showToast = (message, type = 'success') => {
+        toastMessage.textContent = message;
+        toast.className = `fixed bottom-5 right-5 text-white py-2 px-4 rounded-lg shadow-lg opacity-0 translate-y-2 transition-all duration-300 ${type === 'error' ? 'bg-red-600' : 'bg-gray-800'}`;
+        toast.classList.remove('opacity-0', 'translate-y-2');
+        setTimeout(() => {
+            toast.classList.add('opacity-0', 'translate-y-2');
+        }, 3000);
+    };
+
+    const toggleSettingsPanel = (show) => {
+        if (show) {
+            settingsPanel.classList.remove('hidden');
+            setTimeout(() => {
+                settingsContent.classList.remove('translate-x-full');
+            }, 10);
+        } else {
+            settingsContent.classList.add('translate-x-full');
+            setTimeout(() => {
+                settingsPanel.classList.add('hidden');
+            }, 300);
+        }
+    };
+
+    const renderSettings = () => {
+        sectionsList.innerHTML = '';
+        Object.keys(state.sections).forEach(name => {
+            const sectionDiv = document.createElement('div');
+            sectionDiv.className = 'flex justify-between items-center p-2 bg-gray-100 dark:bg-gray-700 rounded-md';
+            sectionDiv.innerHTML = `
+                <span class="font-medium">${name}</span>
+                <button data-section="${name}" class="remove-section-btn text-red-500 hover:text-red-700 p-1 rounded-full">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" /></svg>
+                </button>
+            `;
+            sectionsList.appendChild(sectionDiv);
+        });
+
+        friendSectionSelect.innerHTML = '<option value="">Select a section</option>';
+        Object.keys(state.sections).forEach(name => {
+            const option = document.createElement('option');
+            option.value = name;
+            option.textContent = name;
+            friendSectionSelect.appendChild(option);
+        });
+
+        debugModeToggle.checked = state.settings.debugMode;
+    };
+
+    const renderDashboard = (statuses) => {
+        if (Object.keys(state.sections).length === 0) {
+            dashboard.innerHTML = '';
+            dashboard.classList.add('hidden');
+            noSectionsMessage.classList.remove('hidden');
+            return;
+        }
+        
+        dashboard.classList.remove('hidden');
+        noSectionsMessage.classList.add('hidden');
+
+        statuses.sort((a, b) => {
+            if (a.isFree && !b.isFree) return -1;
+            if (!a.isFree && b.isFree) return 1;
+            return a.sectionName.localeCompare(b.sectionName);
+        });
+
+        const activeSections = new Set();
+
+        statuses.forEach((status, index) => {
+            activeSections.add(status.sectionName);
+            let card = dashboard.querySelector(`[data-section="${status.sectionName}"]`);
+
+            const friendsHtml = state.sections[status.sectionName].friends.map(friend => `
+                <span class="inline-flex items-center bg-gray-200 dark:bg-gray-600 rounded-full px-3 py-1 text-sm font-medium">
+                    ${friend}
+                    <button data-friend="${friend}" data-section="${status.sectionName}" class="remove-friend-btn ml-1.5 -mr-1 p-0.5 rounded-full text-gray-500 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-500">
+                        &times;
+                    </button>
+                </span>
+            `).join(' ');
+
+            const cardColor = status.isFree ? 'bg-green-500/20 dark:bg-green-500/10' : 'bg-red-500/20 dark:bg-red-500/10';
+            const progressColor = status.isFree ? 'bg-green-500/50' : 'bg-red-500/50';
+            const textColor = status.isFree ? 'text-green-800 dark:text-green-200' : 'text-red-800 dark:text-red-200';
+            const headerColor = status.isFree ? 'text-green-600 dark:text-green-400' : 'text-red-500 dark:text-red-400';
+            const detailsTextColor = 'text-gray-700 dark:text-gray-300';
+            
+            let detailsHtml = '';
+            if (status.isFree) {
+                detailsHtml = `
+                    <p class="font-semibold text-lg ${headerColor}">Free until ${status.nextClassTime}</p>
+                    <div class="mt-2 text-sm ${detailsTextColor}">
+                        <p><span class="font-medium">Next:</span> ${status.nextClassSubject}</p>
+                        <p><span class="font-medium">At:</span> ${status.nextClassVenue} <span class="font-medium">with</span> ${status.nextClassFaculty}</p>
+                    </div>
+                `;
+            } else {
+                detailsHtml = `
+                    <p class="font-semibold text-lg ${headerColor}">In class until ${status.currentClassEnd}</p>
+                    <div class="mt-2 text-sm ${detailsTextColor}">
+                        <p><span class="font-medium">Subject:</span> ${status.currentClassSubject}</p>
+                        <p><span class="font-medium">Venue:</span> ${status.currentClassVenue}</p>
+                        <p><span class="font-medium">Faculty:</span> ${status.currentClassFaculty}</p>
+                        ${status.nextFreeTime ? `<p class="mt-1 opacity-80"><span class="font-medium">Free at:</span> ${status.nextFreeTime}</p>` : ''}
+                    </div>
+                `;
+            }
+
+            const cardContentHtml = `
+                <div class="progress-bar-bg ${progressColor}" style="width: ${status.progress}%;"></div>
+                <div class="relative z-10">
+                    <div class="flex justify-between items-start">
+                        <h2 class="text-2xl font-bold text-gray-800 dark:text-white">${status.sectionName}</h2>
+                        <div class="text-right ${textColor} font-bold text-lg">${status.isFree ? 'FREE' : 'IN CLASS'}</div>
+                    </div>
+                    <div class="mt-4">
+                        ${detailsHtml}
+                    </div>
+                    <div class="mt-4 flex flex-wrap gap-2">
+                        ${friendsHtml}
+                    </div>
+                </div>
+            `;
+
+            if (card) {
+                // Update existing card
+                card.style.order = index;
+                // Only update if content has changed to be more efficient
+                if (card.innerHTML !== cardContentHtml) {
+                    card.innerHTML = cardContentHtml;
+                }
+            } else {
+                // Create new card
+                card = document.createElement('div');
+                card.className = `relative rounded-xl shadow-md overflow-hidden ${cardColor} p-5 z-0 card-fade-in`;
+                card.dataset.section = status.sectionName;
+                card.style.order = index;
+                card.innerHTML = cardContentHtml;
+                dashboard.appendChild(card);
+            }
+        });
+
+        // Remove cards for deleted sections
+        dashboard.querySelectorAll('[data-section]').forEach(card => {
+            if (!activeSections.has(card.dataset.section)) {
+                card.remove();
+            }
+        });
+    };
+
+    // --- TIME & SCHEDULE LOGIC ---
+    const getCurrentTime = () => state.debugTime || new Date();
+
+    const updateClock = () => {
+        const now = getCurrentTime();
+        const dateOptions = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+        const timeOptions = { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true };
+        clockElement.textContent = `${now.toLocaleDateString('en-US', dateOptions)} at ${now.toLocaleTimeString('en-US', timeOptions)}`;
+    };
+
+    const parseTime = (timeStr, date) => {
+        const [hours, minutes] = timeStr.split(/[.:]/).map(Number);
+        const newDate = new Date(date);
+        newDate.setHours(hours, minutes, 0, 0);
+        return newDate;
+    };
+
+    const formatTime = (date) => {
+        if (!date) return 'N/A';
+        return date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false });
+    };
+
+    const formatTimeWithDay = (date) => {
+        if (!date) return 'N/A';
+        const now = getCurrentTime();
+        const isToday = date.getDate() === now.getDate() && date.getMonth() === now.getMonth() && date.getFullYear() === now.getFullYear();
+        if (isToday) {
+            return formatTime(date);
+        }
+        return `${DAYS[date.getDay()]} at ${formatTime(date)}`;
+    };
+
+    const getScheduleForDay = (timetable, date) => {
+        const dayName = DAYS[date.getDay()];
+        return timetable.schedule.find(s => s.day.toLowerCase() === dayName.toLowerCase());
+    };
+
+    const getClassAtTime = (timetable, date) => {
+        const daySchedule = getScheduleForDay(timetable, date);
+        if (!daySchedule) return null;
+
+        for (const classInfo of daySchedule.classes) {
+            if (!classInfo.subject) continue;
+            const slot = timetable.timeSlots.find(ts => ts.lecture === classInfo.lecture);
+            if (!slot) continue;
+            const [startTimeStr, endTimeStr] = slot.time.split('-');
+            const startTime = parseTime(startTimeStr, date);
+            let endTime = parseTime(endTimeStr, date);
+            if (classInfo.span && classInfo.span > 1) {
+                const endLectureNum = classInfo.lecture + classInfo.span - 1;
+                const endSlot = timetable.timeSlots.find(ts => ts.lecture === endLectureNum);
+                if (endSlot) {
+                    const [, endSpanTimeStr] = endSlot.time.split('-');
+                    endTime = parseTime(endSpanTimeStr, date);
+                }
+            }
+            if (date >= startTime && date < endTime) {
+                return { ...classInfo, startTime, endTime };
+            }
+        }
+        return null;
+    };
+
+    const getNextClass = (timetable, date) => {
+        for (let i = 0; i < 7; i++) {
+            const checkDate = new Date(date);
+            checkDate.setDate(date.getDate() + i);
+            const daySchedule = getScheduleForDay(timetable, checkDate);
+            if (!daySchedule) continue;
+            for (const classInfo of daySchedule.classes) {
+                if (!classInfo.subject) continue;
+                const slot = timetable.timeSlots.find(ts => ts.lecture === classInfo.lecture);
+                if (!slot) continue;
+                const [startTimeStr] = slot.time.split('-');
+                const startTime = parseTime(startTimeStr, checkDate);
+                if (startTime > date) {
+                    return { ...classInfo, startTime };
+                }
+            }
+        }
+        return null;
+    };
+    
+    const findClassStartingAt = (timetable, date) => {
+        const daySchedule = getScheduleForDay(timetable, date);
+        if (!daySchedule) return null;
+        for (const classInfo of daySchedule.classes) {
+            if (!classInfo.subject) continue;
+            const slot = timetable.timeSlots.find(ts => ts.lecture === classInfo.lecture);
+            if (!slot) continue;
+            const [startTimeStr, endTimeStr] = slot.time.split('-');
+            const startTime = parseTime(startTimeStr, date);
+            if (startTime.getTime() === date.getTime()) {
+                let endTime = parseTime(endTimeStr, date);
+                if (classInfo.span && classInfo.span > 1) {
+                    const endLectureNum = classInfo.lecture + classInfo.span - 1;
+                    const endSlot = timetable.timeSlots.find(ts => ts.lecture === endLectureNum);
+                    if (endSlot) {
+                        const [, endSpanTimeStr] = endSlot.time.split('-');
+                        endTime = parseTime(endSpanTimeStr, date);
+                    }
+                }
+                return { ...classInfo, startTime, endTime };
+            }
+        }
+        return null;
+    };
+
+    const getNextFreeTime = (timetable, date) => {
+        const currentClass = getClassAtTime(timetable, date);
+        if (!currentClass) return null;
+        let lastClassEndTime = currentClass.endTime;
+        while (true) {
+            const nextContiguousClass = findClassStartingAt(timetable, lastClassEndTime);
+            if (nextContiguousClass) {
+                lastClassEndTime = nextContiguousClass.endTime;
+            } else {
+                break;
+            }
+        }
+        return lastClassEndTime;
+    };
+
+    const calculateAllStatuses = () => {
+        const now = getCurrentTime();
+        const statuses = Object.keys(state.sections).map(sectionName => {
+            const { timetable } = state.sections[sectionName];
+            if (!timetable || !timetable.schedule) {
+                logger(`Invalid timetable for ${sectionName}`);
+                return { sectionName, isFree: true, progress: 0, error: 'Invalid Timetable' };
+            }
+            const currentClass = getClassAtTime(timetable, now);
+            const nextClass = getNextClass(timetable, now);
+            const nextFree = getNextFreeTime(timetable, now);
+            if (currentClass) {
+                const totalDuration = currentClass.endTime - currentClass.startTime;
+                const elapsed = now - currentClass.startTime;
+                const progress = totalDuration > 0 ? Math.min(100, (elapsed / totalDuration) * 100) : 0;
+                return {
+                    sectionName, isFree: false, progress,
+                    currentClassSubject: currentClass.subject,
+                    currentClassVenue: currentClass.venue || 'N/A',
+                    currentClassFaculty: currentClass.faculty || 'N/A',
+                    currentClassEnd: formatTime(currentClass.endTime),
+                    nextFreeTime: nextFree ? formatTimeWithDay(nextFree) : null,
+                };
+            } else {
+                if (nextClass) {
+                    const daySchedule = getScheduleForDay(timetable, now);
+                    const lastClassOfTheDay = daySchedule ? [...daySchedule.classes].reverse().find(c => c.subject) : null;
+                    let freePeriodStart;
+                    if (lastClassOfTheDay) {
+                         const lastSlot = timetable.timeSlots.find(ts => ts.lecture === lastClassOfTheDay.lecture);
+                         const [, lastEndTimeStr] = lastSlot.time.split('-');
+                         const lastEndTime = parseTime(lastEndTimeStr, now);
+                         if (now > lastEndTime) {
+                             freePeriodStart = lastEndTime;
+                         } else {
+                            const reversedClasses = [...daySchedule.classes].reverse();
+                            const prevClassInfo = reversedClasses.find(c => {
+                                if(!c.subject) return false;
+                                const slot = timetable.timeSlots.find(ts => ts.lecture === c.lecture);
+                                const [, endTimeStr] = slot.time.split('-');
+                                return parseTime(endTimeStr, now) <= now;
+                            });
+                            if(prevClassInfo) {
+                                const prevSlot = timetable.timeSlots.find(ts => ts.lecture === prevClassInfo.lecture);
+                                const [, prevEndTimeStr] = prevSlot.time.split('-');
+                                freePeriodStart = parseTime(prevEndTimeStr, now);
+                            } else {
+                                freePeriodStart = new Date(now);
+                                freePeriodStart.setHours(0,0,0,0);
+                            }
+                         }
+                    } else {
+                         freePeriodStart = new Date(now);
+                         freePeriodStart.setHours(0,0,0,0);
+                    }
+                    const totalDuration = nextClass.startTime - freePeriodStart;
+                    const elapsed = now - freePeriodStart;
+                    const progress = totalDuration > 0 ? Math.min(100, (elapsed / totalDuration) * 100) : 0;
+                    return {
+                        sectionName, isFree: true, progress,
+                        nextClassTime: formatTimeWithDay(nextClass.startTime),
+                        nextClassSubject: nextClass.subject,
+                        nextClassVenue: nextClass.venue || 'N/A',
+                        nextClassFaculty: nextClass.faculty || 'N/A',
+                    };
+                } else {
+                    return {
+                        sectionName, isFree: true, progress: 100,
+                        nextClassTime: 'a long while',
+                        nextClassSubject: 'Nothing scheduled',
+                        nextClassVenue: '-',
+                        nextClassFaculty: '-',
+                    };
+                }
+            }
+        });
+        renderDashboard(statuses);
+    };
+
+    // --- MODAL & EVENT HANDLERS ---
+    let confirmCallback = null;
+
+    const showConfirm = (title, message, onConfirm) => {
+        confirmTitle.textContent = title;
+        confirmMessage.textContent = message;
+        confirmCallback = onConfirm;
+        confirmModal.classList.remove('hidden');
+    };
+
+    const hideConfirm = () => {
+        confirmModal.classList.add('hidden');
+        confirmCallback = null;
+    };
+
+    const handleAddSection = (e) => {
+        e.preventDefault();
+        const name = newSectionNameInput.value.trim().toUpperCase();
+        const file = timetableFileInput.files[0];
+        if (!name || !file) {
+            showToast('Please provide a section name and a file.', 'error');
+            return;
+        }
+        if (state.sections[name]) {
+            showToast(`Section "${name}" already exists.`, 'error');
+            return;
+        }
+        const reader = new FileReader();
+        reader.onload = (event) => {
+            try {
+                const timetable = JSON.parse(event.target.result);
+                if (!timetable.schedule || !timetable.timeSlots) {
+                    throw new Error("Invalid timetable format.");
+                }
+                state.sections[name] = { timetable, friends: [] };
+                saveState();
+                renderSettings();
+                calculateAllStatuses();
+                addSectionForm.reset();
+                showToast(`Section "${name}" added successfully.`);
+            } catch (error) {
+                showToast(`Error parsing timetable file: ${error.message}`, 'error');
+                logger("Timetable parsing error:", error);
+            }
+        };
+        reader.readAsText(file);
+    };
+
+    const handleRemoveSection = (name) => {
+        showConfirm(
+            `Remove Section "${name}"?`,
+            'This will also remove all friends in this section. This action cannot be undone.',
+            () => {
+                delete state.sections[name];
+                saveState();
+                renderSettings();
+                calculateAllStatuses();
+                showToast(`Section "${name}" removed.`);
+            }
+        );
+    };
+
+    const handleAddFriend = (e) => {
+        e.preventDefault();
+        const name = newFriendNameInput.value.trim();
+        const section = friendSectionSelect.value;
+        if (!name || !section) {
+            showToast('Please provide a name and select a section.', 'error');
+            return;
+        }
+        if (state.sections[section].friends.includes(name)) {
+            showToast(`${name} is already in section ${section}.`, 'error');
+            return;
+        }
+        state.sections[section].friends.push(name);
+        saveState();
+        calculateAllStatuses();
+        addFriendForm.reset();
+        showToast(`${name} added to section ${section}.`);
+    };
+
+    const handleRemoveFriend = (friend, section) => {
+        showConfirm(
+            `Remove ${friend}?`,
+            `Are you sure you want to remove ${friend} from section ${section}?`,
+            () => {
+                const friendsList = state.sections[section].friends;
+                const index = friendsList.indexOf(friend);
+                if (index > -1) {
+                    friendsList.splice(index, 1);
+                    saveState();
+                    calculateAllStatuses();
+                    showToast(`${friend} removed from section ${section}.`);
+                }
+            }
+        );
+    };
+
+    const handleDebugTimeChange = (e) => {
+        const value = e.target.value;
+        if (value) {
+            state.debugTime = new Date(value);
+        } else {
+            state.debugTime = null;
+        }
+        saveState();
+        updateClock();
+        calculateAllStatuses();
+    };
+
+    const handleResetTime = () => {
+        state.debugTime = null;
+        debugTimeInput.value = '';
+        saveState();
+        updateClock();
+        calculateAllStatuses();
+        showToast('Time reset to real-time.');
+    };
+
+    const handleClearData = () => {
+        showConfirm(
+            'Clear All Data?',
+            'This action cannot be undone and will reset the application.',
+            () => {
+                state.sections = {};
+                state.debugTime = null;
+                saveState();
+                location.reload();
+            }
+        );
+    };
+
+    const handleExportData = () => {
+        const dataStr = JSON.stringify({ sections: state.sections, friends: state.friends }, null, 2);
+        const dataBlob = new Blob([dataStr], {type: "application/json"});
+        const url = URL.createObjectURL(dataBlob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `friend-tracker-backup-${new Date().toISOString().split('T')[0]}.json`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+        showToast("Data exported successfully.");
+    };
+
+    const handleImportData = (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = (event) => {
+            try {
+                const importedData = JSON.parse(event.target.result);
+                if (importedData && importedData.sections) {
+                    state.sections = importedData.sections;
+                    saveState();
+                    renderSettings();
+                    calculateAllStatuses();
+                    showToast("Data imported successfully.");
+                } else {
+                    throw new Error("Invalid data format.");
+                }
+            } catch (error) {
+                showToast(`Error importing data: ${error.message}`, 'error');
+            } finally {
+                importDataFile.value = '';
+            }
+        };
+        reader.readAsText(file);
+    };
+
+    // --- INITIALIZATION ---
+    const initializeApp = () => {
+        applyTheme();
+        renderSettings();
+        updateClock();
+        calculateAllStatuses(); 
+        
+        setInterval(() => {
+            updateClock();
+            calculateAllStatuses();
+        }, 1000);
+    };
+
+    // --- EVENT LISTENERS ---
+    settingsBtn.addEventListener('click', () => toggleSettingsPanel(true));
+    addSectionShortcut.addEventListener('click', () => toggleSettingsPanel(true));
+    closeSettingsBtn.addEventListener('click', () => toggleSettingsPanel(false));
+    settingsPanel.addEventListener('click', (e) => {
+        if (e.target === settingsPanel) {
+            toggleSettingsPanel(false);
+        }
+    });
+
+    darkModeToggle.addEventListener('click', () => {
+        state.settings.darkMode = !state.settings.darkMode;
+        applyTheme();
+        saveState();
+    });
+
+    addSectionForm.addEventListener('submit', handleAddSection);
+    addFriendForm.addEventListener('submit', handleAddFriend);
+    debugTimeInput.addEventListener('change', handleDebugTimeChange);
+    resetTimeBtn.addEventListener('click', handleResetTime);
+    clearDataBtn.addEventListener('click', handleClearData);
+    exportDataBtn.addEventListener('click', handleExportData);
+    importDataFile.addEventListener('change', handleImportData);
+
+    debugModeToggle.addEventListener('change', (e) => {
+        state.settings.debugMode = e.target.checked;
+        saveState();
+        showToast(`Debugging ${state.settings.debugMode ? 'enabled' : 'disabled'}.`);
+    });
+
+    confirmCancelBtn.addEventListener('click', hideConfirm);
+    confirmOkBtn.addEventListener('click', () => {
+        if (confirmCallback) {
+            confirmCallback();
+        }
+        hideConfirm();
+    });
+
+    sectionsList.addEventListener('click', (e) => {
+        const removeBtn = e.target.closest('.remove-section-btn');
+        if (removeBtn) {
+            handleRemoveSection(removeBtn.dataset.section);
+        }
+    });
+
+    dashboard.addEventListener('click', (e) => {
+        const removeBtn = e.target.closest('.remove-friend-btn');
+        if (removeBtn) {
+            handleRemoveFriend(removeBtn.dataset.friend, removeBtn.dataset.section);
+        }
+    });
+
+    // --- APP START ---
+    loadState();
+    initializeApp();
+});
+</script>
+</body>
+</html>
