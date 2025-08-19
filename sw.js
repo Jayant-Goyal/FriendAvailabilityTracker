@@ -21,8 +21,8 @@ self.addEventListener('install', event => {
   );
 });
 
-// Fetch event: serves requests from the cache if available.
-// If not in the cache, it fetches from the network.
+// Fetch event: serves requests from the cache first.
+// If a network request fails (especially for navigation), it serves the main app page as a fallback.
 self.addEventListener('fetch', event => {
   event.respondWith(
     caches.match(event.request)
@@ -31,9 +31,16 @@ self.addEventListener('fetch', event => {
         if (response) {
           return response;
         }
-        // Otherwise, fetch the request from the network
-        return fetch(event.request);
-      }
-    )
+
+        // If not in cache, fetch from the network.
+        return fetch(event.request).catch(() => {
+          // If the network fetch fails (e.g., user is offline),
+          // and the user was trying to navigate to a page,
+          // return the main index.html file from the cache.
+          if (event.request.mode === 'navigate') {
+            return caches.match(`/${REPO_NAME}/index.html`);
+          }
+        });
+      })
   );
 });
