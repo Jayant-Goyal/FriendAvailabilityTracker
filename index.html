@@ -4,6 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Friend Availability Tracker</title>
+
+    <!-- PWA Meta Tags -->
+    <meta name="theme-color" content="#1f2937">
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="https://placehold.co/192x192/7c3aed/ffffff?text=App">
+
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -883,6 +889,21 @@ document.addEventListener('DOMContentLoaded', () => {
     loadState();
     initializeApp();
 });
+</script>
+<!-- Service Worker Registration -->
+<script>
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            // Make sure to replace 'your-repo-name' with your repository name
+            navigator.serviceWorker.register('/your-repo-name/sw.js')
+                .then(registration => {
+                    console.log('ServiceWorker registration successful with scope: ', registration.scope);
+                })
+                .catch(err => {
+                    console.log('ServiceWorker registration failed: ', err);
+                });
+        });
+    }
 </script>
 </body>
 </html>
