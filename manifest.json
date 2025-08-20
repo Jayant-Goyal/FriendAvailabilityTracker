@@ -1,7 +1,7 @@
 {
   "name": "Friend Availability Tracker",
   "short_name": "Availability",
-  "start_url": "/your-repo-name/index.html",
+  "start_url": "/FriendAvailabilityTracker/index.html",
   "display": "standalone",
   "background_color": "#111827",
   "theme_color": "#1f2937",
