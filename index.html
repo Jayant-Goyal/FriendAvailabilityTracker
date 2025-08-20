@@ -346,6 +346,10 @@ document.addEventListener('DOMContentLoaded', () => {
         debugModeToggle.checked = state.settings.debugMode;
     };
 
+    /**
+     * Renders the main dashboard with status cards for each section.
+     * This function is now updated to display the "Free at ... till ..." information.
+     */
     const renderDashboard = (statuses) => {
         if (Object.keys(state.sections).length === 0) {
             dashboard.innerHTML = '';
@@ -394,13 +398,26 @@ document.addEventListener('DOMContentLoaded', () => {
                     </div>
                 `;
             } else {
+                // *** MODIFIED PART ***
+                // This block constructs the new "Free at...till..." message.
+                let freeAtHtml = '';
+                if (status.nextFreeTime) {
+                    if (status.freeUntilTime.includes('day') || status.freeUntilTime.includes('while')) {
+                        // Handles cases where they are free until the next day or for a long time.
+                        freeAtHtml = `<p class="mt-1 opacity-80"><span class="font-medium">Free from:</span> ${status.nextFreeTime} until ${status.freeUntilTime}</p>`;
+                    } else {
+                        // Handles cases where the next class is on the same day.
+                        freeAtHtml = `<p class="mt-1 opacity-80"><span class="font-medium">Free at:</span> ${status.nextFreeTime} till ${status.freeUntilTime}</p>`;
+                    }
+                }
+
                 detailsHtml = `
                     <p class="font-semibold text-lg ${headerColor}">In class until ${status.currentClassEnd}</p>
                     <div class="mt-2 text-sm ${detailsTextColor}">
                         <p><span class="font-medium">Subject:</span> ${status.currentClassSubject}</p>
                         <p><span class="font-medium">Venue:</span> ${status.currentClassVenue}</p>
                         <p><span class="font-medium">Faculty:</span> ${status.currentClassFaculty}</p>
-                        ${status.nextFreeTime ? `<p class="mt-1 opacity-80"><span class="font-medium">Free at:</span> ${status.nextFreeTime}</p>` : ''}
+                        ${freeAtHtml}
                     </div>
                 `;
             }
@@ -422,14 +439,11 @@ document.addEventListener('DOMContentLoaded', () => {
             `;
 
             if (card) {
-                // Update existing card
                 card.style.order = index;
-                // Only update if content has changed to be more efficient
                 if (card.innerHTML !== cardContentHtml) {
                     card.innerHTML = cardContentHtml;
                 }
             } else {
-                // Create new card
                 card = document.createElement('div');
                 card.className = `relative rounded-xl shadow-md overflow-hidden ${cardColor} p-5 z-0 card-fade-in`;
                 card.dataset.section = status.sectionName;
@@ -439,7 +453,6 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
 
-        // Remove cards for deleted sections
         dashboard.querySelectorAll('[data-section]').forEach(card => {
             if (!activeSections.has(card.dataset.section)) {
                 card.remove();
@@ -570,6 +583,10 @@ document.addEventListener('DOMContentLoaded', () => {
         return lastClassEndTime;
     };
 
+    /**
+     * Calculates the status for all sections.
+     * This function is now updated to calculate the "free until" time.
+     */
     const calculateAllStatuses = () => {
         const now = getCurrentTime();
         const statuses = Object.keys(state.sections).map(sectionName => {
@@ -581,17 +598,40 @@ document.addEventListener('DOMContentLoaded', () => {
             const currentClass = getClassAtTime(timetable, now);
             const nextClass = getNextClass(timetable, now);
             const nextFree = getNextFreeTime(timetable, now);
+            
             if (currentClass) {
-                const totalDuration = currentClass.endTime - currentClass.startTime;
+                const busyPeriodEndTime = nextFree || currentClass.endTime;
+                
+                // *** MODIFIED PART ***
+                // Find the next class *after* the current block of classes ends.
+                const nextClassAfterBusy = getNextClass(timetable, busyPeriodEndTime);
+                let freeUntilInfo = 'a long while'; // Default message if no more classes are found
+
+                if (nextClassAfterBusy) {
+                    const startOfFreePeriod = busyPeriodEndTime;
+                    const endOfFreePeriod = nextClassAfterBusy.startTime;
+
+                    // Check if the next class is on a different day.
+                    if (startOfFreePeriod.getDate() !== endOfFreePeriod.getDate()) {
+                        freeUntilInfo = `the next day (${DAYS[endOfFreePeriod.getDay()]})`;
+                    } else {
+                        // If it's the same day, just show the time.
+                        freeUntilInfo = formatTime(endOfFreePeriod);
+                    }
+                }
+                
+                const totalDuration = busyPeriodEndTime - currentClass.startTime;
                 const elapsed = now - currentClass.startTime;
                 const progress = totalDuration > 0 ? Math.min(100, (elapsed / totalDuration) * 100) : 0;
+
                 return {
                     sectionName, isFree: false, progress,
                     currentClassSubject: currentClass.subject,
                     currentClassVenue: currentClass.venue || 'N/A',
                     currentClassFaculty: currentClass.faculty || 'N/A',
-                    currentClassEnd: formatTime(currentClass.endTime),
+                    currentClassEnd: formatTime(busyPeriodEndTime),
                     nextFreeTime: nextFree ? formatTimeWithDay(nextFree) : null,
+                    freeUntilTime: freeUntilInfo, // Pass the new "till" information
                 };
             } else {
                 if (nextClass) {
