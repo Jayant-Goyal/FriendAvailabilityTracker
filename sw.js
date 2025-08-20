@@ -2,7 +2,7 @@
 const CACHE_NAME = 'friend-tracker-v1';
 
 // Make sure to replace 'your-repo-name' with your repository name
-const REPO_NAME = 'your-repo-name';
+const REPO_NAME = 'FriendAvailabilityTracker';
 
 // List of files to cache when the service worker is installed
 const urlsToCache = [
