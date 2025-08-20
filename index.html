@@ -48,18 +48,26 @@
         }
         .card-fade-in {
             animation: fadeIn 0.5s ease-out forwards;
+            /* Add smooth height transition */
+            transition: height 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
         }
         /* Styles for swipeable cards */
         .card-inner-wrapper {
             display: flex;
+            /* MODIFIED: Prevents flex items from stretching to the same height */
+            align-items: flex-start;
             transition: transform 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
         }
-        .card-normal-view, .card-next-class-view {
+        .card-normal-view, .card-next-class-view, .card-timetable-view {
             width: 100%;
             flex-shrink: 0;
         }
-        .is-swiped .card-inner-wrapper {
+        /* Handle 3 swipe states */
+        [data-swipe-state="1"] .card-inner-wrapper {
             transform: translateX(-100%);
+        }
+        [data-swipe-state="2"] .card-inner-wrapper {
+            transform: translateX(-200%);
         }
         .swipe-indicator {
             position: absolute;
@@ -75,12 +83,13 @@
             border-radius: 50%;
             background-color: currentColor;
             transition: all 0.3s ease;
-        }
-        .is-swiped .swipe-indicator-dot:first-child {
             transform: scale(0.8);
             opacity: 0.6;
         }
-        .is-swiped .swipe-indicator-dot:last-child {
+        /* Handle 3 indicator dots */
+        [data-swipe-state="0"] .swipe-indicator-dot:nth-child(1),
+        [data-swipe-state="1"] .swipe-indicator-dot:nth-child(2),
+        [data-swipe-state="2"] .swipe-indicator-dot:nth-child(3) {
             transform: scale(1.2);
             opacity: 1;
         }
@@ -381,6 +390,20 @@ document.addEventListener('DOMContentLoaded', () => {
         debugModeToggle.checked = state.settings.debugMode;
     };
 
+    const updateCardHeight = (cardElement) => {
+        if (!cardElement) return;
+        const state = parseInt(cardElement.dataset.swipeState || '0', 10);
+        const views = [
+            cardElement.querySelector('.card-normal-view'),
+            cardElement.querySelector('.card-next-class-view'),
+            cardElement.querySelector('.card-timetable-view')
+        ];
+        const activeView = views[state];
+        if (activeView) {
+            cardElement.style.height = `${activeView.scrollHeight}px`;
+        }
+    };
+
     const renderDashboard = (statuses) => {
         if (Object.keys(state.sections).length === 0) {
             dashboard.innerHTML = '';
@@ -449,7 +472,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 `;
             }
 
-            // *** NEW: HTML for the next class view (swipe left) ***
             let nextClassDetailsHtml = `
             <div class="p-5 h-full flex flex-col justify-center items-center text-center">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-gray-400 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.293 2.293a1 1 0 010 1.414L11 12l4.293 4.293a1 1 0 01-1.414 1.414L10 13.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 12 4.293 7.707a1 1 0 011.414-1.414L10 10.586 14.293 6.293a1 1 0 011.414 0L18 8.586m-5 5l2.293-2.293a1 1 0 011.414 0L21 15m-4-4l-2.293 2.293a1 1 0 01-1.414 0L9 11" /></svg>
@@ -471,7 +493,33 @@ document.addEventListener('DOMContentLoaded', () => {
                 </div>`;
             }
 
-            // *** NEW: Card content now uses a wrapper for the two views ***
+            let timetableHtml = `
+            <div class="p-5 h-full flex flex-col justify-center items-center text-center">
+                <h3 class="text-lg font-bold text-gray-700 dark:text-gray-300">No Classes Today</h3>
+            </div>`;
+
+            if (status.dayScheduleForView && status.dayScheduleForView.length > 0) {
+                const scheduleRows = status.dayScheduleForView.map(slot => {
+                    const isCurrentClass = slot.isCurrent ? 'bg-blue-100 dark:bg-blue-900/50' : '';
+                    const subjectClass = slot.subject ? 'font-semibold' : 'text-gray-400';
+                    return `
+                        <div class="grid grid-cols-5 gap-2 text-xs py-1.5 px-2 rounded-md ${isCurrentClass}">
+                            <span class="text-left">${slot.time}</span>
+                            <span class="text-left col-span-2 ${subjectClass}">${slot.subject || 'Free Period'}</span>
+                            <span class="text-right col-span-2 text-gray-500 truncate">${slot.venue || ''}</span>
+                        </div>
+                    `;
+                }).join('');
+                timetableHtml = `
+                <div class="p-5 h-full flex flex-col">
+                    <p class="font-bold text-lg text-gray-800 dark:text-gray-200 text-center mb-2">Today's Schedule</p>
+                    <div class="flex-grow overflow-y-auto space-y-1 -mr-2 pr-2">
+                        ${scheduleRows}
+                    </div>
+                </div>`;
+            }
+
+
             const cardContentHtml = `
             <div class="card-inner-wrapper">
                 <div class="card-normal-view">
@@ -491,28 +539,32 @@ document.addEventListener('DOMContentLoaded', () => {
                     <div class="swipe-indicator text-gray-500 dark:text-gray-400">
                         <div class="swipe-indicator-dot"></div>
                         <div class="swipe-indicator-dot"></div>
+                        <div class="swipe-indicator-dot"></div>
                     </div>
                 </div>
                 <div class="card-next-class-view bg-gray-50 dark:bg-gray-800/50">
                     ${nextClassDetailsHtml}
                 </div>
+                <div class="card-timetable-view bg-gray-50 dark:bg-gray-800/50">
+                    ${timetableHtml}
+                </div>
             </div>`;
 
             if (card) {
-                const wasSwiped = card.classList.contains('is-swiped');
+                const swipeState = card.dataset.swipeState || '0';
                 card.style.order = index;
                 card.innerHTML = cardContentHtml;
-                // Preserve swipe state on re-render
-                if (wasSwiped) {
-                    card.classList.add('is-swiped');
-                }
+                card.dataset.swipeState = swipeState;
+                setTimeout(() => updateCardHeight(card), 0);
             } else {
                 card = document.createElement('div');
                 card.className = `relative rounded-xl shadow-md overflow-hidden ${cardColor} z-0 card-fade-in`;
                 card.dataset.section = status.sectionName;
+                card.dataset.swipeState = '0';
                 card.style.order = index;
                 card.innerHTML = cardContentHtml;
                 dashboard.appendChild(card);
+                setTimeout(() => updateCardHeight(card), 0);
             }
         });
 
@@ -655,8 +707,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 return { sectionName, isFree: true, progress: 0, error: 'Invalid Timetable' };
             }
             const currentClass = getClassAtTime(timetable, now);
-
-            // *** NEW: Determine the absolute next class for the swipe view ***
+            
             let absoluteNextClass = null;
             if (currentClass) {
                 const nextFree = getNextFreeTime(timetable, now);
@@ -674,6 +725,23 @@ document.addEventListener('DOMContentLoaded', () => {
                     venue: absoluteNextClass.venue || 'N/A',
                     faculty: absoluteNextClass.faculty || 'N/A'
                 };
+            }
+
+            let dayScheduleForView = null;
+            const todaySchedule = getScheduleForDay(timetable, now);
+            if (todaySchedule) {
+                dayScheduleForView = timetable.timeSlots.map(slot => {
+                    const classInfo = todaySchedule.classes.find(c => c.lecture === slot.lecture);
+                    const startTime = parseTime(slot.time.split('-')[0], now);
+                    const endTime = parseTime(slot.time.split('-')[1], now);
+                    const isCurrent = now >= startTime && now < endTime && classInfo && classInfo.subject;
+                    return {
+                        time: slot.time,
+                        subject: classInfo ? classInfo.subject : null,
+                        venue: classInfo ? classInfo.venue || '' : '',
+                        isCurrent: isCurrent
+                    };
+                });
             }
             
             if (currentClass) {
@@ -705,6 +773,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     nextFreeTime: nextFree ? formatTimeWithDay(nextFree) : null,
                     freeUntilTime: freeUntilInfo,
                     nextClassForSwipe: nextClassForSwipeData,
+                    dayScheduleForView: dayScheduleForView
                 };
             } else {
                 const nextClass = getNextClass(timetable, now);
@@ -749,6 +818,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         nextClassVenue: nextClass.venue || 'N/A',
                         nextClassFaculty: nextClass.faculty || 'N/A',
                         nextClassForSwipe: nextClassForSwipeData,
+                        dayScheduleForView: dayScheduleForView
                     };
                 } else {
                     return {
@@ -758,6 +828,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         nextClassVenue: '-',
                         nextClassFaculty: '-',
                         nextClassForSwipe: nextClassForSwipeData,
+                        dayScheduleForView: dayScheduleForView
                     };
                 }
             }
@@ -941,7 +1012,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let touchCurrentX = 0;
     let swipedCard = null;
     let isSwiping = false;
-    const swipeThreshold = 50; // Min pixels to trigger a swipe
+    const swipeThreshold = 50;
 
     const handleTouchStart = (e) => {
         const card = e.target.closest('[data-section]');
@@ -952,7 +1023,7 @@ document.addEventListener('DOMContentLoaded', () => {
         isSwiping = false;
         const wrapper = swipedCard.querySelector('.card-inner-wrapper');
         if (wrapper) {
-            wrapper.style.transition = 'none'; // Disable transition during swipe for direct feedback
+            wrapper.style.transition = 'none';
         }
     };
 
@@ -961,20 +1032,15 @@ document.addEventListener('DOMContentLoaded', () => {
         touchCurrentX = e.targetTouches[0].clientX;
         const diffX = touchCurrentX - touchStartX;
 
-        // Start swiping only after a small movement to distinguish from clicks
         if (Math.abs(diffX) > 10 || isSwiping) {
-            if (!isSwiping) {
-                isSwiping = true;
-            }
-            // Prevent vertical scroll while swiping horizontally
+            if (!isSwiping) isSwiping = true;
             e.preventDefault(); 
             const wrapper = swipedCard.querySelector('.card-inner-wrapper');
             if (!wrapper) return;
 
-            const isSwiped = swipedCard.classList.contains('is-swiped');
-            const baseTranslate = isSwiped ? -swipedCard.offsetWidth : 0;
-            // Clamp the drag movement so you can't over-drag
-            const newTranslate = Math.max(-swipedCard.offsetWidth, Math.min(0, baseTranslate + diffX));
+            const currentState = parseInt(swipedCard.dataset.swipeState || '0', 10);
+            const baseTranslate = -currentState * swipedCard.offsetWidth;
+            const newTranslate = Math.max(-swipedCard.offsetWidth * 2, Math.min(0, baseTranslate + diffX));
             wrapper.style.transform = `translateX(${newTranslate}px)`;
         }
     };
@@ -984,24 +1050,24 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const wrapper = swipedCard.querySelector('.card-inner-wrapper');
         if (wrapper) {
-            // Re-enable transition for smooth snap
             wrapper.style.transition = 'transform 0.4s cubic-bezier(0.25, 0.8, 0.25, 1)';
-            wrapper.style.transform = ''; // Clear inline style to let CSS take over
+            wrapper.style.transform = '';
         }
 
         if (isSwiping) {
             const diffX = touchCurrentX - touchStartX;
-            // Swipe left
+            const currentState = parseInt(swipedCard.dataset.swipeState || '0', 10);
+            let newState = currentState;
+
             if (diffX < -swipeThreshold) {
-                swipedCard.classList.add('is-swiped');
+                newState = Math.min(currentState + 1, 2);
+            } else if (diffX > swipeThreshold) {
+                newState = Math.max(currentState - 1, 0);
             }
-            // Swipe right
-            else if (diffX > swipeThreshold) {
-                swipedCard.classList.remove('is-swiped');
-            }
+            swipedCard.dataset.swipeState = newState;
+            updateCardHeight(swipedCard);
         }
         
-        // Reset
         swipedCard = null;
         isSwiping = false;
     };
@@ -1018,6 +1084,10 @@ document.addEventListener('DOMContentLoaded', () => {
             updateClock();
             calculateAllStatuses();
         }, 1000);
+
+        window.addEventListener('resize', () => {
+            dashboard.querySelectorAll('[data-section]').forEach(updateCardHeight);
+        });
     };
 
     // --- EVENT LISTENERS ---
@@ -1072,11 +1142,10 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
     
-    // Add touch event listeners for swipe
     dashboard.addEventListener('touchstart', handleTouchStart, { passive: false });
     dashboard.addEventListener('touchmove', handleTouchMove, { passive: false });
     dashboard.addEventListener('touchend', handleTouchEnd);
-    dashboard.addEventListener('touchcancel', handleTouchEnd); // Also reset on touch cancel
+    dashboard.addEventListener('touchcancel', handleTouchEnd);
 
     // --- APP START ---
     loadState();
