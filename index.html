@@ -49,6 +49,41 @@
         .card-fade-in {
             animation: fadeIn 0.5s ease-out forwards;
         }
+        /* Styles for swipeable cards */
+        .card-inner-wrapper {
+            display: flex;
+            transition: transform 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+        .card-normal-view, .card-next-class-view {
+            width: 100%;
+            flex-shrink: 0;
+        }
+        .is-swiped .card-inner-wrapper {
+            transform: translateX(-100%);
+        }
+        .swipe-indicator {
+            position: absolute;
+            bottom: 10px;
+            right: 15px;
+            display: flex;
+            gap: 4px;
+            opacity: 0.5;
+        }
+        .swipe-indicator-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background-color: currentColor;
+            transition: all 0.3s ease;
+        }
+        .is-swiped .swipe-indicator-dot:first-child {
+            transform: scale(0.8);
+            opacity: 0.6;
+        }
+        .is-swiped .swipe-indicator-dot:last-child {
+            transform: scale(1.2);
+            opacity: 1;
+        }
     </style>
     <script>
         // Tailwind dark mode configuration
@@ -346,10 +381,6 @@ document.addEventListener('DOMContentLoaded', () => {
         debugModeToggle.checked = state.settings.debugMode;
     };
 
-    /**
-     * Renders the main dashboard with status cards for each section.
-     * This function is now updated to display the "Free at ... till ..." information.
-     */
     const renderDashboard = (statuses) => {
         if (Object.keys(state.sections).length === 0) {
             dashboard.innerHTML = '';
@@ -398,15 +429,11 @@ document.addEventListener('DOMContentLoaded', () => {
                     </div>
                 `;
             } else {
-                // *** MODIFIED PART ***
-                // This block constructs the new "Free at...till..." message.
                 let freeAtHtml = '';
                 if (status.nextFreeTime) {
                     if (status.freeUntilTime.includes('day') || status.freeUntilTime.includes('while')) {
-                        // Handles cases where they are free until the next day or for a long time.
                         freeAtHtml = `<p class="mt-1 opacity-80"><span class="font-medium">Free from:</span> ${status.nextFreeTime} until ${status.freeUntilTime}</p>`;
                     } else {
-                        // Handles cases where the next class is on the same day.
                         freeAtHtml = `<p class="mt-1 opacity-80"><span class="font-medium">Free at:</span> ${status.nextFreeTime} till ${status.freeUntilTime}</p>`;
                     }
                 }
@@ -422,30 +449,66 @@ document.addEventListener('DOMContentLoaded', () => {
                 `;
             }
 
+            // *** NEW: HTML for the next class view (swipe left) ***
+            let nextClassDetailsHtml = `
+            <div class="p-5 h-full flex flex-col justify-center items-center text-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-gray-400 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.293 2.293a1 1 0 010 1.414L11 12l4.293 4.293a1 1 0 01-1.414 1.414L10 13.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 12 4.293 7.707a1 1 0 011.414-1.414L10 10.586 14.293 6.293a1 1 0 011.414 0L18 8.586m-5 5l2.293-2.293a1 1 0 011.414 0L21 15m-4-4l-2.293 2.293a1 1 0 01-1.414 0L9 11" /></svg>
+                <h3 class="text-lg font-bold text-gray-700 dark:text-gray-300">All Done!</h3>
+                <p class="text-sm text-gray-500">No further classes are scheduled.</p>
+            </div>`;
+
+            if (status.nextClassForSwipe) {
+                const nc = status.nextClassForSwipe;
+                nextClassDetailsHtml = `
+                <div class="p-5 h-full flex flex-col justify-center">
+                    <p class="font-bold text-lg text-gray-800 dark:text-gray-200">Next Up</p>
+                    <div class="mt-2 text-sm text-gray-700 dark:text-gray-300 space-y-1.5">
+                        <p><span class="font-medium text-gray-500 dark:text-gray-400 w-16 inline-block">Time:</span> ${nc.time}</p>
+                        <p><span class="font-medium text-gray-500 dark:text-gray-400 w-16 inline-block">Subject:</span> ${nc.subject}</p>
+                        <p><span class="font-medium text-gray-500 dark:text-gray-400 w-16 inline-block">Venue:</span> ${nc.venue}</p>
+                        <p><span class="font-medium text-gray-500 dark:text-gray-400 w-16 inline-block">Faculty:</span> ${nc.faculty}</p>
+                    </div>
+                </div>`;
+            }
+
+            // *** NEW: Card content now uses a wrapper for the two views ***
             const cardContentHtml = `
-                <div class="progress-bar-bg ${progressColor}" style="width: ${status.progress}%;"></div>
-                <div class="relative z-10">
-                    <div class="flex justify-between items-start">
-                        <h2 class="text-2xl font-bold text-gray-800 dark:text-white">${status.sectionName}</h2>
-                        <div class="text-right ${textColor} font-bold text-lg">${status.isFree ? 'FREE' : 'IN CLASS'}</div>
+            <div class="card-inner-wrapper">
+                <div class="card-normal-view">
+                    <div class="progress-bar-bg ${progressColor}" style="width: ${status.progress}%;"></div>
+                    <div class="relative z-10 p-5">
+                        <div class="flex justify-between items-start">
+                            <h2 class="text-2xl font-bold text-gray-800 dark:text-white">${status.sectionName}</h2>
+                            <div class="text-right ${textColor} font-bold text-lg">${status.isFree ? 'FREE' : 'IN CLASS'}</div>
+                        </div>
+                        <div class="mt-4">
+                            ${detailsHtml}
+                        </div>
+                        <div class="mt-4 flex flex-wrap gap-2">
+                            ${friendsHtml}
+                        </div>
                     </div>
-                    <div class="mt-4">
-                        ${detailsHtml}
-                    </div>
-                    <div class="mt-4 flex flex-wrap gap-2">
-                        ${friendsHtml}
+                    <div class="swipe-indicator text-gray-500 dark:text-gray-400">
+                        <div class="swipe-indicator-dot"></div>
+                        <div class="swipe-indicator-dot"></div>
                     </div>
                 </div>
-            `;
+                <div class="card-next-class-view bg-gray-50 dark:bg-gray-800/50">
+                    ${nextClassDetailsHtml}
+                </div>
+            </div>`;
 
             if (card) {
+                const wasSwiped = card.classList.contains('is-swiped');
                 card.style.order = index;
-                if (card.innerHTML !== cardContentHtml) {
-                    card.innerHTML = cardContentHtml;
+                card.innerHTML = cardContentHtml;
+                // Preserve swipe state on re-render
+                if (wasSwiped) {
+                    card.classList.add('is-swiped');
                 }
             } else {
                 card = document.createElement('div');
-                card.className = `relative rounded-xl shadow-md overflow-hidden ${cardColor} p-5 z-0 card-fade-in`;
+                card.className = `relative rounded-xl shadow-md overflow-hidden ${cardColor} z-0 card-fade-in`;
                 card.dataset.section = status.sectionName;
                 card.style.order = index;
                 card.innerHTML = cardContentHtml;
@@ -583,10 +646,6 @@ document.addEventListener('DOMContentLoaded', () => {
         return lastClassEndTime;
     };
 
-    /**
-     * Calculates the status for all sections.
-     * This function is now updated to calculate the "free until" time.
-     */
     const calculateAllStatuses = () => {
         const now = getCurrentTime();
         const statuses = Object.keys(state.sections).map(sectionName => {
@@ -596,26 +655,39 @@ document.addEventListener('DOMContentLoaded', () => {
                 return { sectionName, isFree: true, progress: 0, error: 'Invalid Timetable' };
             }
             const currentClass = getClassAtTime(timetable, now);
-            const nextClass = getNextClass(timetable, now);
-            const nextFree = getNextFreeTime(timetable, now);
+
+            // *** NEW: Determine the absolute next class for the swipe view ***
+            let absoluteNextClass = null;
+            if (currentClass) {
+                const nextFree = getNextFreeTime(timetable, now);
+                const busyPeriodEndTime = nextFree || currentClass.endTime;
+                absoluteNextClass = getNextClass(timetable, busyPeriodEndTime);
+            } else {
+                absoluteNextClass = getNextClass(timetable, now);
+            }
+
+            let nextClassForSwipeData = null;
+            if (absoluteNextClass) {
+                nextClassForSwipeData = {
+                    time: formatTimeWithDay(absoluteNextClass.startTime),
+                    subject: absoluteNextClass.subject,
+                    venue: absoluteNextClass.venue || 'N/A',
+                    faculty: absoluteNextClass.faculty || 'N/A'
+                };
+            }
             
             if (currentClass) {
+                const nextFree = getNextFreeTime(timetable, now);
                 const busyPeriodEndTime = nextFree || currentClass.endTime;
-                
-                // *** MODIFIED PART ***
-                // Find the next class *after* the current block of classes ends.
                 const nextClassAfterBusy = getNextClass(timetable, busyPeriodEndTime);
-                let freeUntilInfo = 'a long while'; // Default message if no more classes are found
+                let freeUntilInfo = 'a long while';
 
                 if (nextClassAfterBusy) {
                     const startOfFreePeriod = busyPeriodEndTime;
                     const endOfFreePeriod = nextClassAfterBusy.startTime;
-
-                    // Check if the next class is on a different day.
                     if (startOfFreePeriod.getDate() !== endOfFreePeriod.getDate()) {
                         freeUntilInfo = `the next day (${DAYS[endOfFreePeriod.getDay()]})`;
                     } else {
-                        // If it's the same day, just show the time.
                         freeUntilInfo = formatTime(endOfFreePeriod);
                     }
                 }
@@ -631,9 +703,11 @@ document.addEventListener('DOMContentLoaded', () => {
                     currentClassFaculty: currentClass.faculty || 'N/A',
                     currentClassEnd: formatTime(busyPeriodEndTime),
                     nextFreeTime: nextFree ? formatTimeWithDay(nextFree) : null,
-                    freeUntilTime: freeUntilInfo, // Pass the new "till" information
+                    freeUntilTime: freeUntilInfo,
+                    nextClassForSwipe: nextClassForSwipeData,
                 };
             } else {
+                const nextClass = getNextClass(timetable, now);
                 if (nextClass) {
                     const daySchedule = getScheduleForDay(timetable, now);
                     const lastClassOfTheDay = daySchedule ? [...daySchedule.classes].reverse().find(c => c.subject) : null;
@@ -674,6 +748,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         nextClassSubject: nextClass.subject,
                         nextClassVenue: nextClass.venue || 'N/A',
                         nextClassFaculty: nextClass.faculty || 'N/A',
+                        nextClassForSwipe: nextClassForSwipeData,
                     };
                 } else {
                     return {
@@ -682,6 +757,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         nextClassSubject: 'Nothing scheduled',
                         nextClassVenue: '-',
                         nextClassFaculty: '-',
+                        nextClassForSwipe: nextClassForSwipeData,
                     };
                 }
             }
@@ -860,6 +936,77 @@ document.addEventListener('DOMContentLoaded', () => {
         reader.readAsText(file);
     };
 
+    // --- SWIPE HANDLING ---
+    let touchStartX = 0;
+    let touchCurrentX = 0;
+    let swipedCard = null;
+    let isSwiping = false;
+    const swipeThreshold = 50; // Min pixels to trigger a swipe
+
+    const handleTouchStart = (e) => {
+        const card = e.target.closest('[data-section]');
+        if (!card) return;
+        touchStartX = e.targetTouches[0].clientX;
+        touchCurrentX = touchStartX;
+        swipedCard = card;
+        isSwiping = false;
+        const wrapper = swipedCard.querySelector('.card-inner-wrapper');
+        if (wrapper) {
+            wrapper.style.transition = 'none'; // Disable transition during swipe for direct feedback
+        }
+    };
+
+    const handleTouchMove = (e) => {
+        if (!swipedCard) return;
+        touchCurrentX = e.targetTouches[0].clientX;
+        const diffX = touchCurrentX - touchStartX;
+
+        // Start swiping only after a small movement to distinguish from clicks
+        if (Math.abs(diffX) > 10 || isSwiping) {
+            if (!isSwiping) {
+                isSwiping = true;
+            }
+            // Prevent vertical scroll while swiping horizontally
+            e.preventDefault(); 
+            const wrapper = swipedCard.querySelector('.card-inner-wrapper');
+            if (!wrapper) return;
+
+            const isSwiped = swipedCard.classList.contains('is-swiped');
+            const baseTranslate = isSwiped ? -swipedCard.offsetWidth : 0;
+            // Clamp the drag movement so you can't over-drag
+            const newTranslate = Math.max(-swipedCard.offsetWidth, Math.min(0, baseTranslate + diffX));
+            wrapper.style.transform = `translateX(${newTranslate}px)`;
+        }
+    };
+
+    const handleTouchEnd = () => {
+        if (!swipedCard) return;
+
+        const wrapper = swipedCard.querySelector('.card-inner-wrapper');
+        if (wrapper) {
+            // Re-enable transition for smooth snap
+            wrapper.style.transition = 'transform 0.4s cubic-bezier(0.25, 0.8, 0.25, 1)';
+            wrapper.style.transform = ''; // Clear inline style to let CSS take over
+        }
+
+        if (isSwiping) {
+            const diffX = touchCurrentX - touchStartX;
+            // Swipe left
+            if (diffX < -swipeThreshold) {
+                swipedCard.classList.add('is-swiped');
+            }
+            // Swipe right
+            else if (diffX > swipeThreshold) {
+                swipedCard.classList.remove('is-swiped');
+            }
+        }
+        
+        // Reset
+        swipedCard = null;
+        isSwiping = false;
+    };
+
+
     // --- INITIALIZATION ---
     const initializeApp = () => {
         applyTheme();
@@ -924,6 +1071,12 @@ document.addEventListener('DOMContentLoaded', () => {
             handleRemoveFriend(removeBtn.dataset.friend, removeBtn.dataset.section);
         }
     });
+    
+    // Add touch event listeners for swipe
+    dashboard.addEventListener('touchstart', handleTouchStart, { passive: false });
+    dashboard.addEventListener('touchmove', handleTouchMove, { passive: false });
+    dashboard.addEventListener('touchend', handleTouchEnd);
+    dashboard.addEventListener('touchcancel', handleTouchEnd); // Also reset on touch cancel
 
     // --- APP START ---
     loadState();
