@@ -459,6 +459,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
+    // This function only builds the cards. It's called once or when sections change.
     const renderDashboard = (statuses) => {
         if (Object.keys(state.sections).length === 0) {
             dashboard.innerHTML = '';
@@ -469,6 +470,7 @@ document.addEventListener('DOMContentLoaded', () => {
         
         dashboard.classList.remove('hidden');
         noSectionsMessage.classList.add('hidden');
+        dashboard.innerHTML = ''; // Clear existing cards before full re-render
 
         statuses.sort((a, b) => {
             if (a.isPinned !== b.isPinned) {
@@ -480,25 +482,7 @@ document.addEventListener('DOMContentLoaded', () => {
             return a.sectionName.localeCompare(b.sectionName);
         });
 
-        const activeSections = new Set();
-
         statuses.forEach((status, index) => {
-            activeSections.add(status.sectionName);
-            let card = dashboard.querySelector(`[data-section="${status.sectionName}"]`);
-
-            // *** FIX: Save scroll positions before re-rendering the card ***
-            // The app re-renders every second, which was resetting the scroll.
-            // This code saves the current scroll position of the timetable.
-            let fullScheduleScrollLeft = 0;
-            let fullScheduleScrollTop = 0;
-            if (card) {
-                const scroller = card.querySelector('.card-full-timetable-view .overflow-auto');
-                if (scroller) {
-                    fullScheduleScrollLeft = scroller.scrollLeft;
-                    fullScheduleScrollTop = scroller.scrollTop;
-                }
-            }
-
             const friendsHtml = state.sections[status.sectionName].friends.map(friend => `
                 <span class="inline-flex items-center bg-gray-200 dark:bg-gray-600 rounded-full px-3 py-1 text-sm font-medium">
                     ${friend}
@@ -511,190 +495,150 @@ document.addEventListener('DOMContentLoaded', () => {
             const cardColor = status.isFree ? 'bg-green-500/20 dark:bg-green-500/10' : 'bg-red-500/20 dark:bg-red-500/10';
             const progressColor = status.isFree ? 'bg-green-500/50' : 'bg-red-500/50';
             const textColor = status.isFree ? 'text-green-800 dark:text-green-200' : 'text-red-800 dark:text-red-200';
-            const headerColor = status.isFree ? 'text-green-600 dark:text-green-400' : 'text-red-500 dark:text-red-400';
-            const detailsTextColor = 'text-gray-700 dark:text-gray-300';
             
-            let detailsHtml = '';
-            if (status.isFree) {
-                detailsHtml = `
-                    <p class="font-semibold text-lg ${headerColor}">Free until ${status.nextClassTime}</p>
-                    <div class="mt-2 text-sm ${detailsTextColor}">
-                        <p><span class="font-medium">Next:</span> ${status.nextClassSubject}</p>
-                        <p><span class="font-medium">At:</span> ${status.nextClassVenue} <span class="font-medium">with</span> ${status.nextClassFaculty}</p>
-                    </div>
-                `;
-            } else {
-                let freeAtHtml = '';
-                if (status.nextFreeTime) {
-                    if (status.freeUntilTime.includes('day') || status.freeUntilTime.includes('while')) {
-                        freeAtHtml = `<p class="mt-1 opacity-80"><span class="font-medium">Free from:</span> ${status.nextFreeTime} until ${status.freeUntilTime}</p>`;
-                    } else {
-                        freeAtHtml = `<p class="mt-1 opacity-80"><span class="font-medium">Free at:</span> ${status.nextFreeTime} till ${status.freeUntilTime}</p>`;
-                    }
-                }
+            let detailsHtml = ''; // This will be populated by the update function
+            let nextClassDetailsHtml = ''; // Populated on creation
+            let timetableHtml = ''; // Populated on creation
+            let fullTimetableHtml = ''; // Populated on creation
 
-                detailsHtml = `
-                    <p class="font-semibold text-lg ${headerColor}">In class until ${status.currentClassEnd}</p>
-                    <div class="mt-2 text-sm ${detailsTextColor}">
-                        <p><span class="font-medium">Subject:</span> ${status.currentClassSubject}</p>
-                        <p><span class="font-medium">Venue:</span> ${status.currentClassVenue}</p>
-                        <p><span class="font-medium">Faculty:</span> ${status.currentClassFaculty}</p>
-                        ${freeAtHtml}
-                    </div>
-                `;
-            }
-
-            let nextClassDetailsHtml = `
-            <div class="p-5 h-full flex flex-col justify-center items-center text-center">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-gray-400 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.293 2.293a1 1 0 010 1.414L11 12l4.293 4.293a1 1 0 01-1.414 1.414L10 13.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 12 4.293 7.707a1 1 0 011.414-1.414L10 10.586 14.293 6.293a1 1 0 011.414 0L18 8.586m-5 5l2.293-2.293a1 1 0 011.414 0L21 15m-4-4l-2.293 2.293a1 1 0 01-1.414 0L9 11" /></svg>
-                <h3 class="text-lg font-bold text-gray-700 dark:text-gray-300">All Done!</h3>
-                <p class="text-sm text-gray-500">No further classes are scheduled.</p>
-            </div>`;
-
+            // Since this is a full render, we can build all the views
+            // Next Class View
             if (status.nextClassForSwipe) {
                 const nc = status.nextClassForSwipe;
-                nextClassDetailsHtml = `
-                <div class="p-5 h-full flex flex-col justify-center">
-                    <p class="font-bold text-lg text-gray-800 dark:text-gray-200">Next Up</p>
-                    <div class="mt-2 text-sm text-gray-700 dark:text-gray-300 space-y-1.5">
-                        <p><span class="font-medium text-gray-500 dark:text-gray-400 w-16 inline-block">Time:</span> ${nc.time}</p>
-                        <p><span class="font-medium text-gray-500 dark:text-gray-400 w-16 inline-block">Subject:</span> ${nc.subject}</p>
-                        <p><span class="font-medium text-gray-500 dark:text-gray-400 w-16 inline-block">Venue:</span> ${nc.venue}</p>
-                        <p><span class="font-medium text-gray-500 dark:text-gray-400 w-16 inline-block">Faculty:</span> ${nc.faculty}</p>
-                    </div>
-                </div>`;
+                nextClassDetailsHtml = `<div class="p-5 h-full flex flex-col justify-center"><p class="font-bold text-lg text-gray-800 dark:text-gray-200">Next Up</p><div class="mt-2 text-sm text-gray-700 dark:text-gray-300 space-y-1.5"><p><span class="font-medium text-gray-500 dark:text-gray-400 w-16 inline-block">Time:</span> ${nc.time}</p><p><span class="font-medium text-gray-500 dark:text-gray-400 w-16 inline-block">Subject:</span> ${nc.subject}</p><p><span class="font-medium text-gray-500 dark:text-gray-400 w-16 inline-block">Venue:</span> ${nc.venue}</p><p><span class="font-medium text-gray-500 dark:text-gray-400 w-16 inline-block">Faculty:</span> ${nc.faculty}</p></div></div>`;
+            } else {
+                nextClassDetailsHtml = `<div class="p-5 h-full flex flex-col justify-center items-center text-center"><svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-gray-400 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.293 2.293a1 1 0 010 1.414L11 12l4.293 4.293a1 1 0 01-1.414 1.414L10 13.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 12 4.293 7.707a1 1 0 011.414-1.414L10 10.586 14.293 6.293a1 1 0 011.414 0L18 8.586m-5 5l2.293-2.293a1 1 0 011.414 0L21 15m-4-4l-2.293 2.293a1 1 0 01-1.414 0L9 11" /></svg><h3 class="text-lg font-bold text-gray-700 dark:text-gray-300">All Done!</h3><p class="text-sm text-gray-500">No further classes are scheduled.</p></div>`;
             }
 
-            let timetableHtml = `
-            <div class="p-5 h-full flex flex-col justify-center items-center text-center">
-                <h3 class="text-lg font-bold text-gray-700 dark:text-gray-300">No Classes Today</h3>
-            </div>`;
-
+            // Today's Schedule View
             if (status.dayScheduleForView && status.dayScheduleForView.length > 0) {
-                const scheduleRows = status.dayScheduleForView.map(slot => {
-                    const isCurrentClass = slot.isCurrent ? 'bg-blue-100 dark:bg-blue-900/50' : '';
-                    const subjectClass = slot.subject ? 'font-semibold' : 'text-gray-400';
-                    
-                    let subjectHtml = slot.subject || 'Free Period';
-                    if (slot.subject && slot.venue) {
-                        subjectHtml = `${slot.subject} <span class="font-normal text-gray-500">(${slot.venue})</span>`;
-                    }
-
-                    return `
-                        <div class="grid grid-cols-3 gap-2 text-xs py-1.5 px-2 rounded-md ${isCurrentClass}">
-                            <span class="text-left col-span-1">${slot.time}</span>
-                            <span class="text-left col-span-2 ${subjectClass} truncate">${subjectHtml}</span>
-                        </div>
-                    `;
-                }).join('');
-                timetableHtml = `
-                <div class="p-5 h-full flex flex-col">
-                    <p class="font-bold text-lg text-gray-800 dark:text-gray-200 text-center mb-2">Today's Schedule</p>
-                    <div class="flex-grow overflow-y-auto space-y-1 -mr-2 pr-2">
-                        ${scheduleRows}
-                    </div>
-                </div>`;
+                const scheduleRows = status.dayScheduleForView.map(slot => `<div class="grid grid-cols-3 gap-2 text-xs py-1.5 px-2 rounded-md ${slot.isCurrent ? 'bg-blue-100 dark:bg-blue-900/50' : ''}"><span class="text-left col-span-1">${slot.time}</span><span class="text-left col-span-2 ${slot.subject ? 'font-semibold' : 'text-gray-400'} truncate">${slot.subject ? `${slot.subject} <span class="font-normal text-gray-500">(${slot.venue})</span>` : 'Free Period'}</span></div>`).join('');
+                timetableHtml = `<div class="p-5 h-full flex flex-col"><p class="font-bold text-lg text-gray-800 dark:text-gray-200 text-center mb-2">Today's Schedule</p><div class="flex-grow overflow-y-auto space-y-1 -mr-2 pr-2">${scheduleRows}</div></div>`;
+            } else {
+                timetableHtml = `<div class="p-5 h-full flex flex-col justify-center items-center text-center"><h3 class="text-lg font-bold text-gray-700 dark:text-gray-300">No Classes Today</h3></div>`;
             }
 
-            let fullTimetableHtml = `<div class="p-5 text-center">No schedule data.</div>`;
+            // Full Schedule View
             if (status.fullScheduleForView) {
                 const { headers, rows } = status.fullScheduleForView;
                 const headerHtml = headers.map(h => `<div class="text-center font-bold text-xs sticky top-0 bg-gray-100 dark:bg-gray-800 py-1">${h}</div>`).join('');
                 const bodyHtml = rows.map(row => {
                     const timeCell = `<div class="text-center text-xs py-2">${row.time}</div>`;
-                    const classCells = row.classes.map(c => {
-                        if (c.rowSpan === 0) return '';
-                        const rowSpanClass = c.rowSpan > 1 ? `row-span-${c.rowSpan}` : '';
-                        return `<div class="text-center text-xs p-1 border border-gray-200 dark:border-gray-700 rounded-md flex flex-col justify-center ${rowSpanClass} ${c.subject ? '' : 'opacity-0'}">
-                            <span class="font-semibold truncate">${c.subject || ''}</span>
-                            <span class="text-gray-500 truncate">${c.venue || ''}</span>
-                        </div>`;
-                    }).join('');
+                    const classCells = row.classes.map(c => c.rowSpan === 0 ? '' : `<div class="text-center text-xs p-1 border border-gray-200 dark:border-gray-700 rounded-md flex flex-col justify-center ${c.rowSpan > 1 ? `row-span-${c.rowSpan}` : ''} ${c.subject ? '' : 'opacity-0'}"><span class="font-semibold truncate">${c.subject || ''}</span><span class="text-gray-500 truncate">${c.venue || ''}</span></div>`).join('');
                     return timeCell + classCells;
                 }).join('');
-
-                fullTimetableHtml = `
-                <div class="p-5 h-full flex flex-col">
-                    <p class="font-bold text-lg text-gray-800 dark:text-gray-200 text-center mb-2">Full Schedule</p>
-                    <div class="flex-grow overflow-auto">
-                        <div class="grid gap-1" style="grid-template-columns: 50px repeat(${headers.length - 1}, 1fr);">
-                            ${headerHtml}
-                            ${bodyHtml}
-                        </div>
-                    </div>
-                </div>`;
+                fullTimetableHtml = `<div class="p-5 h-full flex flex-col"><p class="font-bold text-lg text-gray-800 dark:text-gray-200 text-center mb-2">Full Schedule</p><div class="flex-grow overflow-auto"><div class="grid gap-1" style="grid-template-columns: 50px repeat(${headers.length - 1}, 1fr);">${headerHtml}${bodyHtml}</div></div></div>`;
+            } else {
+                fullTimetableHtml = `<div class="p-5 text-center">No schedule data.</div>`;
             }
 
+            const card = document.createElement('div');
+            card.className = `relative rounded-xl shadow-md overflow-hidden z-0 card-fade-in ${cardColor} ${status.isPinned ? 'is-pinned' : ''} ${status.isHighlighted ? 'is-highlighted' : ''}`;
+            card.dataset.section = status.sectionName;
+            card.dataset.swipeState = '0';
+            card.dataset.isFree = status.isFree;
+            card.style.order = index;
 
-            const cardContentHtml = `
+            card.innerHTML = `
             <div class="card-inner-wrapper">
                 <div class="card-normal-view">
                     <div class="progress-bar-bg ${progressColor}" style="width: ${status.progress}%;"></div>
                     <div class="relative z-10 p-5">
                         <div class="flex justify-between items-start">
                             <h2 class="text-2xl font-bold text-gray-800 dark:text-white">${status.sectionName}</h2>
-                            <div class="text-right ${textColor} font-bold text-lg">${status.isFree ? 'FREE' : 'IN CLASS'}</div>
+                            <div class="main-status-text text-right ${textColor} font-bold text-lg">${status.isFree ? 'FREE' : 'IN CLASS'}</div>
                         </div>
-                        <div class="mt-4">
+                        <div class="details-container mt-4">
                             ${detailsHtml}
                         </div>
-                        <div class="mt-4 flex flex-wrap gap-2">
+                        <div class="friends-container mt-4 flex flex-wrap gap-2">
                             ${friendsHtml}
                         </div>
                     </div>
                     <div class="swipe-indicator text-gray-500 dark:text-gray-400">
-                        <div class="swipe-indicator-dot"></div>
-                        <div class="swipe-indicator-dot"></div>
-                        <div class="swipe-indicator-dot"></div>
-                        <div class="swipe-indicator-dot"></div>
+                        <div class="swipe-indicator-dot"></div><div class="swipe-indicator-dot"></div><div class="swipe-indicator-dot"></div><div class="swipe-indicator-dot"></div>
                     </div>
                 </div>
-                <div class="card-next-class-view bg-gray-50 dark:bg-gray-800/50">
-                    ${nextClassDetailsHtml}
-                </div>
-                <div class="card-timetable-view bg-gray-50 dark:bg-gray-800/50">
-                    ${timetableHtml}
-                </div>
-                <div class="card-full-timetable-view bg-gray-50 dark:bg-gray-800/50">
-                    ${fullTimetableHtml}
-                </div>
+                <div class="card-next-class-view bg-gray-50 dark:bg-gray-800/50">${nextClassDetailsHtml}</div>
+                <div class="card-timetable-view bg-gray-50 dark:bg-gray-800/50">${timetableHtml}</div>
+                <div class="card-full-timetable-view bg-gray-50 dark:bg-gray-800/50">${fullTimetableHtml}</div>
             </div>`;
-
-            if (card) {
-                const swipeState = card.dataset.swipeState || '0';
-                card.className = `relative rounded-xl shadow-md overflow-hidden ${cardColor} z-0 card-fade-in ${status.isPinned ? 'is-pinned' : ''} ${status.isHighlighted ? 'is-highlighted' : ''}`;
-                card.style.order = index;
-                card.innerHTML = cardContentHtml;
-                card.dataset.swipeState = swipeState;
-                
-                // *** FIX: Restore scroll position after re-rendering ***
-                // After the card's HTML is updated, we find the new scrollable element
-                // and apply the saved position to it.
-                const newScroller = card.querySelector('.card-full-timetable-view .overflow-auto');
-                if (newScroller) {
-                    newScroller.scrollLeft = fullScheduleScrollLeft;
-                    newScroller.scrollTop = fullScheduleScrollTop;
-                }
-
-                setTimeout(() => updateCardHeight(card), 0);
-            } else {
-                card = document.createElement('div');
-                card.className = `relative rounded-xl shadow-md overflow-hidden ${cardColor} z-0 card-fade-in ${status.isPinned ? 'is-pinned' : ''} ${status.isHighlighted ? 'is-highlighted' : ''}`;
-                card.dataset.section = status.sectionName;
-                card.dataset.swipeState = '0';
-                card.style.order = index;
-                card.innerHTML = cardContentHtml;
-                dashboard.appendChild(card);
-                setTimeout(() => updateCardHeight(card), 0);
-            }
+            
+            dashboard.appendChild(card);
+            setTimeout(() => updateCardHeight(card), 50); // Small delay to ensure DOM is ready
         });
+        updateDashboardStatuses(); // Run once to populate details
+    };
+    
+    // This function ONLY updates live data, it does not rebuild the card structure.
+    const updateDashboardStatuses = () => {
+        const statuses = calculateAllStatuses();
+        
+        statuses.forEach(status => {
+            const card = dashboard.querySelector(`[data-section="${status.sectionName}"]`);
+            if (!card) return;
 
-        dashboard.querySelectorAll('[data-section]').forEach(card => {
-            if (!activeSections.has(card.dataset.section)) {
-                card.remove();
+            // Update Progress Bar
+            const progressBar = card.querySelector('.progress-bar-bg');
+            if (progressBar) progressBar.style.width = `${status.progress}%`;
+
+            // Update Colors and Main Status Text if they have changed
+            const currentIsFree = card.dataset.isFree === 'true';
+            if (currentIsFree !== status.isFree) {
+                const cardColor = status.isFree ? 'bg-green-500/20 dark:bg-green-500/10' : 'bg-red-500/20 dark:bg-red-500/10';
+                const progressColor = status.isFree ? 'bg-green-500/50' : 'bg-red-500/50';
+                const textColor = status.isFree ? 'text-green-800 dark:text-green-200' : 'text-red-800 dark:text-red-200';
+                
+                card.classList.remove('bg-green-500/20', 'dark:bg-green-500/10', 'bg-red-500/20', 'dark:bg-red-500/10');
+                card.classList.add(...cardColor.split(' '));
+                if(progressBar) {
+                    progressBar.classList.remove('bg-green-500/50', 'bg-red-500/50');
+                    progressBar.classList.add(progressColor);
+                }
+                const statusTextElement = card.querySelector('.main-status-text');
+                if(statusTextElement) {
+                    statusTextElement.textContent = status.isFree ? 'FREE' : 'IN CLASS';
+                    statusTextElement.className = `main-status-text text-right font-bold text-lg ${textColor}`;
+                }
+                card.dataset.isFree = status.isFree;
+            }
+
+            // Re-generate and update only the details HTML block
+            const headerColor = status.isFree ? 'text-green-600 dark:text-green-400' : 'text-red-500 dark:text-red-400';
+            const detailsTextColor = 'text-gray-700 dark:text-gray-300';
+            let detailsHtml;
+            if (status.isFree) {
+                detailsHtml = `<p class="font-semibold text-lg ${headerColor}">Free until ${status.nextClassTime}</p><div class="mt-2 text-sm ${detailsTextColor}"><p><span class="font-medium">Next:</span> ${status.nextClassSubject}</p><p><span class="font-medium">At:</span> ${status.nextClassVenue} <span class="font-medium">with</span> ${status.nextClassFaculty}</p></div>`;
+            } else {
+                let freeAtHtml = '';
+                if (status.nextFreeTime) {
+                     freeAtHtml = `<p class="mt-1 opacity-80"><span class="font-medium">${status.freeUntilTime.includes('day') || status.freeUntilTime.includes('while') ? 'Free from:' : 'Free at:'}</span> ${status.nextFreeTime} ${status.freeUntilTime.includes('day') || status.freeUntilTime.includes('while') ? 'until' : 'till'} ${status.freeUntilTime}</p>`;
+                }
+                detailsHtml = `<p class="font-semibold text-lg ${headerColor}">In class until ${status.currentClassEnd}</p><div class="mt-2 text-sm ${detailsTextColor}"><p><span class="font-medium">Subject:</span> ${status.currentClassSubject}</p><p><span class="font-medium">Venue:</span> ${status.currentClassVenue}</p><p><span class="font-medium">Faculty:</span> ${status.currentClassFaculty}</p>${freeAtHtml}</div>`;
+            }
+            const detailsContainer = card.querySelector('.details-container');
+            if (detailsContainer && detailsContainer.innerHTML !== detailsHtml) {
+                 detailsContainer.innerHTML = detailsHtml;
+            }
+
+            // *** FIX: Update "Today's Schedule" view every second ***
+            const timetableContainer = card.querySelector('.card-timetable-view');
+            if (timetableContainer) {
+                let newTimetableHtml;
+                if (status.dayScheduleForView && status.dayScheduleForView.length > 0) {
+                    const scheduleRows = status.dayScheduleForView.map(slot => `<div class="grid grid-cols-3 gap-2 text-xs py-1.5 px-2 rounded-md ${slot.isCurrent ? 'bg-blue-100 dark:bg-blue-900/50' : ''}"><span class="text-left col-span-1">${slot.time}</span><span class="text-left col-span-2 ${slot.subject ? 'font-semibold' : 'text-gray-400'} truncate">${slot.subject ? `${slot.subject} <span class="font-normal text-gray-500">(${slot.venue})</span>` : 'Free Period'}</span></div>`).join('');
+                    newTimetableHtml = `<div class="p-5 h-full flex flex-col"><p class="font-bold text-lg text-gray-800 dark:text-gray-200 text-center mb-2">Today's Schedule</p><div class="flex-grow overflow-y-auto space-y-1 -mr-2 pr-2">${scheduleRows}</div></div>`;
+                } else {
+                    newTimetableHtml = `<div class="p-5 h-full flex flex-col justify-center items-center text-center"><h3 class="text-lg font-bold text-gray-700 dark:text-gray-300">No Classes Today</h3></div>`;
+                }
+                // Only update the DOM if the content has actually changed.
+                if (timetableContainer.innerHTML !== newTimetableHtml) {
+                    timetableContainer.innerHTML = newTimetableHtml;
+                }
             }
         });
     };
+
 
     // --- TIME & SCHEDULE LOGIC ---
     const getCurrentTime = () => state.debugTime || new Date();
@@ -821,7 +765,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const calculateAllStatuses = () => {
         const now = getCurrentTime();
-        const statuses = Object.keys(state.sections).map(sectionName => {
+        return Object.keys(state.sections).map(sectionName => {
             const { timetable, pinned, highlighted } = state.sections[sectionName];
             if (!timetable || !timetable.schedule) {
                 logger(`Invalid timetable for ${sectionName}`);
@@ -869,7 +813,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
             }
 
-            // *** NEW: Generate data for the full timetable view ***
             let fullScheduleForView = null;
             if (timetable.schedule && timetable.timeSlots) {
                 const weekDays = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
@@ -990,7 +933,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             }
         });
-        renderDashboard(statuses);
     };
 
     // --- MODAL & EVENT HANDLERS ---
@@ -1030,7 +972,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 state.sections[name] = { timetable, friends: [], pinned: false, highlighted: false };
                 saveState();
                 renderSettings();
-                calculateAllStatuses();
+                renderDashboard(calculateAllStatuses());
                 addSectionForm.reset();
                 showToast(`Section "${name}" added successfully.`);
             } catch (error) {
@@ -1049,7 +991,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 delete state.sections[name];
                 saveState();
                 renderSettings();
-                calculateAllStatuses();
+                renderDashboard(calculateAllStatuses());
                 showToast(`Section "${name}" removed.`);
             }
         );
@@ -1059,7 +1001,7 @@ document.addEventListener('DOMContentLoaded', () => {
         state.sections[name].pinned = !state.sections[name].pinned;
         saveState();
         renderSettings();
-        calculateAllStatuses();
+        renderDashboard(calculateAllStatuses());
         showToast(state.sections[name].pinned ? `Pinned ${name}.` : `Unpinned ${name}.`);
     };
 
@@ -1067,7 +1009,7 @@ document.addEventListener('DOMContentLoaded', () => {
         state.sections[name].highlighted = !state.sections[name].highlighted;
         saveState();
         renderSettings();
-        calculateAllStatuses();
+        renderDashboard(calculateAllStatuses());
         showToast(state.sections[name].highlighted ? `Highlighted ${name}.` : `Removed highlight from ${name}.`);
     };
 
@@ -1085,7 +1027,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         state.sections[section].friends.push(name);
         saveState();
-        calculateAllStatuses();
+        renderDashboard(calculateAllStatuses());
         addFriendForm.reset();
         showToast(`${name} added to section ${section}.`);
     };
@@ -1100,7 +1042,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (index > -1) {
                     friendsList.splice(index, 1);
                     saveState();
-                    calculateAllStatuses();
+                    renderDashboard(calculateAllStatuses());
                     showToast(`${friend} removed from section ${section}.`);
                 }
             }
@@ -1116,7 +1058,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         saveState();
         updateClock();
-        calculateAllStatuses();
+        updateDashboardStatuses();
     };
 
     const handleResetTime = () => {
@@ -1124,7 +1066,7 @@ document.addEventListener('DOMContentLoaded', () => {
         debugTimeInput.value = '';
         saveState();
         updateClock();
-        calculateAllStatuses();
+        updateDashboardStatuses();
         showToast('Time reset to real-time.');
     };
 
@@ -1166,7 +1108,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     state.sections = importedData.sections;
                     saveState();
                     renderSettings();
-                    calculateAllStatuses();
+                    renderDashboard(calculateAllStatuses());
                     showToast("Data imported successfully.");
                 } else {
                     throw new Error("Invalid data format.");
@@ -1194,7 +1136,7 @@ document.addEventListener('DOMContentLoaded', () => {
         touchStartX = e.targetTouches[0].clientX;
         touchCurrentX = touchStartX;
         swipedCard = card;
-        isSwiping = false; // Reset swiping state
+        isSwiping = false;
         
         const wrapper = swipedCard.querySelector('.card-inner-wrapper');
         if (wrapper) {
@@ -1208,7 +1150,6 @@ document.addEventListener('DOMContentLoaded', () => {
         touchCurrentX = e.targetTouches[0].clientX;
         const diffX = touchCurrentX - touchStartX;
 
-        // Only proceed if the movement is significant enough to be considered a swipe.
         if (Math.abs(diffX) < 10 && !isSwiping) {
             return;
         }
@@ -1216,29 +1157,19 @@ document.addEventListener('DOMContentLoaded', () => {
         const fullScheduleScroller = e.target.closest('.card-full-timetable-view .overflow-auto');
         const currentState = parseInt(swipedCard.dataset.swipeState || '0', 10);
 
-        // This is the condition to allow the card to be swiped.
-        // It should swipe if:
-        // 1. We are not on the 4th view's scroller.
-        // 2. OR we ARE on the 4th view's scroller, swiping right, and the scroll is at the start.
         const canSwipeCard = !fullScheduleScroller || (currentState === 3 && diffX > 0 && fullScheduleScroller.scrollLeft === 0);
 
         if (canSwipeCard) {
-            // This is a card swipe gesture.
             if (!isSwiping) isSwiping = true;
-            
-            // Prevent the browser's native scrolling behavior.
             e.preventDefault(); 
             
             const wrapper = swipedCard.querySelector('.card-inner-wrapper');
             if (!wrapper) return;
 
             const baseTranslate = -currentState * swipedCard.offsetWidth;
-            // Apply the drag effect.
             const newTranslate = Math.max(-swipedCard.offsetWidth * 3, Math.min(0, baseTranslate + diffX));
             wrapper.style.transform = `translateX(${newTranslate}px)`;
         }
-        // If canSwipeCard is false, we do nothing. This allows the browser's default
-        // behavior (scrolling the timetable) to take over.
     };
 
     const handleTouchEnd = () => {
@@ -1274,11 +1205,11 @@ document.addEventListener('DOMContentLoaded', () => {
         applyTheme();
         renderSettings();
         updateClock();
-        calculateAllStatuses(); 
+        renderDashboard(calculateAllStatuses()); 
         
         setInterval(() => {
             updateClock();
-            calculateAllStatuses();
+            updateDashboardStatuses();
         }, 1000);
 
         window.addEventListener('resize', () => {
