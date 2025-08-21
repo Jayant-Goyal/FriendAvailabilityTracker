@@ -97,7 +97,7 @@
             transform: scale(1.2);
             opacity: 1;
         }
-        /* Wooden corner for pinned cards */
+        /* Gold corner for pinned cards */
         .card-fade-in.is-pinned::before {
             content: '';
             position: absolute;
@@ -105,10 +105,9 @@
             left: 0;
             width: 28px;
             height: 28px;
-            background: linear-gradient(135deg, #8B5A2B 25%, #A0522D 25%, #A0522D 50%, #8B5A2B 50%, #8B5A2B 75%, #A0522D 75%, #A0522D 100%);
-            background-size: 8px 8px;
+            background: linear-gradient(135deg, #FBBF24, #F59E0B); /* Gold gradient */
             clip-path: polygon(0 0, 100% 0, 0 100%);
-            box-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+            box-shadow: 2px 2px 4px rgba(0,0,0,0.3);
             z-index: 20;
         }
         /* Highlight effect for cards */
