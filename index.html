@@ -503,10 +503,10 @@ document.addEventListener('DOMContentLoaded', () => {
                     const isCurrentClass = slot.isCurrent ? 'bg-blue-100 dark:bg-blue-900/50' : '';
                     const subjectClass = slot.subject ? 'font-semibold' : 'text-gray-400';
                     return `
-                        <div class="grid grid-cols-5 gap-2 text-xs py-1.5 px-2 rounded-md ${isCurrentClass}">
-                            <span class="text-left">${slot.time}</span>
-                            <span class="text-left col-span-2 ${subjectClass}">${slot.subject || 'Free Period'}</span>
-                            <span class="text-right col-span-2 text-gray-500 truncate">${slot.venue || ''}</span>
+                        <div class="grid grid-cols-6 gap-2 text-xs py-1.5 px-2 rounded-md ${isCurrentClass}">
+                            <span class="text-left col-span-2">${slot.time}</span>
+                            <span class="text-left col-span-3 ${subjectClass} truncate">${slot.subject || 'Free Period'}</span>
+                            <span class="text-right col-span-1 text-gray-500 truncate">${slot.venue || ''}</span>
                         </div>
                     `;
                 }).join('');
@@ -731,14 +731,25 @@ document.addEventListener('DOMContentLoaded', () => {
             const todaySchedule = getScheduleForDay(timetable, now);
             if (todaySchedule) {
                 dayScheduleForView = timetable.timeSlots.map(slot => {
-                    const classInfo = todaySchedule.classes.find(c => c.lecture === slot.lecture);
+                    let classForThisSlot = null;
+                    for (const classInfo of todaySchedule.classes) {
+                        if (!classInfo.subject) continue;
+                        const startLecture = classInfo.lecture;
+                        const endLecture = startLecture + (classInfo.span || 1) - 1;
+                        if (slot.lecture >= startLecture && slot.lecture <= endLecture) {
+                            classForThisSlot = classInfo;
+                            break;
+                        }
+                    }
+                    
                     const startTime = parseTime(slot.time.split('-')[0], now);
                     const endTime = parseTime(slot.time.split('-')[1], now);
-                    const isCurrent = now >= startTime && now < endTime && classInfo && classInfo.subject;
+                    const isCurrent = now >= startTime && now < endTime && classForThisSlot;
+
                     return {
                         time: slot.time,
-                        subject: classInfo ? classInfo.subject : null,
-                        venue: classInfo ? classInfo.venue || '' : '',
+                        subject: classForThisSlot ? classForThisSlot.subject : null,
+                        venue: classForThisSlot ? classForThisSlot.venue || '' : '',
                         isCurrent: isCurrent
                     };
                 });
