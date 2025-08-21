@@ -21,6 +21,7 @@
         /* Custom scrollbar for a more modern look */
         ::-webkit-scrollbar {
             width: 8px;
+            height: 8px;
         }
         ::-webkit-scrollbar-track {
             background: #1f2937; /* dark:bg-gray-800 */
@@ -485,6 +486,19 @@ document.addEventListener('DOMContentLoaded', () => {
             activeSections.add(status.sectionName);
             let card = dashboard.querySelector(`[data-section="${status.sectionName}"]`);
 
+            // *** FIX: Save scroll positions before re-rendering the card ***
+            // The app re-renders every second, which was resetting the scroll.
+            // This code saves the current scroll position of the timetable.
+            let fullScheduleScrollLeft = 0;
+            let fullScheduleScrollTop = 0;
+            if (card) {
+                const scroller = card.querySelector('.card-full-timetable-view .overflow-auto');
+                if (scroller) {
+                    fullScheduleScrollLeft = scroller.scrollLeft;
+                    fullScheduleScrollTop = scroller.scrollTop;
+                }
+            }
+
             const friendsHtml = state.sections[status.sectionName].friends.map(friend => `
                 <span class="inline-flex items-center bg-gray-200 dark:bg-gray-600 rounded-full px-3 py-1 text-sm font-medium">
                     ${friend}
@@ -652,6 +666,16 @@ document.addEventListener('DOMContentLoaded', () => {
                 card.style.order = index;
                 card.innerHTML = cardContentHtml;
                 card.dataset.swipeState = swipeState;
+                
+                // *** FIX: Restore scroll position after re-rendering ***
+                // After the card's HTML is updated, we find the new scrollable element
+                // and apply the saved position to it.
+                const newScroller = card.querySelector('.card-full-timetable-view .overflow-auto');
+                if (newScroller) {
+                    newScroller.scrollLeft = fullScheduleScrollLeft;
+                    newScroller.scrollTop = fullScheduleScrollTop;
+                }
+
                 setTimeout(() => updateCardHeight(card), 0);
             } else {
                 card = document.createElement('div');
@@ -1166,10 +1190,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const handleTouchStart = (e) => {
         const card = e.target.closest('[data-section]');
         if (!card) return;
+        
         touchStartX = e.targetTouches[0].clientX;
         touchCurrentX = touchStartX;
         swipedCard = card;
-        isSwiping = false;
+        isSwiping = false; // Reset swiping state
+        
         const wrapper = swipedCard.querySelector('.card-inner-wrapper');
         if (wrapper) {
             wrapper.style.transition = 'none';
@@ -1178,20 +1204,41 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const handleTouchMove = (e) => {
         if (!swipedCard) return;
+        
         touchCurrentX = e.targetTouches[0].clientX;
         const diffX = touchCurrentX - touchStartX;
 
-        if (Math.abs(diffX) > 10 || isSwiping) {
+        // Only proceed if the movement is significant enough to be considered a swipe.
+        if (Math.abs(diffX) < 10 && !isSwiping) {
+            return;
+        }
+
+        const fullScheduleScroller = e.target.closest('.card-full-timetable-view .overflow-auto');
+        const currentState = parseInt(swipedCard.dataset.swipeState || '0', 10);
+
+        // This is the condition to allow the card to be swiped.
+        // It should swipe if:
+        // 1. We are not on the 4th view's scroller.
+        // 2. OR we ARE on the 4th view's scroller, swiping right, and the scroll is at the start.
+        const canSwipeCard = !fullScheduleScroller || (currentState === 3 && diffX > 0 && fullScheduleScroller.scrollLeft === 0);
+
+        if (canSwipeCard) {
+            // This is a card swipe gesture.
             if (!isSwiping) isSwiping = true;
+            
+            // Prevent the browser's native scrolling behavior.
             e.preventDefault(); 
+            
             const wrapper = swipedCard.querySelector('.card-inner-wrapper');
             if (!wrapper) return;
 
-            const currentState = parseInt(swipedCard.dataset.swipeState || '0', 10);
             const baseTranslate = -currentState * swipedCard.offsetWidth;
+            // Apply the drag effect.
             const newTranslate = Math.max(-swipedCard.offsetWidth * 3, Math.min(0, baseTranslate + diffX));
             wrapper.style.transform = `translateX(${newTranslate}px)`;
         }
+        // If canSwipeCard is false, we do nothing. This allows the browser's default
+        // behavior (scrolling the timetable) to take over.
     };
 
     const handleTouchEnd = () => {
