@@ -1,46 +1,108 @@
-// A unique name for the cache
-const CACHE_NAME = 'friend-tracker-v1';
+// A unique name for the cache. Increment this version when you update the app's core files.
+const CACHE_NAME = 'friend-tracker-v2';
 
-// Make sure to replace 'your-repo-name' with your repository name
-const REPO_NAME = 'FriendAvailabilityTracker';
-
-// List of files to cache when the service worker is installed
+// List of core files to cache when the service worker is installed.
+// These are the essential files needed for the app to run offline.
 const urlsToCache = [
-  `/${REPO_NAME}/`,
-  `/${REPO_NAME}/index.html`
+  './', // Caches the root URL of the app
+  './index.html',
+  './manifest.json'
+  // Other assets like CSS, JS from CDNs will be cached on first use (see fetch event).
 ];
 
-// Install event: opens the cache and adds the core files to it.
+// --- INSTALL Event ---
+// This event fires when the service worker is first installed.
+// It opens the cache and adds the core files to it.
 self.addEventListener('install', event => {
+  console.log('[Service Worker] Install');
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then(cache => {
-        console.log('Opened cache');
+        console.log('[Service Worker] Caching all: app shell and content');
         return cache.addAll(urlsToCache);
+      })
+      .then(() => {
+        // Force the waiting service worker to become the active service worker.
+        self.skipWaiting();
       })
   );
 });
 
-// Fetch event: serves requests from the cache first.
-// If a network request fails (especially for navigation), it serves the main app page as a fallback.
+// --- ACTIVATE Event ---
+// This event fires when the service worker is activated.
+// It's a good place to clean up old caches.
+self.addEventListener('activate', event => {
+    console.log('[Service Worker] Activate');
+    event.waitUntil(
+        caches.keys().then(cacheNames => {
+            return Promise.all(
+                cacheNames.map(cacheName => {
+                    // If a cache's name is not the current one, delete it.
+                    if (cacheName !== CACHE_NAME) {
+                        console.log('[Service Worker] Deleting old cache:', cacheName);
+                        return caches.delete(cacheName);
+                    }
+                })
+            );
+        }).then(() => {
+            // Tell the active service worker to take control of the page immediately.
+            return self.clients.claim();
+        })
+    );
+});
+
+
+// --- FETCH Event ---
+// This event fires for every network request made by the page.
+// It intercepts the request and decides how to respond.
 self.addEventListener('fetch', event => {
-  event.respondWith(
-    caches.match(event.request)
-      .then(response => {
-        // If the request is in the cache, return the cached response
+  // We only want to handle GET requests.
+  if (event.request.method !== 'GET') {
+    return;
+  }
+
+  // For navigation requests (loading the HTML page), use a "stale-while-revalidate" strategy.
+  if (event.request.mode === 'navigate') {
+    event.respondWith(
+      caches.open(CACHE_NAME).then(cache => {
+        // 1. Respond with the cached version immediately.
+        return cache.match(event.request).then(cachedResponse => {
+          // 2. In the background, fetch a fresh version from the network.
+          const fetchPromise = fetch(event.request).then(networkResponse => {
+            // If the fetch is successful, update the cache with the new version.
+            console.log('[Service Worker] Fetched & Caching new version for:', event.request.url);
+            cache.put(event.request, networkResponse.clone());
+            return networkResponse;
+          }).catch(error => {
+            console.log('[Service Worker] Fetch failed; returning offline page instead.', error);
+            // If the network fails, the cached response (if it exists) is already served.
+            // No further action is needed here for this strategy.
+          });
+
+          // Return the cached response if it exists, otherwise wait for the network to respond.
+          // This ensures the user sees content instantly on repeat visits.
+          return cachedResponse || fetchPromise;
+        });
+      })
+    );
+  } else {
+    // For all other requests (CSS, JS, fonts, images), use a "cache-first" strategy.
+    event.respondWith(
+      caches.match(event.request).then(response => {
+        // If the resource is in the cache, return it.
         if (response) {
           return response;
         }
-
-        // If not in cache, fetch from the network.
-        return fetch(event.request).catch(() => {
-          // If the network fetch fails (e.g., user is offline),
-          // and the user was trying to navigate to a page,
-          // return the main index.html file from the cache.
-          if (event.request.mode === 'navigate') {
-            return caches.match(`/${REPO_NAME}/index.html`);
-          }
+        // If not in the cache, fetch it from the network.
+        return fetch(event.request).then(networkResponse => {
+          // And cache the new resource for future use.
+          return caches.open(CACHE_NAME).then(cache => {
+            console.log('[Service Worker] Caching new resource:', event.request.url);
+            cache.put(event.request, networkResponse.clone());
+            return networkResponse;
+          });
         });
       })
-  );
+    );
+  }
 });

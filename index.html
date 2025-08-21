@@ -511,7 +511,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // Today's Schedule View
             if (status.dayScheduleForView && status.dayScheduleForView.length > 0) {
-                const scheduleRows = status.dayScheduleForView.map(slot => `<div class="grid grid-cols-3 gap-2 text-xs py-1.5 px-2 rounded-md ${slot.isCurrent ? 'bg-blue-100 dark:bg-blue-900/50' : ''}"><span class="text-left col-span-1">${slot.time}</span><span class="text-left col-span-2 ${slot.subject ? 'font-semibold' : 'text-gray-400'} truncate">${slot.subject ? `${slot.subject} <span class="font-normal text-gray-500">(${slot.venue})</span>` : 'Free Period'}</span></div>`).join('');
+                const scheduleRows = status.dayScheduleForView.map(slot => `<div class="grid grid-cols-3 gap-2 text-xs py-1.5 px-2 rounded-md ${slot.isCurrent ? 'bg-blue-100 dark:bg-blue-900/50' : ''}"><span class="text-left col-span-1">${slot.time}</span><span class="text-left col-span-2 ${slot.subject ? 'font-semibold' : 'text-gray-400'}">${slot.subject ? `${slot.subject} <span class="font-normal text-gray-500">(${slot.venue})</span>` : 'Free Period'}</span></div>`).join('');
                 timetableHtml = `<div class="p-5 h-full flex flex-col"><p class="font-bold text-lg text-gray-800 dark:text-gray-200 text-center mb-2">Today's Schedule</p><div class="flex-grow overflow-y-auto space-y-1 -mr-2 pr-2">${scheduleRows}</div></div>`;
             } else {
                 timetableHtml = `<div class="p-5 h-full flex flex-col justify-center items-center text-center"><h3 class="text-lg font-bold text-gray-700 dark:text-gray-300">No Classes Today</h3></div>`;
@@ -625,7 +625,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (timetableContainer) {
                 let newTimetableHtml;
                 if (status.dayScheduleForView && status.dayScheduleForView.length > 0) {
-                    const scheduleRows = status.dayScheduleForView.map(slot => `<div class="grid grid-cols-3 gap-2 text-xs py-1.5 px-2 rounded-md ${slot.isCurrent ? 'bg-blue-100 dark:bg-blue-900/50' : ''}"><span class="text-left col-span-1">${slot.time}</span><span class="text-left col-span-2 ${slot.subject ? 'font-semibold' : 'text-gray-400'} truncate">${slot.subject ? `${slot.subject} <span class="font-normal text-gray-500">(${slot.venue})</span>` : 'Free Period'}</span></div>`).join('');
+                    const scheduleRows = status.dayScheduleForView.map(slot => `<div class="grid grid-cols-3 gap-2 text-xs py-1.5 px-2 rounded-md ${slot.isCurrent ? 'bg-blue-100 dark:bg-blue-900/50' : ''}"><span class="text-left col-span-1">${slot.time}</span><span class="text-left col-span-2 ${slot.subject ? 'font-semibold' : 'text-gray-400'}">${slot.subject ? `${slot.subject} <span class="font-normal text-gray-500">(${slot.venue})</span>` : 'Free Period'}</span></div>`).join('');
                     newTimetableHtml = `<div class="p-5 h-full flex flex-col"><p class="font-bold text-lg text-gray-800 dark:text-gray-200 text-center mb-2">Today's Schedule</p><div class="flex-grow overflow-y-auto space-y-1 -mr-2 pr-2">${scheduleRows}</div></div>`;
                 } else {
                     newTimetableHtml = `<div class="p-5 h-full flex flex-col justify-center items-center text-center"><h3 class="text-lg font-bold text-gray-700 dark:text-gray-300">No Classes Today</h3></div>`;
@@ -1290,8 +1290,8 @@ document.addEventListener('DOMContentLoaded', () => {
 <script>
     if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
-            // Make sure to replace 'your-repo-name' with your repository name
-            navigator.serviceWorker.register('/your-repo-name/sw.js')
+            // Use a relative path for the service worker registration
+            navigator.serviceWorker.register('./sw.js')
                 .then(registration => {
                     console.log('ServiceWorker registration successful with scope: ', registration.scope);
                 })
