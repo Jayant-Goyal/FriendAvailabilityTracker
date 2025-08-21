@@ -49,12 +49,11 @@
         .card-fade-in {
             animation: fadeIn 0.5s ease-out forwards;
             /* Add smooth height transition */
-            transition: height 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+            transition: height 0.4s cubic-bezier(0.25, 0.8, 0.25, 1), box-shadow 0.3s ease-in-out, border 0.3s ease-in-out;
         }
         /* Styles for swipeable cards */
         .card-inner-wrapper {
             display: flex;
-            /* MODIFIED: Prevents flex items from stretching to the same height */
             align-items: flex-start;
             transition: transform 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
         }
@@ -92,6 +91,29 @@
         [data-swipe-state="2"] .swipe-indicator-dot:nth-child(3) {
             transform: scale(1.2);
             opacity: 1;
+        }
+        /* Wooden corner for pinned cards */
+        .card-fade-in.is-pinned::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 28px;
+            height: 28px;
+            background: linear-gradient(135deg, #8B5A2B 25%, #A0522D 25%, #A0522D 50%, #8B5A2B 50%, #8B5A2B 75%, #A0522D 75%, #A0522D 100%);
+            background-size: 8px 8px;
+            clip-path: polygon(0 0, 100% 0, 0 100%);
+            box-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+            z-index: 20;
+        }
+        /* Highlight effect for cards */
+        .card-fade-in.is-highlighted {
+            box-shadow: 0 0 12px 2px rgba(250, 204, 21, 0.5); /* Amber-400 glow */
+            border: 1px solid rgba(250, 204, 21, 0.6);
+        }
+        .dark .card-fade-in.is-highlighted {
+            box-shadow: 0 0 15px 3px rgba(252, 211, 77, 0.4); /* Amber-300 glow */
+            border: 1px solid rgba(252, 211, 77, 0.5);
         }
     </style>
     <script>
@@ -247,7 +269,7 @@
 document.addEventListener('DOMContentLoaded', () => {
     // --- STATE MANAGEMENT ---
     let state = {
-        sections: {}, // { sectionName: { timetable: {}, friends: [] } }
+        sections: {}, // { sectionName: { timetable: {}, friends: [], pinned: false, highlighted: false } }
         settings: {
             darkMode: true,
             debugMode: false
@@ -313,6 +335,15 @@ document.addEventListener('DOMContentLoaded', () => {
             try {
                 const parsedState = JSON.parse(savedState);
                 if (parsedState && typeof parsedState.sections === 'object' && !Array.isArray(parsedState.sections)) {
+                    // Ensure 'pinned' and 'highlighted' properties exist on loaded data
+                    for (const sectionName in parsedState.sections) {
+                        if (typeof parsedState.sections[sectionName].pinned === 'undefined') {
+                            parsedState.sections[sectionName].pinned = false;
+                        }
+                        if (typeof parsedState.sections[sectionName].highlighted === 'undefined') {
+                            parsedState.sections[sectionName].highlighted = false;
+                        }
+                    }
                     Object.assign(state, parsedState);
                     if (state.debugTime) {
                         state.debugTime = new Date(state.debugTime);
@@ -368,13 +399,31 @@ document.addEventListener('DOMContentLoaded', () => {
     const renderSettings = () => {
         sectionsList.innerHTML = '';
         Object.keys(state.sections).forEach(name => {
+            const section = state.sections[name];
             const sectionDiv = document.createElement('div');
             sectionDiv.className = 'flex justify-between items-center p-2 bg-gray-100 dark:bg-gray-700 rounded-md';
+            
+            const pinIcon = section.pinned 
+                ? `<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 16 16" fill="currentColor"><path d="M4.146.146A.5.5 0 0 1 4.5 0h7a.5.5 0 0 1 .5.5c0 .68-.342 1.174-.646 1.479-.126.125-.25.224-.354.298v4.431l.078.048c.203.127.476.314.751.555C12.36 7.775 13 8.527 13 9.5a.5.5 0 0 1-.5.5h-4v4.5c0 .276-.224 1.5-.5 1.5s-.5-1.224-.5-1.5V10h-4a.5.5 0 0 1-.5-.5c0-.973.64-1.725 1.17-2.189A6 6 0 0 1 5 6.708V2.277a3 3 0 0 1-.354-.298C4.342 1.674 4 1.179 4 .5a.5.5 0 0 1 .146-.354m1.58 1.408-.002-.001zm-.002-.001.002.001A.5.5 0 0 1 6 2v5a.5.5 0 0 1-.276.447h-.002l-.012.007-.054.03a5 5 0 0 0-.827.58c-.318.278-.585.596-.725.936h7.792c-.14-.34-.407-.658-.725-.936a5 5 0 0 0-.881-.61l-.012-.006h-.002A.5.5 0 0 1 10 7V2a.5.5 0 0 1 .295-.458 1.8 1.8 0 0 0 .351-.271c.08-.08.155-.17.214-.271H5.14q.091.15.214.271a1.8 1.8 0 0 0 .37.282"/></svg>`
+                : `<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 16 16" stroke="currentColor" stroke-width="1.2"><path d="M4.146.146A.5.5 0 0 1 4.5 0h7a.5.5 0 0 1 .5.5c0 .68-.342 1.174-.646 1.479-.126.125-.25.224-.354.298v4.431l.078.048c.203.127.476.314.751.555C12.36 7.775 13 8.527 13 9.5a.5.5 0 0 1-.5.5h-4v4.5c0 .276-.224 1.5-.5 1.5s-.5-1.224-.5-1.5V10h-4a.5.5 0 0 1-.5-.5c0-.973.64-1.725 1.17-2.189A6 6 0 0 1 5 6.708V2.277a3 3 0 0 1-.354-.298C4.342 1.674 4 1.179 4 .5a.5.5 0 0 1 .146-.354z"/></svg>`;
+            
+            const highlightIcon = section.highlighted
+                ? `<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" /></svg>`
+                : `<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.783-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" /></svg>`;
+
             sectionDiv.innerHTML = `
                 <span class="font-medium">${name}</span>
-                <button data-section="${name}" class="remove-section-btn text-red-500 hover:text-red-700 p-1 rounded-full">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" /></svg>
-                </button>
+                <div class="flex items-center space-x-2">
+                    <button data-section="${name}" class="highlight-section-btn text-gray-400 hover:text-amber-500 p-1 rounded-full ${section.highlighted ? 'text-amber-400' : ''}">
+                        ${highlightIcon}
+                    </button>
+                    <button data-section="${name}" class="pin-section-btn text-gray-400 hover:text-indigo-500 p-1 rounded-full ${section.pinned ? 'text-indigo-500' : ''}">
+                        ${pinIcon}
+                    </button>
+                    <button data-section="${name}" class="remove-section-btn text-red-500 hover:text-red-700 p-1 rounded-full">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" /></svg>
+                    </button>
+                </div>
             `;
             sectionsList.appendChild(sectionDiv);
         });
@@ -416,8 +465,12 @@ document.addEventListener('DOMContentLoaded', () => {
         noSectionsMessage.classList.add('hidden');
 
         statuses.sort((a, b) => {
-            if (a.isFree && !b.isFree) return -1;
-            if (!a.isFree && b.isFree) return 1;
+            if (a.isPinned !== b.isPinned) {
+                return b.isPinned - a.isPinned;
+            }
+            if (a.isFree !== b.isFree) {
+                return a.isFree ? -1 : 1;
+            }
             return a.sectionName.localeCompare(b.sectionName);
         });
 
@@ -557,13 +610,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (card) {
                 const swipeState = card.dataset.swipeState || '0';
+                card.className = `relative rounded-xl shadow-md overflow-hidden ${cardColor} z-0 card-fade-in ${status.isPinned ? 'is-pinned' : ''} ${status.isHighlighted ? 'is-highlighted' : ''}`;
                 card.style.order = index;
                 card.innerHTML = cardContentHtml;
                 card.dataset.swipeState = swipeState;
                 setTimeout(() => updateCardHeight(card), 0);
             } else {
                 card = document.createElement('div');
-                card.className = `relative rounded-xl shadow-md overflow-hidden ${cardColor} z-0 card-fade-in`;
+                card.className = `relative rounded-xl shadow-md overflow-hidden ${cardColor} z-0 card-fade-in ${status.isPinned ? 'is-pinned' : ''} ${status.isHighlighted ? 'is-highlighted' : ''}`;
                 card.dataset.section = status.sectionName;
                 card.dataset.swipeState = '0';
                 card.style.order = index;
@@ -706,21 +760,14 @@ document.addEventListener('DOMContentLoaded', () => {
     const calculateAllStatuses = () => {
         const now = getCurrentTime();
         const statuses = Object.keys(state.sections).map(sectionName => {
-            const { timetable } = state.sections[sectionName];
+            const { timetable, pinned, highlighted } = state.sections[sectionName];
             if (!timetable || !timetable.schedule) {
                 logger(`Invalid timetable for ${sectionName}`);
-                return { sectionName, isFree: true, progress: 0, error: 'Invalid Timetable' };
+                return { sectionName, isFree: true, progress: 0, error: 'Invalid Timetable', isPinned: pinned, isHighlighted: highlighted };
             }
             const currentClass = getClassAtTime(timetable, now);
             
-            let absoluteNextClass = null;
-            if (currentClass) {
-                const nextFree = getNextFreeTime(timetable, now);
-                const busyPeriodEndTime = nextFree || currentClass.endTime;
-                absoluteNextClass = getNextClass(timetable, busyPeriodEndTime);
-            } else {
-                absoluteNextClass = getNextClass(timetable, now);
-            }
+            const absoluteNextClass = getNextClass(timetable, now);
 
             let nextClassForSwipeData = null;
             if (absoluteNextClass) {
@@ -781,7 +828,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const progress = totalDuration > 0 ? Math.min(100, (elapsed / totalDuration) * 100) : 0;
 
                 return {
-                    sectionName, isFree: false, progress,
+                    sectionName, isFree: false, progress, isPinned: pinned, isHighlighted: highlighted,
                     currentClassSubject: currentClass.subject,
                     currentClassVenue: currentClass.venue || 'N/A',
                     currentClassFaculty: currentClass.faculty || 'N/A',
@@ -828,7 +875,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     const elapsed = now - freePeriodStart;
                     const progress = totalDuration > 0 ? Math.min(100, (elapsed / totalDuration) * 100) : 0;
                     return {
-                        sectionName, isFree: true, progress,
+                        sectionName, isFree: true, progress, isPinned: pinned, isHighlighted: highlighted,
                         nextClassTime: formatTimeWithDay(nextClass.startTime),
                         nextClassSubject: nextClass.subject,
                         nextClassVenue: nextClass.venue || 'N/A',
@@ -838,7 +885,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     };
                 } else {
                     return {
-                        sectionName, isFree: true, progress: 100,
+                        sectionName, isFree: true, progress: 100, isPinned: pinned, isHighlighted: highlighted,
                         nextClassTime: 'a long while',
                         nextClassSubject: 'Nothing scheduled',
                         nextClassVenue: '-',
@@ -886,7 +933,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (!timetable.schedule || !timetable.timeSlots) {
                     throw new Error("Invalid timetable format.");
                 }
-                state.sections[name] = { timetable, friends: [] };
+                state.sections[name] = { timetable, friends: [], pinned: false, highlighted: false };
                 saveState();
                 renderSettings();
                 calculateAllStatuses();
@@ -912,6 +959,22 @@ document.addEventListener('DOMContentLoaded', () => {
                 showToast(`Section "${name}" removed.`);
             }
         );
+    };
+
+    const handlePinSection = (name) => {
+        state.sections[name].pinned = !state.sections[name].pinned;
+        saveState();
+        renderSettings();
+        calculateAllStatuses();
+        showToast(state.sections[name].pinned ? `Pinned ${name}.` : `Unpinned ${name}.`);
+    };
+
+    const handleHighlightSection = (name) => {
+        state.sections[name].highlighted = !state.sections[name].highlighted;
+        saveState();
+        renderSettings();
+        calculateAllStatuses();
+        showToast(state.sections[name].highlighted ? `Highlighted ${name}.` : `Removed highlight from ${name}.`);
     };
 
     const handleAddFriend = (e) => {
@@ -1148,6 +1211,14 @@ document.addEventListener('DOMContentLoaded', () => {
         const removeBtn = e.target.closest('.remove-section-btn');
         if (removeBtn) {
             handleRemoveSection(removeBtn.dataset.section);
+        }
+        const pinBtn = e.target.closest('.pin-section-btn');
+        if (pinBtn) {
+            handlePinSection(pinBtn.dataset.section);
+        }
+        const highlightBtn = e.target.closest('.highlight-section-btn');
+        if (highlightBtn) {
+            handleHighlightSection(highlightBtn.dataset.section);
         }
     });
 
