@@ -502,11 +502,16 @@ document.addEventListener('DOMContentLoaded', () => {
                 const scheduleRows = status.dayScheduleForView.map(slot => {
                     const isCurrentClass = slot.isCurrent ? 'bg-blue-100 dark:bg-blue-900/50' : '';
                     const subjectClass = slot.subject ? 'font-semibold' : 'text-gray-400';
+                    
+                    let subjectHtml = slot.subject || 'Free Period';
+                    if (slot.subject && slot.venue) {
+                        subjectHtml = `${slot.subject} <span class="font-normal text-gray-500">(${slot.venue})</span>`;
+                    }
+
                     return `
-                        <div class="grid grid-cols-6 gap-2 text-xs py-1.5 px-2 rounded-md ${isCurrentClass}">
-                            <span class="text-left col-span-2">${slot.time}</span>
-                            <span class="text-left col-span-3 ${subjectClass} truncate">${slot.subject || 'Free Period'}</span>
-                            <span class="text-right col-span-1 text-gray-500 truncate">${slot.venue || ''}</span>
+                        <div class="grid grid-cols-3 gap-2 text-xs py-1.5 px-2 rounded-md ${isCurrentClass}">
+                            <span class="text-left col-span-1">${slot.time}</span>
+                            <span class="text-left col-span-2 ${subjectClass} truncate">${subjectHtml}</span>
                         </div>
                     `;
                 }).join('');
