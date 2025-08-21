@@ -1,13 +1,13 @@
 // A unique name for the cache. Increment this version when you update the app's core files.
-const CACHE_NAME = 'friend-tracker-v2';
+const CACHE_NAME = 'friend-tracker-v3';
 
 // List of core files to cache when the service worker is installed.
 // These are the essential files needed for the app to run offline.
 const urlsToCache = [
   './', // Caches the root URL of the app
   './index.html',
-  './manifest.json'
-  // Other assets like CSS, JS from CDNs will be cached on first use (see fetch event).
+  './manifest.json',
+  './generated-image.jpg' // Added the new app icon to the cache
 ];
 
 // --- INSTALL Event ---

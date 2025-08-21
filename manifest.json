@@ -8,14 +8,14 @@
   "description": "Track the availability of friends based on their class schedules.",
   "icons": [
     {
-      "src": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxOTIgMTkyIiB3aWR0aD0iMTkyIiBoZWlnaHQ9IjE5MiI+PHBhdGggZmlsbD0ibm9uZSIgZD0iTTAgMGgxOTJ2MTkySDB6Ii8+PHBhdGggZmlsbD0iIzdjM2FlZCIgZD0iTTk2IDE4QTc4IDc4IDAgMSAxIDE4IDk2IDc4IDc4IDAgMCAxIDk2IDE4em0wIDEyYTc4IDc4IDAgMSAxIDAgMTU2VjMwYTc4IDc4IDAgMCAxIDAgMTU2em0wIDAiLz48cGF0aCBmaWxsPSIjZmZmIiBkPSJtMTE4LjUgNzAtMy4xNSAyLjg1TDEwNCA4Mi44di0xMEg5OHYxNmw5LjE1IDkuMTUgMi44NS0zLjE1TDEwNCA5NC44di0xMmw5LjE1LTkuMTV6bS01MS4xNSA0Mi4zIDIuODUgMy4xNUw3OSA5NC44di0xMmw5LjE1LTkuMTVMMODUgNzBsLTMuMTUgMi44NUw3MyA4Mi44di0xMEg2N3YxNmw5LjE1IDkuMTV6Ii8+PC9zdmc+",
+      "src": "generated-image.jpg",
       "sizes": "192x192",
-      "type": "image/svg+xml"
+      "type": "image/jpeg"
     },
     {
-      "src": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIiB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiI+PHBhdGggZmlsbD0ibm9uZSIgZD0iTTAgMGg1MTJ2NTEySDB6Ii8+PHBhdGggZmlsbD0iIzdjM2FlZCIgZD0iTTI1NiA0MEEyMTYgMjE2IDAgMSAxIDQwIDI1NiAyMTYgMjE2IDAgMCAxIDI1NiA0MHptMCAzNmEyMTYgMjE2IDAgMSAxIDAgNDMyVjc2YTIxNiAyMTYgMCAwIDEgMCA0MzJ6bTAgMCIvPjxwYXRoIGZpbGw9IiNmZmYiIGQ9Im0zMTYgMTg2LjY3LTguNCA3LjZMMjgzLjMzIDIyMC44di0yNi42N0gyNjB2NDIuNjdsMjQuNCAyNC40IDcuNi04LjQtMjQuNC0yNC40di0yNi42N2wyNC40LTI0LjR6bS0xMzYuNCAxMTIuOCA3LjYgOC40IDI0LjQtMjQuNHYtMjYuNjdsMjQuNC0yNC40LTguNC03LjYtMjQuNCAyNC40di0yNi42N0gxNzZ2NDIuNjdsMjQuNCAyNC40eiIvPjwvc3ZnPg==",
+      "src": "generated-image.jpg",
       "sizes": "512x512",
-      "type": "image/svg+xml"
+      "type": "image/jpeg"
     }
   ]
 }
