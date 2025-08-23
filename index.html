@@ -194,6 +194,29 @@
         </div>
     </div>
 
+    <!-- Changelog Modal -->
+    <div id="changelog-modal" class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl p-6 w-full max-w-md">
+            <h2 class="text-2xl font-bold mb-4 text-gray-800 dark:text-white text-center">Timetables Updated!</h2>
+            <div class="text-gray-600 dark:text-gray-300 mb-6 space-y-4 max-h-64 overflow-y-auto">
+                <div id="changelog-updated-container" class="hidden">
+                    <h3 class="font-semibold text-lg mb-1">Updated Sections:</h3>
+                    <ul id="changelog-updated" class="list-disc list-inside text-sm space-y-1"></ul>
+                </div>
+                <div id="changelog-added-container" class="hidden">
+                    <h3 class="font-semibold text-lg mb-1">Added Sections:</h3>
+                    <ul id="changelog-added" class="list-disc list-inside text-sm space-y-1"></ul>
+                </div>
+                <div id="changelog-removed-container" class="hidden">
+                    <h3 class="font-semibold text-lg mb-1">Removed Sections:</h3>
+                    <ul id="changelog-removed" class="list-disc list-inside text-sm space-y-1"></ul>
+                </div>
+            </div>
+            <button id="close-changelog-modal" class="w-full bg-indigo-600 text-white py-2 rounded-md hover:bg-indigo-700 transition-colors font-semibold">OK</button>
+        </div>
+    </div>
+
+
     <!-- Settings Panel (Modal) -->
     <div id="settings-panel" class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm z-40 hidden">
         <div id="settings-content" class="absolute top-0 right-0 h-full w-full max-w-sm bg-white dark:bg-gray-800 shadow-2xl transform translate-x-full transition-transform duration-300 ease-in-out p-6 flex flex-col">
@@ -304,7 +327,8 @@ document.addEventListener('DOMContentLoaded', () => {
             debugMode: false
         },
         debugTime: null, // Stores the manual time as a Date object
-        remoteTimetablesVersion: 0
+        remoteTimetablesVersion: 0,
+        removedSections: [] // Tracks sections user has removed
     };
 
     // --- DOM ELEMENTS ---
@@ -338,6 +362,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const importDataFile = document.getElementById('import-data-file');
     const welcomeModal = document.getElementById('welcome-modal');
     const closeWelcomeModalBtn = document.getElementById('close-welcome-modal');
+    const changelogModal = document.getElementById('changelog-modal');
+    const closeChangelogModalBtn = document.getElementById('close-changelog-modal');
 
 
     // --- CONSTANTS ---
@@ -383,6 +409,9 @@ document.addEventListener('DOMContentLoaded', () => {
                             parsedState.sections[sectionName].isLocal = false;
                         }
                     }
+                    if (!parsedState.removedSections) {
+                        parsedState.removedSections = [];
+                    }
                     Object.assign(state, parsedState);
                     if (state.debugTime) {
                         state.debugTime = new Date(state.debugTime);
@@ -416,57 +445,78 @@ document.addEventListener('DOMContentLoaded', () => {
             if (remoteVersion > localVersion || isFirstVisit) {
                 logger(`New timetable version found. Remote: ${remoteVersion}, Local: ${localVersion}. Updating...`);
 
+                const oldRemoteSections = Object.keys(state.sections).filter(name => !state.sections[name].isLocal);
+
                 // Fetch all individual timetable files listed in the manifest
                 const timetablePromises = manifest.files.map(file => 
                     fetch(`./TimeTables/${file}?t=${new Date().getTime()}`).then(res => {
                         if (!res.ok) {
                            logger(`Failed to fetch ${file}`);
-                           return null; // Return null for failed fetches
+                           return null;
                         }
                         return res.json();
                     })
                 );
                 
-                const timetablesData = (await Promise.all(timetablePromises)).filter(Boolean); // Filter out nulls
-
-                // Preserve existing local sections and friends data
-                const localSections = {};
-                const friendData = {};
-                Object.keys(state.sections).forEach(name => {
-                    if (state.sections[name].isLocal) {
-                        localSections[name] = state.sections[name];
-                    } else {
-                        friendData[name] = state.sections[name].friends;
-                    }
-                });
-
-                const newSections = {};
-                timetablesData.forEach(timetable => {
-                    // The section name is now read from within the JSON file itself
-                    const sectionName = timetable.timetableInfo?.section; 
-                    if (!sectionName) {
-                        logger("Skipping a timetable file because it's missing 'timetableInfo.section'.", timetable);
-                        return;
-                    }
-                    newSections[sectionName] = {
-                        timetable: timetable,
-                        friends: friendData[sectionName] || [], // Preserve friends
-                        pinned: false,
-                        highlighted: false,
-                        isLocal: false
-                    };
-                });
+                const timetablesData = (await Promise.all(timetablePromises)).filter(Boolean);
                 
-                // Merge new remote sections with existing local sections
-                state.sections = { ...newSections, ...localSections };
+                if (isFirstVisit) {
+                    // First visit logic: just load everything
+                    const newSections = {};
+                    timetablesData.forEach(timetable => {
+                        const sectionName = timetable.timetableInfo?.section;
+                        if (!sectionName) return;
+                        newSections[sectionName] = { timetable, friends: [], pinned: false, highlighted: false, isLocal: false };
+                    });
+                    state.sections = newSections;
+                    welcomeModal.classList.remove('hidden');
+                } else {
+                    // Update logic: preserve data and show changelog
+                    const changelog = { added: [], updated: [], removed: [] };
+                    const newRemoteTimetables = new Map();
+                    
+                    timetablesData.forEach(timetable => {
+                        const sectionName = timetable.timetableInfo?.section;
+                        if (sectionName) {
+                            newRemoteTimetables.set(sectionName, timetable);
+                        }
+                    });
+
+                    // Process updates and new additions
+                    for (const [sectionName, timetable] of newRemoteTimetables.entries()) {
+                        if (state.removedSections.includes(sectionName)) {
+                            continue; // Skip sections the user has removed
+                        }
+
+                        const existingSection = state.sections[sectionName];
+                        if (existingSection) {
+                            // This is an update
+                            existingSection.timetable = timetable;
+                            changelog.updated.push(sectionName);
+                        } else {
+                            // This is a new addition
+                            state.sections[sectionName] = { timetable, friends: [], pinned: false, highlighted: false, isLocal: false };
+                            changelog.added.push(sectionName);
+                        }
+                    }
+
+                    // Process removals
+                    for (const sectionName of oldRemoteSections) {
+                        if (!newRemoteTimetables.has(sectionName)) {
+                            delete state.sections[sectionName];
+                            changelog.removed.push(sectionName);
+                        }
+                    }
+
+                    // Show changelog if there are changes
+                    if (changelog.added.length > 0 || changelog.updated.length > 0 || changelog.removed.length > 0) {
+                        displayChangelog(changelog);
+                    }
+                }
+                
                 state.remoteTimetablesVersion = remoteVersion;
                 saveState();
-                
                 showToast(`Timetables updated to version ${remoteVersion}.`, 'success');
-
-                if (isFirstVisit) {
-                    welcomeModal.classList.remove('hidden');
-                }
 
             } else {
                 logger("Timetables are up to date.");
@@ -474,13 +524,10 @@ document.addEventListener('DOMContentLoaded', () => {
         } catch (error) {
             console.error("Could not fetch remote timetables:", error);
             showToast("Could not check for timetable updates.", "error");
-            // If it's the first visit and the fetch fails, show the welcome modal.
-            // This guides the user even if the initial data load doesn't work.
             if (isFirstVisit) {
                 welcomeModal.classList.remove('hidden');
             }
         } finally {
-            // Always ensure the dashboard is rendered after checking
             renderDashboard(calculateAllStatuses());
             renderSettings();
         }
@@ -488,6 +535,27 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
     // --- UI/DOM MANIPULATION ---
+    const displayChangelog = (changelog) => {
+        const { added, updated, removed } = changelog;
+        
+        const populateList = (containerId, listId, items) => {
+            const container = document.getElementById(containerId);
+            const list = document.getElementById(listId);
+            if (items.length > 0) {
+                list.innerHTML = items.map(item => `<li>${item}</li>`).join('');
+                container.classList.remove('hidden');
+            } else {
+                container.classList.add('hidden');
+            }
+        };
+
+        populateList('changelog-updated-container', 'changelog-updated', updated);
+        populateList('changelog-added-container', 'changelog-added', added);
+        populateList('changelog-removed-container', 'changelog-removed', removed);
+
+        changelogModal.classList.remove('hidden');
+    };
+
     const applyTheme = () => {
         if (state.settings.darkMode) {
             document.documentElement.classList.add('dark');
@@ -1144,6 +1212,12 @@ document.addEventListener('DOMContentLoaded', () => {
             `Remove Section "${name}"?`,
             'This will also remove all friends in this section. This action cannot be undone.',
             () => {
+                if (state.sections[name] && !state.sections[name].isLocal) {
+                    if (!state.removedSections) {
+                        state.removedSections = [];
+                    }
+                    state.removedSections.push(name);
+                }
                 delete state.sections[name];
                 saveState();
                 renderSettings();
@@ -1238,23 +1312,7 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     const handleExportData = () => {
-        const dataToExport = {
-            sections: {},
-            settings: state.settings,
-            remoteTimetablesVersion: state.remoteTimetablesVersion
-        };
-        // Only export local sections and friends
-        Object.keys(state.sections).forEach(name => {
-            if(state.sections[name].isLocal) {
-                dataToExport.sections[name] = state.sections[name];
-            } else {
-                // For remote sections, just save the friends
-                if (!dataToExport.sections[name]) {
-                     dataToExport.sections[name] = { friends: state.sections[name].friends };
-                }
-            }
-        });
-
+        const dataToExport = { ...state };
         const dataStr = JSON.stringify(dataToExport, null, 2);
         const dataBlob = new Blob([dataStr], {type: "application/json"});
         const url = URL.createObjectURL(dataBlob);
@@ -1265,7 +1323,7 @@ document.addEventListener('DOMContentLoaded', () => {
         link.click();
         document.body.removeChild(link);
         URL.revokeObjectURL(url);
-        showToast("Local data and friends exported.");
+        showToast("Data exported successfully.");
     };
 
     const handleImportData = (e) => {
@@ -1276,19 +1334,7 @@ document.addEventListener('DOMContentLoaded', () => {
             try {
                 const importedData = JSON.parse(event.target.result);
                 if (importedData && importedData.sections) {
-                    // Merge imported data with existing state
-                    Object.keys(importedData.sections).forEach(name => {
-                        // If the section is local in the import, add it
-                        if(importedData.sections[name].isLocal) {
-                            state.sections[name] = importedData.sections[name];
-                        } else {
-                            // If it's a remote section, just update friends
-                            if(state.sections[name]) {
-                                state.sections[name].friends = importedData.sections[name].friends || [];
-                            }
-                        }
-                    });
-                    state.settings = importedData.settings || state.settings;
+                    state = importedData;
                     saveState();
                     applyTheme();
                     renderSettings();
@@ -1413,6 +1459,9 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     closeWelcomeModalBtn.addEventListener('click', () => {
         welcomeModal.classList.add('hidden');
+    });
+    closeChangelogModalBtn.addEventListener('click', () => {
+        changelogModal.classList.add('hidden');
     });
 
     darkModeToggle.addEventListener('click', () => {
