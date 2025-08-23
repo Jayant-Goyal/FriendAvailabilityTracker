@@ -1,0 +1,96 @@
+{
+  "university": "JECRC UNIVERSITY",
+  "department": "DEPARTMENT OF COMPUTER SCIENCE AND ENGINEERING",
+  "timetableInfo": {
+    "title": "TIME-TABLE",
+    "section": "DG",
+    "year": "II",
+    "semester": "III Sem",
+    "type": "LT"
+  },
+  "timeSlots": [
+    { "lecture": 1, "time": "8.00-8.50" },
+    { "lecture": 2, "time": "8.50-9.40" },
+    { "lecture": 3, "time": "9.40-10.30" },
+    { "lecture": 4, "time": "10.30-11.20" },
+    { "lecture": 5, "time": "11.20-12.05" },
+    { "lecture": 6, "time": "12.05-12.50" }
+  ],
+  "schedule": [
+    {
+      "day": "Monday",
+      "classes": [
+        { "lecture": 1, "subject": "Data Science", "venue": "NYB 006", "faculty": "Mr. Jay" },
+        { "lecture": 2, "details": null },
+        { "lecture": 3, "subject": "Computer Network Lab", "venue": "VIB 412", "faculty": "Ms. Shradha", "span": 2 },
+        { "lecture": 5, "details": null },
+        { "lecture": 6, "subject": "Life Skills", "venue": "NYB 002", "faculty": "Ms. Pragya" }
+      ]
+    },
+    {
+      "day": "Tuesday",
+      "classes": [
+        { "lecture": 1, "subject": "Data Science", "venue": "NYB 006", "faculty": "Mr. Jay" },
+        { "lecture": 2, "details": null },
+        { "lecture": 3, "subject": "Operating System", "venue": "NYB 006", "faculty": "Ms. Neha" },
+        { "lecture": 4, "subject": "Python", "venue": "VIB 105", "faculty": "Ms. Purva" },
+        { "lecture": 5, "subject": "Computer Network", "venue": "VIB 105", "faculty": "Ms. Shradha" },
+        { "lecture": 6, "details": null }
+      ]
+    },
+    {
+      "day": "Wednesday",
+      "classes": [
+        { "lecture": 1, "details": null },
+        { "lecture": 2, "subject": "Python", "venue": "VIB 103", "faculty": "Ms. Purva" },
+        { "lecture": 3, "subject": "Data Science", "venue": "VIB 109", "faculty": "Mr. Jay" },
+        { "lecture": 4, "details": null },
+        { "lecture": 5, "subject": "Computer Network", "venue": "NYB 001", "faculty": "Ms. Shradha" },
+        { "lecture": 6, "subject": "Operating System", "venue": "NYB 001", "faculty": "Ms. Neha" }
+      ]
+    },
+    {
+      "day": "Thursday",
+      "classes": [
+        { "lecture": 1, "subject": "Discrete Mathematics", "venue": "NYB 002", "faculty": "Dr. Tanya Sharma" },
+        { "lecture": 2, "details": null },
+        { "lecture": 3, "subject": "Python", "venue": "NYB 002", "faculty": "Ms. Purva" },
+        { "lecture": 4, "details": null },
+        { "lecture": 5, "subject": "Computer Network", "venue": "NYB 002", "faculty": "Ms. Shradha" },
+        { "lecture": 6, "details": null }
+      ]
+    },
+    {
+      "day": "Friday",
+      "classes": [
+        { "lecture": 1, "subject": "Discrete Mathematics", "venue": "NYB 002", "faculty": "Dr. Tanya Sharma" },
+        { "lecture": 2, "details": null },
+        { "lecture": 3, "subject": "Life Skills", "venue": "VIB 110", "faculty": "Ms. Pragya" },
+        { "lecture": 4, "details": null },
+        { "lecture": 5, "subject": "Computer Network Tutorial", "venue": "NYB 001", "faculty": "Ms. Shradha" },
+        { "lecture": 6, "subject": "Operating System", "venue": "NYB 001", "faculty": "Ms. Neha" }
+      ]
+    },
+    {
+      "day": "Saturday",
+      "classes": [
+        { "lecture": 1, "subject": "Discrete Mathematics", "venue": "NYB 216", "faculty": "Dr. Tanya Sharma" },
+        { "lecture": 2, "details": null },
+        { "lecture": 3, "subject": "Python Lab", "venue": "VIB 412", "faculty": "Ms. Purva", "span": 2 },
+        { "lecture": 5, "subject": "Operating System Lab", "venue": "VIB 403", "faculty": "Ms. Neha", "span": 2 }
+      ]
+    }
+  ],
+  "faculty": [
+    { "subject": "Python", "name": "Ms. Purva" },
+    { "subject": "Data Science", "name": "Mr. Jay" },
+    { "subject": "Operating System", "name": "Ms. Neha" },
+    { "subject": "Computer Network", "name": "Ms. Shradha" },
+    { "subject": "Discrete Mathematics", "name": "Dr. Tanya Sharma" },
+    { "subject": "Life Skills", "name": "Ms. Pragya" }
+  ],
+  "staff": [
+    { "role": "Time-Table Coordinator", "name": "Nidhi Gour" },
+    { "role": "HOD", "name": "Dr. Bhavna Sharma" }
+  ]
+}
