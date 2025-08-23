@@ -179,11 +179,18 @@
     <div id="welcome-modal" class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
         <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl p-6 w-full max-w-md text-center">
             <h2 class="text-2xl font-bold mb-4 text-gray-800 dark:text-white">Welcome to SyncUp!</h2>
-            <p class="text-gray-600 dark:text-gray-300 mb-6">
-                This app helps you track your friends' availability based on their class schedules.
-                We've pre-loaded the official timetables for you. You can remove any sections you don't need from the settings menu.
+            <div class="text-gray-600 dark:text-gray-300 mb-6 space-y-3">
+                <p>
+                    This app helps you track your friends' availability based on their class schedules. You can add friend names to sections from the settings menu.
+                </p>
+                <p class="text-xs text-gray-500 dark:text-gray-400">
+                    Please note: The pre-loaded timetable data is for convenience and may be incorrect. Use at your own risk.
+                </p>
+            </div>
+            <button id="close-welcome-modal" class="w-full bg-indigo-600 text-white py-2 rounded-md hover:bg-indigo-700 transition-colors font-semibold mb-4">Get Started</button>
+            <p class="text-xs text-gray-400 dark:text-gray-500">
+                Created by Jayant Goyal
             </p>
-            <button id="close-welcome-modal" class="w-full bg-indigo-600 text-white py-2 rounded-md hover:bg-indigo-700 transition-colors font-semibold">Get Started</button>
         </div>
     </div>
 
