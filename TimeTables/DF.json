@@ -20,7 +20,7 @@
     {
       "day": "Monday",
       "classes": [
-        { "lecture": 1, "details": null },
+        { "lecture": 1, "subject": "Computer Network", "venue": "NYB 002", "faculty": "Ms. Shradha" },
         { "lecture": 2, "subject": "Operating System", "venue": "NYB 002", "faculty": "Ms. Neha" },
         { "lecture": 3, "subject": "Data Science", "venue": "NYB 001", "faculty": "Mr. Jay" },
         { "lecture": 4, "subject": "Discrete Mathematics", "venue": "NYB 001", "faculty": "Dr. Tanya Sharma" },
@@ -93,4 +93,3 @@
     { "role": "HOD", "name": "Dr. Bhavna Sharma" }
   ]
 }
-
