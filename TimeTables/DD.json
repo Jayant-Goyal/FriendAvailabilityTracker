@@ -21,17 +21,16 @@
       "day": "Monday",
       "classes": [
         { "lecture": 1, "details": null },
-        { "lecture": 2, "subject": "Computer Network", "venue": "VIB 212", "faculty": "Ms. Shradha" },
-        { "lecture": 3, "subject": "Life Skills", "venue": "NYB 002", "faculty": "Ms. Pragya" },
-        { "lecture": 4, "details": null },
-        { "lecture": 5, "subject": "Discrete Mathematics", "venue": "NYB 002", "faculty": "Dr. Tanya Sharma" },
+        { "lecture": 2, "subject": "Computer Network", "venue": "VIB 212", "faculty": "Ms. Nidhi" },
+        { "lecture": 3, "subject": "Life Skills", "venue": "NYB 002", "faculty": "Mr. Dinesh", "span": 2 },
+        { "lecture": 5, "subject": "Discrete Mathematics", "venue": "NYB 002", "faculty": "Dr. Ram Jash" },
         { "lecture": 6, "details": null }
       ]
     },
     {
       "day": "Tuesday",
       "classes": [
-        { "lecture": 1, "subject": "Computer Network Lab", "venue": "VIB 412", "faculty": "Ms. Shradha", "span": 2 },
+        { "lecture": 1, "subject": "Computer Network Lab", "venue": "VIB 412", "faculty": "Ms. Nidhi", "span": 2 },
         { "lecture": 3, "subject": "Python", "venue": "VIB 110", "faculty": "Mr. Girriraj" },
         { "lecture": 4, "details": null },
         { "lecture": 5, "details": null },
@@ -41,53 +40,53 @@
     {
       "day": "Wednesday",
       "classes": [
-        { "lecture": 1, "subject": "Computer Network", "venue": "VIB 206", "faculty": "Ms. Shradha" },
+        { "lecture": 1, "subject": "Computer Network", "venue": "VIB 206", "faculty": "Ms. Nidhi" },
         { "lecture": 2, "subject": "Python", "venue": "VIB 212", "faculty": "Mr. Girriraj" },
-        { "lecture": 3, "subject": "Operating System", "venue": "VIB 207", "faculty": "Ms. Neha" },
+        { "lecture": 3, "subject": "Operating System", "venue": "VIB 207", "faculty": "Mr. Himanshu" },
         { "lecture": 4, "details": null },
-        { "lecture": 5, "subject": "Discrete Mathematics", "venue": "VIB 013", "faculty": "Dr. Tanya Sharma" },
-        { "lecture": 6, "subject": "Data Science", "venue": "VIB 206", "faculty": "Mr. Deep" }
+        { "lecture": 5, "subject": "Discrete Mathematics", "venue": "VIB 013", "faculty": "Dr. Ram Jash" },
+        { "lecture": 6, "subject": "Data Science", "venue": "VIB 206", "faculty": "Mr. Jay" }
       ]
     },
     {
       "day": "Thursday",
       "classes": [
         { "lecture": 1, "details": null },
-        { "lecture": 2, "subject": "Operating System", "venue": "VIB 212", "faculty": "Ms. Neha" },
+        { "lecture": 2, "subject": "Operating System", "venue": "VIB 212", "faculty": "Mr. Himanshu" },
         { "lecture": 3, "subject": "Python", "venue": "VIB 110", "faculty": "Mr. Girriraj" },
         { "lecture": 4, "details": null },
-        { "lecture": 5, "subject": "Computer Network Tutorial", "venue": "VIB 105", "faculty": "Ms. Shradha" },
-        { "lecture": 6, "subject": "Data Science", "venue": "VIB 206", "faculty": "Mr. Deep" }
+        { "lecture": 5, "subject": "Computer Network Tutorial", "venue": "VIB 105", "faculty": "Ms. Nidhi" },
+        { "lecture": 6, "subject": "Data Science", "venue": "VIB 206", "faculty": "Mr. Jay" }
       ]
     },
     {
       "day": "Friday",
       "classes": [
-        { "lecture": 1, "subject": "Computer Network", "venue": "VIB 105", "faculty": "Ms. Shradha" },
-        { "lecture": 2, "subject": "Operating System", "venue": "VIB 212", "faculty": "Ms. Neha" },
+        { "lecture": 1, "subject": "Computer Network", "venue": "VIB 105", "faculty": "Ms. Nidhi" },
+        { "lecture": 2, "subject": "Operating System", "venue": "VIB 212", "faculty": "Mr. Himanshu" },
         { "lecture": 3, "subject": "Python Lab", "venue": "VIB 412", "faculty": "Mr. Girriraj", "span": 2 },
-        { "lecture": 5, "subject": "Operating System Lab", "venue": "VIB 403", "faculty": "Ms. Neha", "span": 2 }
+        { "lecture": 5, "subject": "Operating System Lab", "venue": "VIB 403", "faculty": "Mr. Himanshu", "span": 2 }
       ]
     },
     {
       "day": "Saturday",
       "classes": [
         { "lecture": 1, "details": null },
-        { "lecture": 2, "subject": "Life Skills", "venue": "NYB 001", "faculty": "Ms. Pragya" },
-        { "lecture": 3, "subject": "Discrete Mathematics", "venue": "NYB 001", "faculty": "Dr. Tanya Sharma" },
+        { "lecture": 2, "subject": "Life Skills", "venue": "NYB 001", "faculty": "Mr. Dinesh" },
+        { "lecture": 3, "subject": "Discrete Mathematics", "venue": "NYB 001", "faculty": "Dr. Ram Jash" },
         { "lecture": 4, "details": null },
-        { "lecture": 5, "subject": "Data Science", "venue": "NYB 313", "faculty": "Mr. Deep" },
-        { "lecture": 6, "subject": "Life Skills", "venue": "NYB 001", "faculty": "Ms. Pragya" }
+        { "lecture": 5, "subject": "Data Science", "venue": "NYB 313", "faculty": "Mr. Jay" },
+        { "lecture": 6, "subject": "Life Skills", "venue": "NYB 313", "faculty": "Mr. Dinesh" }
       ]
     }
   ],
   "faculty": [
     { "subject": "Python", "name": "Mr. Girriraj" },
-    { "subject": "Data Science", "name": "Mr. Deep" },
-    { "subject": "Operating System", "name": "Ms. Neha" },
-    { "subject": "Computer Network", "name": "Ms. Shradha" },
-    { "subject": "Discrete Mathematics", "name": "Dr. Tanya Sharma" },
-    { "subject": "Life Skills", "name": "Ms. Pragya" }
+    { "subject": "Data Science", "name": "Mr. Jay" },
+    { "subject": "Operating System", "name": "Mr. Himanshu" },
+    { "subject": "Computer Network", "name": "Ms. Nidhi" },
+    { "subject": "Discrete Mathematics", "name": "Dr. Ram Jash" },
+    { "subject": "Life Skills", "name": "Mr. Dinesh" }
   ],
   "staff": [
     { "role": "Time-Table Coordinator", "name": "Nidhi Gour" },
