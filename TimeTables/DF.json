@@ -24,7 +24,7 @@
         { "lecture": 2, "subject": "Operating System", "venue": "NYB 002", "faculty": "Ms. Neha" },
         { "lecture": 3, "subject": "Data Science", "venue": "NYB 001", "faculty": "Mr. Jay" },
         { "lecture": 4, "subject": "Discrete Mathematics", "venue": "NYB 001", "faculty": "Dr. Tanya Sharma" },
-        { "lecture": 5, "details": null },
+        { "lecture": 5, "subject": "Life Skills", "venue": "VIB 105", "faculty": "Ms. Samina" },
         { "lecture": 6, "details": null }
       ]
     },
@@ -55,9 +55,9 @@
         { "lecture": 1, "details": null },
         { "lecture": 2, "details": null },
         { "lecture": 3, "details": null },
-        { "lecture": 4, "details": null },
-        { "lecture": 5, "subject": "Discrete Mathematics", "venue": "VIB 212", "faculty": "Dr. Tanya Sharma" },
-        { "lecture": 6, "subject": "Operating System", "venue": "VIB 212", "faculty": "Ms. Neha" }
+        { "lecture": 4, "subject": "Discrete Mathematics", "venue": "VIB 212", "faculty": "Dr. Tanya Sharma" },
+        { "lecture": 5, "subject": "Operating System", "venue": "VIB 212", "faculty": "Ms. Neha" },
+        { "lecture": 6, "details": null }
       ]
     },
     {
@@ -65,7 +65,7 @@
       "classes": [
         { "lecture": 1, "subject": "Python", "venue": "VIB 206", "faculty": "Ms. Purva" },
         { "lecture": 2, "subject": "Computer Network Tutorial", "venue": "VIB 105", "faculty": "Ms. Shraddha" },
-        { "lecture": 3, "subject": "Life Skills", "venue": "VIB 105", "faculty": "Ms. Pragya", "span": 2 },
+        { "lecture": 3, "subject": "Life Skills", "venue": "VIB 105", "faculty": "Ms. Samina", "span": 2 },
         { "lecture": 5, "details": null },
         { "lecture": 6, "details": null }
       ]
@@ -75,7 +75,7 @@
       "classes": [
         { "lecture": 1, "subject": "Python Lab", "venue": "VIB 412", "faculty": "Ms. Purva", "span": 2 },
         { "lecture": 3, "subject": "Operating System Lab", "venue": "VIB 403", "faculty": "Ms. Neha", "span": 2 },
-        { "lecture": 5, "subject": "Life Skills", "venue": "NYB 001", "faculty": "Ms. Pragya" },
+        { "lecture": 5, "details": null },
         { "lecture": 6, "subject": "Python", "venue": "NYB 001", "faculty": "Ms. Purva" }
       ]
     }
@@ -86,7 +86,7 @@
     { "subject": "Operating System", "name": "Ms. Neha" },
     { "subject": "Computer Network", "name": "Ms. Shraddha" },
     { "subject": "Discrete Mathematics", "name": "Dr. Tanya Sharma" },
-    { "subject": "Life Skills", "name": "Ms. Pragya" }
+    { "subject": "Life Skills", "name": "Ms. Samina" }
   ],
   "staff": [
     { "role": "Time-Table Coordinator", "name": "Nidhi Gour" },
