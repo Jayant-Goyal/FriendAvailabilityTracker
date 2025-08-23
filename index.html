@@ -467,6 +467,11 @@ document.addEventListener('DOMContentLoaded', () => {
         } catch (error) {
             console.error("Could not fetch remote timetables:", error);
             showToast("Could not check for timetable updates.", "error");
+            // If it's the first visit and the fetch fails, show the welcome modal.
+            // This guides the user even if the initial data load doesn't work.
+            if (isFirstVisit) {
+                welcomeModal.classList.remove('hidden');
+            }
         } finally {
             // Always ensure the dashboard is rendered after checking
             renderDashboard(calculateAllStatuses());
