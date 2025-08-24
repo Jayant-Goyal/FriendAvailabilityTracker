@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SyncUp - Friend Availability Tracker</title>
+    <title>SyncUp - Friend & Group Availability Tracker</title>
 
     <!-- PWA Meta Tags -->
     <meta name="theme-color" content="#1f2937">
@@ -147,6 +147,91 @@
             to { box-shadow: 0 0 12px 4px rgba(239, 68, 68, 0.5); }
         }
         /* --- END: LED INDICATOR STYLES --- */
+
+        /* --- START: TIMELINE MODAL STYLES (NEW) --- */
+        .timeline-grid {
+            display: grid;
+            grid-template-columns: 120px 1fr; /* Names column and timeline column */
+            width: fit-content;
+            min-width: 100%;
+        }
+        .timeline-header-names {
+            position: sticky;
+            top: 0;
+            left: 0;
+            z-index: 20;
+            background-color: #ffffff;
+        }
+        .dark .timeline-header-names {
+            background-color: #1f2937;
+        }
+        .timeline-header-times {
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            background-color: #ffffff;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        .dark .timeline-header-times {
+             background-color: #1f2937;
+             border-color: #374151;
+        }
+        .timeline-member-row {
+            display: contents;
+        }
+        .timeline-member-name {
+            position: sticky;
+            left: 0;
+            z-index: 10;
+            background-color: #ffffff;
+            display: flex;
+            align-items: center;
+            padding: 0 0.5rem;
+            border-bottom: 1px solid #f3f4f6;
+        }
+        .dark .timeline-member-name {
+            background-color: #1f2937;
+            border-color: #374151;
+        }
+        .timeline-track-container {
+            position: relative;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #f3f4f6;
+        }
+        .dark .timeline-track-container {
+            border-color: #374151;
+        }
+        .timeline-bar {
+            display: flex;
+            height: 20px; /* Thicker bar */
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        .timeline-segment {
+            height: 100%;
+        }
+        .timeline-segment-free {
+            background-color: #4ade80; /* green-400 */
+        }
+        .dark .timeline-segment-free {
+            background-color: #22c55e; /* green-500 */
+        }
+        .timeline-segment-busy {
+            background-color: #f87171; /* red-400 */
+        }
+        .dark .timeline-segment-busy {
+            background-color: #ef4444; /* red-500 */
+        }
+        .timeline-current-time {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background-color: #fbbf24; /* amber-400 */
+            z-index: 15;
+        }
+        /* --- END: TIMELINE MODAL STYLES --- */
+
     </style>
     <script>
         // Tailwind dark mode configuration
@@ -303,6 +388,24 @@
                     </form>
                 </div>
 
+                <!-- START: Manage Groups -->
+                <div class="mb-6">
+                    <h3 class="font-semibold mb-2 border-b border-gray-200 dark:border-gray-600 pb-1">Manage Groups</h3>
+                    <form id="add-group-form" class="space-y-3 mt-3">
+                        <input type="text" id="new-group-name" placeholder="Group Name" required class="w-full bg-gray-100 dark:bg-gray-700 border-gray-300 dark:border-gray-600 rounded-md p-2 focus:ring-indigo-500 focus:border-indigo-500">
+                        <div class="p-2 bg-gray-100 dark:bg-gray-700 rounded-md">
+                            <p class="text-sm font-medium mb-2">Select Members:</p>
+                            <div id="group-friends-select-container" class="space-y-2 max-h-32 overflow-y-auto">
+                                <!-- Friend checkboxes will be injected here -->
+                                <p class="text-xs text-gray-500 dark:text-gray-400">Add some friends first to create a group.</p>
+                            </div>
+                        </div>
+                        <button type="submit" class="w-full bg-purple-600 text-white py-2 rounded-md hover:bg-purple-700 transition-colors font-semibold">Create Group</button>
+                    </form>
+                    <div id="groups-list" class="mt-4 space-y-2"></div>
+                </div>
+                <!-- END: Manage Groups -->
+
                 <!-- Time Debugging -->
                 <div class="mb-6">
                     <h3 class="font-semibold mb-2 border-b border-gray-200 dark:border-gray-600 pb-1">Time Debugging</h3>
@@ -359,19 +462,39 @@
         </div>
     </div>
 
+    <!-- START: Timeline Modal -->
+    <div id="timeline-modal" class="fixed inset-0 bg-black bg-opacity-70 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-4xl h-[80vh] flex flex-col p-4">
+            <div class="flex justify-between items-center mb-4 pb-4 border-b border-gray-200 dark:border-gray-700">
+                <h2 id="timeline-group-name" class="text-xl font-bold">Group Timeline</h2>
+                <button id="close-timeline-modal" class="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+            <div id="timeline-container" class="flex-grow overflow-auto relative">
+                <!-- Timeline will be rendered here -->
+            </div>
+        </div>
+    </div>
+    <!-- END: Timeline Modal -->
+
+
 <script>
 document.addEventListener('DOMContentLoaded', () => {
     // --- STATE MANAGEMENT ---
     let state = {
         sections: {}, // { sectionName: { timetable: {}, friends: [], pinned: false, highlighted: false, isLocal: false } }
+        groups: {}, // { groupName: { members: [{name: 'Friend', section: 'SectionX'}], pinned: false, highlighted: false } }
         settings: {
             darkMode: true,
             debugMode: false,
-            ledIndicatorEnabled: false // Default to disabled
+            ledIndicatorEnabled: false
         },
-        debugTime: null, // Stores the manual time as a Date object
+        debugTime: null,
         remoteTimetablesVersion: 0,
-        removedSections: [] // Tracks sections user has removed
+        removedSections: []
     };
 
     // --- DOM ELEMENTS ---
@@ -382,13 +505,24 @@ document.addEventListener('DOMContentLoaded', () => {
     const settingsPanel = document.getElementById('settings-panel');
     const settingsContent = document.getElementById('settings-content');
     const darkModeToggle = document.getElementById('dark-mode-toggle');
-    const ledIndicatorToggle = document.getElementById('led-indicator-toggle'); // New element
+    const ledIndicatorToggle = document.getElementById('led-indicator-toggle');
     const addSectionForm = document.getElementById('add-section-form');
     const timetableFileInput = document.getElementById('timetable-file');
     const sectionsList = document.getElementById('sections-list');
     const addFriendForm = document.getElementById('add-friend-form');
     const newFriendNameInput = document.getElementById('new-friend-name');
     const friendSectionSelect = document.getElementById('friend-section-select');
+    // Group elements
+    const addGroupForm = document.getElementById('add-group-form');
+    const newGroupNameInput = document.getElementById('new-group-name');
+    const groupFriendsSelectContainer = document.getElementById('group-friends-select-container');
+    const groupsList = document.getElementById('groups-list');
+    // Timeline Modal elements
+    const timelineModal = document.getElementById('timeline-modal');
+    const closeTimelineModalBtn = document.getElementById('close-timeline-modal');
+    const timelineGroupName = document.getElementById('timeline-group-name');
+    const timelineContainer = document.getElementById('timeline-container');
+    // Other elements
     const debugTimeInput = document.getElementById('debug-time-input');
     const resetTimeBtn = document.getElementById('reset-time-btn');
     const debugModeToggle = document.getElementById('debug-mode-toggle');
@@ -412,7 +546,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- CONSTANTS ---
     const DAYS = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
-    // This file acts as a manifest, listing all timetable files.
     const TIMETABLES_MANIFEST_URL = './timetables.json';
 
     // --- LOGGING UTILITY ---
@@ -449,14 +582,16 @@ document.addEventListener('DOMContentLoaded', () => {
                             parsedState.sections[sectionName].highlighted = false;
                         }
                          if (typeof parsedState.sections[sectionName].isLocal === 'undefined') {
-                            // Assume old data is remote unless it's re-added locally
                             parsedState.sections[sectionName].isLocal = false;
                         }
                     }
                     if (!parsedState.removedSections) {
                         parsedState.removedSections = [];
                     }
-                    // Add default for new settings if they don't exist in saved state
+                    // Add groups object if it doesn't exist
+                    if (!parsedState.groups) {
+                        parsedState.groups = {};
+                    }
                     if (!parsedState.settings) parsedState.settings = {};
                     if (typeof parsedState.settings.ledIndicatorEnabled === 'undefined') {
                         parsedState.settings.ledIndicatorEnabled = false; 
@@ -483,7 +618,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const isFirstVisit = !localStorage.getItem('syncUpState');
 
         try {
-            // Fetch the manifest file
             const manifestResponse = await fetch(`${TIMETABLES_MANIFEST_URL}?t=${new Date().getTime()}`);
             if (!manifestResponse.ok) {
                 throw new Error(`HTTP error! status: ${manifestResponse.status}`);
@@ -497,7 +631,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 const oldRemoteSections = Object.keys(state.sections).filter(name => !state.sections[name].isLocal);
 
-                // Fetch all individual timetable files listed in the manifest
                 const timetablePromises = manifest.files.map(file => 
                     fetch(`./TimeTables/${file}?t=${new Date().getTime()}`).then(res => {
                         if (!res.ok) {
@@ -511,7 +644,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 const timetablesData = (await Promise.all(timetablePromises)).filter(Boolean);
                 
                 if (isFirstVisit) {
-                    // First visit logic: just load everything
                     const newSections = {};
                     timetablesData.forEach(timetable => {
                         const sectionName = timetable.timetableInfo?.section;
@@ -521,7 +653,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     state.sections = newSections;
                     welcomeModal.classList.remove('hidden');
                 } else {
-                    // Update logic: preserve data and show changelog
                     const changelog = { added: [], updated: [], removed: [] };
                     const newRemoteTimetables = new Map();
                     
@@ -532,25 +663,21 @@ document.addEventListener('DOMContentLoaded', () => {
                         }
                     });
 
-                    // Process updates and new additions
                     for (const [sectionName, timetable] of newRemoteTimetables.entries()) {
                         if (state.removedSections.includes(sectionName)) {
-                            continue; // Skip sections the user has removed
+                            continue;
                         }
 
                         const existingSection = state.sections[sectionName];
                         if (existingSection) {
-                            // This is an update
                             existingSection.timetable = timetable;
                             changelog.updated.push(sectionName);
                         } else {
-                            // This is a new addition
                             state.sections[sectionName] = { timetable, friends: [], pinned: false, highlighted: false, isLocal: false };
                             changelog.added.push(sectionName);
                         }
                     }
 
-                    // Process removals
                     for (const sectionName of oldRemoteSections) {
                         if (!newRemoteTimetables.has(sectionName)) {
                             delete state.sections[sectionName];
@@ -558,7 +685,6 @@ document.addEventListener('DOMContentLoaded', () => {
                         }
                     }
 
-                    // Show changelog if there are changes
                     if (changelog.added.length > 0 || changelog.updated.length > 0 || changelog.removed.length > 0) {
                         displayChangelog(changelog);
                     }
@@ -578,7 +704,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 welcomeModal.classList.remove('hidden');
             }
         } finally {
-            renderDashboard(calculateAllStatuses());
+            renderDashboard();
             renderSettings();
         }
     };
@@ -652,42 +778,28 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     const renderSettings = () => {
+        // Render Sections
         sectionsList.innerHTML = '';
         Object.keys(state.sections).forEach(name => {
             const section = state.sections[name];
             const sectionDiv = document.createElement('div');
             sectionDiv.className = 'flex justify-between items-center p-2 bg-gray-100 dark:bg-gray-700 rounded-md';
             
-            const pinIcon = section.pinned 
-                ? `<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 16 16" fill="currentColor"><path d="M4.146.146A.5.5 0 0 1 4.5 0h7a.5.5 0 0 1 .5.5c0 .68-.342 1.174-.646 1.479-.126.125-.25.224-.354.298v4.431l.078.048c.203.127.476.314.751.555C12.36 7.775 13 8.527 13 9.5a.5.5 0 0 1-.5.5h-4v4.5c0 .276-.224 1.5-.5 1.5s-.5-1.224-.5-1.5V10h-4a.5.5 0 0 1-.5-.5c0-.973.64-1.725 1.17-2.189A6 6 0 0 1 5 6.708V2.277a3 3 0 0 1-.354-.298C4.342 1.674 4 1.179 4 .5a.5.5 0 0 1 .146-.354m1.58 1.408-.002-.001zm-.002-.001.002.001A.5.5 0 0 1 6 2v5a.5.5 0 0 1-.276.447h-.002l-.012.007-.054.03a5 5 0 0 0-.827.58c-.318.278-.585.596-.725.936h7.792c-.14-.34-.407-.658-.725-.936a5 5 0 0 0-.881-.61l-.012-.006h-.002A.5.5 0 0 1 10 7V2a.5.5 0 0 1 .295-.458 1.8 1.8 0 0 0 .351-.271c.08-.08.155-.17.214-.271H5.14q.091.15.214.271a1.8 1.8 0 0 0 .37.282"/></svg>`
-                : `<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 16 16" stroke="currentColor" stroke-width="1.2"><path d="M4.146.146A.5.5 0 0 1 4.5 0h7a.5.5 0 0 1 .5.5c0 .68-.342 1.174-.646 1.479-.126.125-.25.224-.354.298v4.431l.078.048c.203.127.476.314.751.555C12.36 7.775 13 8.527 13 9.5a.5.5 0 0 1-.5.5h-4v4.5c0 .276-.224 1.5-.5 1.5s-.5-1.224-.5-1.5V10h-4a.5.5 0 0 1-.5-.5c0-.973.64-1.725 1.17-2.189A6 6 0 0 1 5 6.708V2.277a3 3 0 0 1-.354-.298C4.342 1.674 4 1.179 4 .5a.5.5 0 0 1 .146-.354z"/></svg>`;
-            
-            const highlightIcon = section.highlighted
-                ? `<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" /></svg>`
-                : `<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.783-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" /></svg>`;
-            
+            const pinIcon = section.pinned ? `<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 16 16" fill="currentColor"><path d="M4.146.146A.5.5 0 0 1 4.5 0h7a.5.5 0 0 1 .5.5c0 .68-.342 1.174-.646 1.479-.126.125-.25.224-.354.298v4.431l.078.048c.203.127.476.314.751.555C12.36 7.775 13 8.527 13 9.5a.5.5 0 0 1-.5.5h-4v4.5c0 .276-.224 1.5-.5 1.5s-.5-1.224-.5-1.5V10h-4a.5.5 0 0 1-.5-.5c0-.973.64-1.725 1.17-2.189A6 6 0 0 1 5 6.708V2.277a3 3 0 0 1-.354-.298C4.342 1.674 4 1.179 4 .5a.5.5 0 0 1 .146-.354m1.58 1.408-.002-.001zm-.002-.001.002.001A.5.5 0 0 1 6 2v5a.5.5 0 0 1-.276.447h-.002l-.012.007-.054.03a5 5 0 0 0-.827.58c-.318.278-.585.596-.725.936h7.792c-.14-.34-.407-.658-.725-.936a5 5 0 0 0-.881-.61l-.012-.006h-.002A.5.5 0 0 1 10 7V2a.5.5 0 0 1 .295-.458 1.8 1.8 0 0 0 .351-.271c.08-.08.155-.17.214-.271H5.14q.091.15.214.271a1.8 1.8 0 0 0 .37.282"/></svg>` : `<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 16 16" stroke="currentColor" stroke-width="1.2"><path d="M4.146.146A.5.5 0 0 1 4.5 0h7a.5.5 0 0 1 .5.5c0 .68-.342 1.174-.646 1.479-.126.125-.25.224-.354.298v4.431l.078.048c.203.127.476.314.751.555C12.36 7.775 13 8.527 13 9.5a.5.5 0 0 1-.5.5h-4v4.5c0 .276-.224 1.5-.5 1.5s-.5-1.224-.5-1.5V10h-4a.5.5 0 0 1-.5-.5c0-.973.64-1.725 1.17-2.189A6 6 0 0 1 5 6.708V2.277a3 3 0 0 1-.354-.298C4.342 1.674 4 1.179 4 .5a.5.5 0 0 1 .146-.354z"/></svg>`;
+            const highlightIcon = section.highlighted ? `<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" /></svg>` : `<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.783-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" /></svg>`;
             const localIndicator = section.isLocal ? `<span class="text-xs text-gray-400 dark:text-gray-500 ml-2">(Local)</span>` : '';
 
             sectionDiv.innerHTML = `
-                <div>
-                    <span class="font-medium">${name}</span>
-                    ${localIndicator}
-                </div>
+                <div><span class="font-medium">${name}</span>${localIndicator}</div>
                 <div class="flex items-center space-x-2">
-                    <button data-section="${name}" class="highlight-section-btn text-gray-400 hover:text-amber-500 p-1 rounded-full ${section.highlighted ? 'text-amber-400' : ''}">
-                        ${highlightIcon}
-                    </button>
-                    <button data-section="${name}" class="pin-section-btn text-gray-400 hover:text-indigo-500 p-1 rounded-full ${section.pinned ? 'text-indigo-500' : ''}">
-                        ${pinIcon}
-                    </button>
-                    <button data-section="${name}" class="remove-section-btn text-red-500 hover:text-red-700 p-1 rounded-full">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" /></svg>
-                    </button>
-                </div>
-            `;
+                    <button data-section="${name}" class="highlight-section-btn text-gray-400 hover:text-amber-500 p-1 rounded-full ${section.highlighted ? 'text-amber-400' : ''}">${highlightIcon}</button>
+                    <button data-section="${name}" class="pin-section-btn text-gray-400 hover:text-indigo-500 p-1 rounded-full ${section.pinned ? 'text-indigo-500' : ''}">${pinIcon}</button>
+                    <button data-section="${name}" class="remove-section-btn text-red-500 hover:text-red-700 p-1 rounded-full"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" /></svg></button>
+                </div>`;
             sectionsList.appendChild(sectionDiv);
         });
 
+        // Render Friend Select
         friendSectionSelect.innerHTML = '<option value="">Select a section</option>';
         Object.keys(state.sections).forEach(name => {
             const option = document.createElement('option');
@@ -696,11 +808,56 @@ document.addEventListener('DOMContentLoaded', () => {
             friendSectionSelect.appendChild(option);
         });
 
+        // Render Group Friend Selection
+        groupFriendsSelectContainer.innerHTML = '';
+        let totalFriends = 0;
+        Object.entries(state.sections).forEach(([sectionName, sectionData]) => {
+            if (sectionData.friends.length > 0) {
+                totalFriends += sectionData.friends.length;
+                const sectionHeader = document.createElement('p');
+                sectionHeader.className = "text-xs font-bold text-gray-500 dark:text-gray-400 mt-1 first:mt-0";
+                sectionHeader.textContent = sectionName;
+                groupFriendsSelectContainer.appendChild(sectionHeader);
+                sectionData.friends.forEach(friendName => {
+                    const value = `${friendName}|${sectionName}`;
+                    const label = document.createElement('label');
+                    label.className = "flex items-center space-x-2 text-sm p-1 rounded hover:bg-gray-200 dark:hover:bg-gray-600";
+                    label.innerHTML = `<input type="checkbox" name="group-members" value="${value}" class="rounded text-indigo-600 focus:ring-indigo-500 h-4 w-4"><span>${friendName}</span>`;
+                    groupFriendsSelectContainer.appendChild(label);
+                });
+            }
+        });
+        if (totalFriends === 0) {
+            groupFriendsSelectContainer.innerHTML = `<p class="text-xs text-gray-500 dark:text-gray-400">Add some friends first to create a group.</p>`;
+        }
+
+        // Render Groups List
+        groupsList.innerHTML = '';
+        Object.keys(state.groups).forEach(name => {
+            const group = state.groups[name];
+            const groupDiv = document.createElement('div');
+            groupDiv.className = 'flex justify-between items-center p-2 bg-gray-100 dark:bg-gray-700 rounded-md';
+            const pinIcon = group.pinned ? `<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 16 16" fill="currentColor"><path d="M4.146.146A.5.5 0 0 1 4.5 0h7a.5.5 0 0 1 .5.5c0 .68-.342 1.174-.646 1.479-.126.125-.25.224-.354.298v4.431l.078.048c.203.127.476.314.751.555C12.36 7.775 13 8.527 13 9.5a.5.5 0 0 1-.5.5h-4v4.5c0 .276-.224 1.5-.5 1.5s-.5-1.224-.5-1.5V10h-4a.5.5 0 0 1-.5-.5c0-.973.64-1.725 1.17-2.189A6 6 0 0 1 5 6.708V2.277a3 3 0 0 1-.354-.298C4.342 1.674 4 1.179 4 .5a.5.5 0 0 1 .146-.354m1.58 1.408-.002-.001zm-.002-.001.002.001A.5.5 0 0 1 6 2v5a.5.5 0 0 1-.276.447h-.002l-.012.007-.054.03a5 5 0 0 0-.827.58c-.318.278-.585.596-.725.936h7.792c-.14-.34-.407-.658-.725-.936a5 5 0 0 0-.881-.61l-.012-.006h-.002A.5.5 0 0 1 10 7V2a.5.5 0 0 1 .295-.458 1.8 1.8 0 0 0 .351-.271c.08-.08.155-.17.214-.271H5.14q.091.15.214.271a1.8 1.8 0 0 0 .37.282"/></svg>` : `<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 16 16" stroke="currentColor" stroke-width="1.2"><path d="M4.146.146A.5.5 0 0 1 4.5 0h7a.5.5 0 0 1 .5.5c0 .68-.342 1.174-.646 1.479-.126.125-.25.224-.354.298v4.431l.078.048c.203.127.476.314.751.555C12.36 7.775 13 8.527 13 9.5a.5.5 0 0 1-.5.5h-4v4.5c0 .276-.224 1.5-.5 1.5s-.5-1.224-.5-1.5V10h-4a.5.5 0 0 1-.5-.5c0-.973.64-1.725 1.17-2.189A6 6 0 0 1 5 6.708V2.277a3 3 0 0 1-.354-.298C4.342 1.674 4 1.179 4 .5a.5.5 0 0 1 .146-.354z"/></svg>`;
+            const highlightIcon = group.highlighted ? `<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" /></svg>` : `<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.783-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" /></svg>`;
+            groupDiv.innerHTML = `
+                <div><span class="font-medium">${name}</span> <span class="text-xs text-gray-500">(${group.members.length} members)</span></div>
+                <div class="flex items-center space-x-2">
+                    <button data-group="${name}" class="highlight-group-btn text-gray-400 hover:text-amber-500 p-1 rounded-full ${group.highlighted ? 'text-amber-400' : ''}">${highlightIcon}</button>
+                    <button data-group="${name}" class="pin-group-btn text-gray-400 hover:text-indigo-500 p-1 rounded-full ${group.pinned ? 'text-indigo-500' : ''}">${pinIcon}</button>
+                    <button data-group="${name}" class="remove-group-btn text-red-500 hover:text-red-700 p-1 rounded-full"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" /></svg></button>
+                </div>`;
+            groupsList.appendChild(groupDiv);
+        });
+
         debugModeToggle.checked = state.settings.debugMode;
     };
 
     const updateCardHeight = (cardElement) => {
         if (!cardElement) return;
+        if (cardElement.dataset.type === 'group') {
+            cardElement.style.height = `${cardElement.querySelector('.card-normal-view').scrollHeight}px`;
+            return;
+        }
         const state = parseInt(cardElement.dataset.swipeState || '0', 10);
         const views = [
             cardElement.querySelector('.card-normal-view'),
@@ -714,9 +871,9 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    // This function only builds the cards. It's called once or when sections change.
-    const renderDashboard = (statuses) => {
-        if (Object.keys(state.sections).length === 0) {
+    const renderDashboard = () => {
+        const statuses = calculateAllStatusesAndGroups();
+        if (statuses.length === 0) {
             dashboard.innerHTML = '';
             dashboard.classList.add('hidden');
             noSectionsMessage.classList.remove('hidden');
@@ -725,208 +882,178 @@ document.addEventListener('DOMContentLoaded', () => {
         
         dashboard.classList.remove('hidden');
         noSectionsMessage.classList.add('hidden');
-        dashboard.innerHTML = ''; // Clear existing cards before full re-render
+        dashboard.innerHTML = '';
 
         statuses.sort((a, b) => {
-            if (a.isPinned !== b.isPinned) {
-                return b.isPinned - a.isPinned;
-            }
-            if (a.isFree !== b.isFree) {
-                return a.isFree ? -1 : 1;
-            }
-            return a.sectionName.localeCompare(b.sectionName);
+            const getSortOrder = (item) => {
+                if (item.isPinned && item.type === 'group') return 0;
+                if (item.isPinned && item.type === 'section') return 1;
+                if (item.type === 'group') return 2;
+                if (item.type === 'section') return 3;
+                return 4;
+            };
+
+            const orderA = getSortOrder(a);
+            const orderB = getSortOrder(b);
+
+            if (orderA !== orderB) return orderA - orderB;
+            if (a.isFree !== b.isFree) return a.isFree ? -1 : 1;
+            return a.name.localeCompare(b.name);
         });
 
         statuses.forEach((status, index) => {
-            const friendsHtml = state.sections[status.sectionName].friends.map(friend => `
-                <span class="inline-flex items-center bg-gray-200 dark:bg-gray-600 rounded-full px-3 py-1 text-sm font-medium">
-                    ${friend}
-                    <button data-friend="${friend}" data-section="${status.sectionName}" class="remove-friend-btn ml-1.5 -mr-1 p-0.5 rounded-full text-gray-500 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-500">
-                        &times;
-                    </button>
-                </span>
-            `).join(' ');
-
             const cardColor = status.isFree ? 'bg-green-500/20 dark:bg-green-500/10' : 'bg-red-500/20 dark:bg-red-500/10';
             const progressColor = status.isFree ? 'bg-green-500/50' : 'bg-red-500/50';
             const textColor = status.isFree ? 'text-green-800 dark:text-green-200' : 'text-red-800 dark:text-red-200';
             
-            let detailsHtml = ''; // This will be populated by the update function
-            let nextClassDetailsHtml = ''; // Populated on creation
-            let timetableHtml = ''; // Populated on creation
-            let fullTimetableHtml = ''; // Populated on creation
+            let cardHtml = '';
 
-            // Conditionally create the LED indicator HTML based on the setting
-            const ledIndicatorHtml = state.settings.ledIndicatorEnabled
-                ? `<div class="led-indicator led-${status.ledColor}"></div>`
-                : '';
+            if (status.type === 'section') {
+                const friendsHtml = state.sections[status.name].friends.map(friend => `
+                    <span class="inline-flex items-center bg-gray-200 dark:bg-gray-600 rounded-full px-3 py-1 text-sm font-medium">
+                        ${friend}
+                        <button data-friend="${friend}" data-section="${status.name}" class="remove-friend-btn ml-1.5 -mr-1 p-0.5 rounded-full text-gray-500 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-500">&times;</button>
+                    </span>`).join(' ');
+                
+                const ledIndicatorHtml = state.settings.ledIndicatorEnabled ? `<div class="led-indicator led-${status.ledColor}"></div>` : '';
+                
+                const nextClassDetailsHtml = status.nextClassForSwipe ? `<div class="p-5 h-full flex flex-col justify-center"><p class="font-bold text-lg text-gray-800 dark:text-gray-200">Next Up</p><div class="mt-2 text-sm text-gray-700 dark:text-gray-300 space-y-1.5"><p><span class="font-medium text-gray-500 dark:text-gray-400 w-16 inline-block">Time:</span> ${status.nextClassForSwipe.time}</p><p><span class="font-medium text-gray-500 dark:text-gray-400 w-16 inline-block">Subject:</span> ${status.nextClassForSwipe.subject}</p><p><span class="font-medium text-gray-500 dark:text-gray-400 w-16 inline-block">Venue:</span> ${status.nextClassForSwipe.venue}</p><p><span class="font-medium text-gray-500 dark:text-gray-400 w-16 inline-block">Faculty:</span> ${status.nextClassForSwipe.faculty}</p></div></div>` : `<div class="p-5 h-full flex flex-col justify-center items-center text-center"><svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-gray-400 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.293 2.293a1 1 0 010 1.414L11 12l4.293 4.293a1 1 0 01-1.414 1.414L10 13.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 12 4.293 7.707a1 1 0 011.414-1.414L10 10.586 14.293 6.293a1 1 0 011.414 0L18 8.586m-5 5l2.293-2.293a1 1 0 011.414 0L21 15m-4-4l-2.293 2.293a1 1 0 01-1.414 0L9 11" /></svg><h3 class="text-lg font-bold text-gray-700 dark:text-gray-300">All Done!</h3><p class="text-sm text-gray-500">No further classes are scheduled.</p></div>`;
+                const timetableHtml = status.dayScheduleForView && status.dayScheduleForView.length > 0 ? `<div class="p-5 h-full flex flex-col"><p class="font-bold text-lg text-gray-800 dark:text-gray-200 text-center mb-2">Today's Schedule</p><div class="flex-grow overflow-y-auto space-y-1 -mr-2 pr-2">${status.dayScheduleForView.map(slot => `<div class="grid grid-cols-3 gap-2 text-xs py-1.5 px-2 rounded-md ${slot.isCurrent ? 'bg-blue-100 dark:bg-blue-900/50' : ''}"><span class="text-left col-span-1">${slot.time}</span><span class="text-left col-span-2 ${slot.subject ? 'font-semibold' : 'text-gray-400'}">${slot.subject ? `${slot.subject} <span class="font-normal text-gray-500">(${slot.venue})</span>` : 'Free Period'}</span></div>`).join('')}</div></div>` : `<div class="p-5 h-full flex flex-col justify-center items-center text-center"><h3 class="text-lg font-bold text-gray-700 dark:text-gray-300">No Classes Today</h3></div>`;
+                const fullTimetableHtml = status.fullScheduleForView ? `<div class="p-5 h-full flex flex-col"><p class="font-bold text-lg text-gray-800 dark:text-gray-200 text-center mb-2">Full Schedule</p><div class="flex-grow overflow-auto"><div class="grid gap-1" style="grid-template-columns: 50px repeat(${status.fullScheduleForView.headers.length - 1}, 1fr);">${status.fullScheduleForView.headers.map(h => `<div class="text-center font-bold text-xs sticky top-0 bg-gray-100 dark:bg-gray-800 py-1">${h}</div>`).join('')}${status.fullScheduleForView.rows.map(row => `<div class="text-center text-xs py-2">${row.time}</div>` + row.classes.map(c => c.rowSpan === 0 ? '' : `<div class="text-center text-xs p-1 border border-gray-200 dark:border-gray-700 rounded-md flex flex-col justify-center ${c.rowSpan > 1 ? `row-span-${c.rowSpan}` : ''} ${c.subject ? '' : 'opacity-0'}"><span class="font-semibold truncate">${c.subject || ''}</span><span class="text-gray-500 truncate">${c.venue || ''}</span></div>`).join('')).join('')}</div></div></div>` : `<div class="p-5 text-center">No schedule data.</div>`;
 
-            // Since this is a full render, we can build all the views
-            // Next Class View
-            if (status.nextClassForSwipe) {
-                const nc = status.nextClassForSwipe;
-                nextClassDetailsHtml = `<div class="p-5 h-full flex flex-col justify-center"><p class="font-bold text-lg text-gray-800 dark:text-gray-200">Next Up</p><div class="mt-2 text-sm text-gray-700 dark:text-gray-300 space-y-1.5"><p><span class="font-medium text-gray-500 dark:text-gray-400 w-16 inline-block">Time:</span> ${nc.time}</p><p><span class="font-medium text-gray-500 dark:text-gray-400 w-16 inline-block">Subject:</span> ${nc.subject}</p><p><span class="font-medium text-gray-500 dark:text-gray-400 w-16 inline-block">Venue:</span> ${nc.venue}</p><p><span class="font-medium text-gray-500 dark:text-gray-400 w-16 inline-block">Faculty:</span> ${nc.faculty}</p></div></div>`;
-            } else {
-                nextClassDetailsHtml = `<div class="p-5 h-full flex flex-col justify-center items-center text-center"><svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-gray-400 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.293 2.293a1 1 0 010 1.414L11 12l4.293 4.293a1 1 0 01-1.414 1.414L10 13.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 12 4.293 7.707a1 1 0 011.414-1.414L10 10.586 14.293 6.293a1 1 0 011.414 0L18 8.586m-5 5l2.293-2.293a1 1 0 011.414 0L21 15m-4-4l-2.293 2.293a1 1 0 01-1.414 0L9 11" /></svg><h3 class="text-lg font-bold text-gray-700 dark:text-gray-300">All Done!</h3><p class="text-sm text-gray-500">No further classes are scheduled.</p></div>`;
-            }
+                cardHtml = `
+                <div class="card-inner-wrapper">
+                    <div class="card-normal-view">
+                        <div class="progress-bar-bg ${progressColor}" style="width: ${status.progress}%;"></div>
+                        <div class="relative z-10 p-5">
+                            <div class="flex justify-between items-start">
+                                <h2 class="text-2xl font-bold text-gray-800 dark:text-white">${status.name}</h2>
+                                <div class="flex items-center">
+                                    <div class="main-status-text text-right ${textColor} font-bold text-lg">${status.isFree ? 'FREE' : 'IN CLASS'}</div>
+                                    ${ledIndicatorHtml}
+                                </div>
+                            </div>
+                            <div class="details-container mt-4"></div>
+                            <div class="friends-container mt-4 flex flex-wrap gap-2">${friendsHtml}</div>
+                        </div>
+                        <div class="swipe-indicator text-gray-500 dark:text-gray-400">
+                            <div class="swipe-indicator-dot"></div><div class="swipe-indicator-dot"></div><div class="swipe-indicator-dot"></div><div class="swipe-indicator-dot"></div>
+                        </div>
+                    </div>
+                    <div class="card-next-class-view bg-gray-50 dark:bg-gray-800/50">${nextClassDetailsHtml}</div>
+                    <div class="card-timetable-view bg-gray-50 dark:bg-gray-800/50">${timetableHtml}</div>
+                    <div class="card-full-timetable-view bg-gray-50 dark:bg-gray-800/50">${fullTimetableHtml}</div>
+                </div>`;
+            } else { // status.type === 'group'
+                const membersHtml = state.groups[status.name].members.map(member => `
+                    <span class="inline-flex items-center bg-gray-200 dark:bg-gray-600 rounded-full px-3 py-1 text-sm font-medium">
+                        ${member.name} <span class="text-xs text-gray-500 dark:text-gray-400 ml-1.5">(${member.section})</span>
+                    </span>`).join(' ');
 
-            // Today's Schedule View
-            if (status.dayScheduleForView && status.dayScheduleForView.length > 0) {
-                const scheduleRows = status.dayScheduleForView.map(slot => `<div class="grid grid-cols-3 gap-2 text-xs py-1.5 px-2 rounded-md ${slot.isCurrent ? 'bg-blue-100 dark:bg-blue-900/50' : ''}"><span class="text-left col-span-1">${slot.time}</span><span class="text-left col-span-2 ${slot.subject ? 'font-semibold' : 'text-gray-400'}">${slot.subject ? `${slot.subject} <span class="font-normal text-gray-500">(${slot.venue})</span>` : 'Free Period'}</span></div>`).join('');
-                timetableHtml = `<div class="p-5 h-full flex flex-col"><p class="font-bold text-lg text-gray-800 dark:text-gray-200 text-center mb-2">Today's Schedule</p><div class="flex-grow overflow-y-auto space-y-1 -mr-2 pr-2">${scheduleRows}</div></div>`;
-            } else {
-                timetableHtml = `<div class="p-5 h-full flex flex-col justify-center items-center text-center"><h3 class="text-lg font-bold text-gray-700 dark:text-gray-300">No Classes Today</h3></div>`;
-            }
-
-            // Full Schedule View
-            if (status.fullScheduleForView) {
-                const { headers, rows } = status.fullScheduleForView;
-                const headerHtml = headers.map(h => `<div class="text-center font-bold text-xs sticky top-0 bg-gray-100 dark:bg-gray-800 py-1">${h}</div>`).join('');
-                const bodyHtml = rows.map(row => {
-                    const timeCell = `<div class="text-center text-xs py-2">${row.time}</div>`;
-                    const classCells = row.classes.map(c => c.rowSpan === 0 ? '' : `<div class="text-center text-xs p-1 border border-gray-200 dark:border-gray-700 rounded-md flex flex-col justify-center ${c.rowSpan > 1 ? `row-span-${c.rowSpan}` : ''} ${c.subject ? '' : 'opacity-0'}"><span class="font-semibold truncate">${c.subject || ''}</span><span class="text-gray-500 truncate">${c.venue || ''}</span></div>`).join('');
-                    return timeCell + classCells;
-                }).join('');
-                fullTimetableHtml = `<div class="p-5 h-full flex flex-col"><p class="font-bold text-lg text-gray-800 dark:text-gray-200 text-center mb-2">Full Schedule</p><div class="flex-grow overflow-auto"><div class="grid gap-1" style="grid-template-columns: 50px repeat(${headers.length - 1}, 1fr);">${headerHtml}${bodyHtml}</div></div></div>`;
-            } else {
-                fullTimetableHtml = `<div class="p-5 text-center">No schedule data.</div>`;
+                cardHtml = `
+                <div class="card-normal-view">
+                    <div class="relative z-10 p-5">
+                        <div class="flex justify-between items-start">
+                            <h2 class="text-2xl font-bold text-gray-800 dark:text-white flex items-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 opacity-70" viewBox="0 0 20 20" fill="currentColor"><path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3zM6 8a2 2 0 11-4 0 2 2 0 014 0zM16 18v-3a5.972 5.972 0 00-.75-2.906A3.005 3.005 0 0119 15v3h-3zM4.75 12.094A5.973 5.973 0 004 15v3H1v-3a3 3 0 013.75-2.906z" /></svg>
+                                ${status.name}
+                            </h2>
+                            <div class="main-status-text text-right ${textColor} font-bold text-lg">${status.isFree ? 'ALL FREE' : 'BUSY'}</div>
+                        </div>
+                        <div class="details-container mt-4"></div>
+                        <div class="friends-container mt-4 flex flex-wrap gap-2">${membersHtml}</div>
+                         <div class="mt-4">
+                            <button data-group-name="${status.name}" class="view-timeline-btn w-full bg-purple-600 text-white py-2 rounded-md hover:bg-purple-700 transition-colors font-semibold">View Timeline</button>
+                        </div>
+                    </div>
+                </div>`;
             }
 
             const card = document.createElement('div');
             card.className = `relative rounded-xl shadow-md overflow-hidden z-0 card-fade-in ${cardColor} ${status.isPinned ? 'is-pinned' : ''} ${status.isHighlighted ? 'is-highlighted' : ''}`;
-            card.dataset.section = status.sectionName;
+            card.dataset.name = status.name;
+            card.dataset.type = status.type;
             card.dataset.swipeState = '0';
             card.dataset.isFree = status.isFree;
             card.style.order = index;
-
-            card.innerHTML = `
-            <div class="card-inner-wrapper">
-                <div class="card-normal-view">
-                    <div class="progress-bar-bg ${progressColor}" style="width: ${status.progress}%;"></div>
-                    <div class="relative z-10 p-5">
-                        <div class="flex justify-between items-start">
-                            <h2 class="text-2xl font-bold text-gray-800 dark:text-white">${status.sectionName}</h2>
-                            <div class="flex items-center">
-                                <div class="main-status-text text-right ${textColor} font-bold text-lg">${status.isFree ? 'FREE' : 'IN CLASS'}</div>
-                                ${ledIndicatorHtml}
-                            </div>
-                        </div>
-                        <div class="details-container mt-4">
-                            ${detailsHtml}
-                        </div>
-                        <div class="friends-container mt-4 flex flex-wrap gap-2">
-                            ${friendsHtml}
-                        </div>
-                    </div>
-                    <div class="swipe-indicator text-gray-500 dark:text-gray-400">
-                        <div class="swipe-indicator-dot"></div><div class="swipe-indicator-dot"></div><div class="swipe-indicator-dot"></div><div class="swipe-indicator-dot"></div>
-                    </div>
-                </div>
-                <div class="card-next-class-view bg-gray-50 dark:bg-gray-800/50">${nextClassDetailsHtml}</div>
-                <div class="card-timetable-view bg-gray-50 dark:bg-gray-800/50">${timetableHtml}</div>
-                <div class="card-full-timetable-view bg-gray-50 dark:bg-gray-800/50">${fullTimetableHtml}</div>
-            </div>`;
+            card.innerHTML = cardHtml;
             
             dashboard.appendChild(card);
-            setTimeout(() => updateCardHeight(card), 50); // Small delay to ensure DOM is ready
+            setTimeout(() => updateCardHeight(card), 50);
         });
-        updateDashboardStatuses(); // Run once to populate details
+        updateDashboardStatuses();
     };
     
-    // This function ONLY updates live data, it does not rebuild the card structure.
     const updateDashboardStatuses = () => {
-        const statuses = calculateAllStatuses();
+        const statuses = calculateAllStatusesAndGroups();
         
         statuses.forEach(status => {
-            const card = dashboard.querySelector(`[data-section="${status.sectionName}"]`);
+            const card = dashboard.querySelector(`[data-name="${status.name}"][data-type="${status.type}"]`);
             if (!card) return;
 
-            // Update Progress Bar
-            const progressBar = card.querySelector('.progress-bar-bg');
-            if (progressBar) progressBar.style.width = `${status.progress}%`;
-
-            // Update Colors and Main Status Text if they have changed
             const currentIsFree = card.dataset.isFree === 'true';
             if (currentIsFree !== status.isFree) {
                 const cardColor = status.isFree ? 'bg-green-500/20 dark:bg-green-500/10' : 'bg-red-500/20 dark:bg-red-500/10';
-                const progressColor = status.isFree ? 'bg-green-500/50' : 'bg-red-500/50';
                 const textColor = status.isFree ? 'text-green-800 dark:text-green-200' : 'text-red-800 dark:text-red-200';
                 
                 card.classList.remove('bg-green-500/20', 'dark:bg-green-500/10', 'bg-red-500/20', 'dark:bg-red-500/10');
                 card.classList.add(...cardColor.split(' '));
-                if(progressBar) {
-                    progressBar.classList.remove('bg-green-500/50', 'bg-red-500/50');
-                    progressBar.classList.add(progressColor);
-                }
+                
                 const statusTextElement = card.querySelector('.main-status-text');
                 if(statusTextElement) {
-                    statusTextElement.textContent = status.isFree ? 'FREE' : 'IN CLASS';
+                    let text = '...';
+                    if (status.type === 'section') text = status.isFree ? 'FREE' : 'IN CLASS';
+                    else if (status.type === 'group') text = status.isFree ? 'ALL FREE' : 'BUSY';
+                    statusTextElement.textContent = text;
                     statusTextElement.className = `main-status-text text-right font-bold text-lg ${textColor}`;
                 }
                 card.dataset.isFree = status.isFree;
             }
 
-            // Update LED indicator color if it's enabled and exists
-            const ledIndicator = card.querySelector('.led-indicator');
-            if (ledIndicator) {
-                ledIndicator.classList.remove('led-green', 'led-red');
-                ledIndicator.classList.add(`led-${status.ledColor}`);
-            }
-
-            // Re-generate and update only the details HTML block
+            let detailsHtml = '';
             const headerColor = status.isFree ? 'text-green-600 dark:text-green-400' : 'text-red-500 dark:text-red-400';
             const detailsTextColor = 'text-gray-700 dark:text-gray-300';
-            let detailsHtml;
-            if (status.isFree) {
-                detailsHtml = `<p class="font-semibold text-lg ${headerColor}">Free until ${status.nextClassTime}</p><div class="mt-2 text-sm ${detailsTextColor}"><p><span class="font-medium">Next:</span> ${status.nextClassSubject}</p><p><span class="font-medium">At:</span> ${status.nextClassVenue} <span class="font-medium">with</span> ${status.nextClassFaculty}</p></div>`;
-            } else {
-                let freeAtHtml = '';
-                if (status.nextFreeTime) {
-                     freeAtHtml = `<p class="mt-1 opacity-80"><span class="font-medium">${status.freeUntilTime.includes('day') || status.freeUntilTime.includes('while') ? 'Free from:' : 'Free at:'}</span> ${status.nextFreeTime} ${status.freeUntilTime.includes('day') || status.freeUntilTime.includes('while') ? 'until' : 'till'} ${status.freeUntilTime}</p>`;
+
+            if (status.type === 'section') {
+                const progressBar = card.querySelector('.progress-bar-bg');
+                if (progressBar) progressBar.style.width = `${status.progress}%`;
+                const ledIndicator = card.querySelector('.led-indicator');
+                if (ledIndicator) {
+                    ledIndicator.classList.remove('led-green', 'led-red');
+                    ledIndicator.classList.add(`led-${status.ledColor}`);
                 }
-                detailsHtml = `<p class="font-semibold text-lg ${headerColor}">In class until ${status.currentClassEnd}</p><div class="mt-2 text-sm ${detailsTextColor}"><p><span class="font-medium">Subject:</span> ${status.currentClassSubject}</p><p><span class="font-medium">Venue:</span> ${status.currentClassVenue}</p><p><span class="font-medium">Faculty:</span> ${status.currentClassFaculty}</p>${freeAtHtml}</div>`;
+
+                if (status.isFree) {
+                    detailsHtml = `<p class="font-semibold text-lg ${headerColor}">Free until ${status.nextClassTime}</p><div class="mt-2 text-sm ${detailsTextColor}"><p><span class="font-medium">Next:</span> ${status.nextClassSubject}</p><p><span class="font-medium">At:</span> ${status.nextClassVenue} <span class="font-medium">with</span> ${status.nextClassFaculty}</p></div>`;
+                } else {
+                    let freeAtHtml = status.nextFreeTime ? `<p class="mt-1 opacity-80"><span class="font-medium">${status.freeUntilTime.includes('day') || status.freeUntilTime.includes('while') ? 'Free from:' : 'Free at:'}</span> ${status.nextFreeTime} ${status.freeUntilTime.includes('day') || status.freeUntilTime.includes('while') ? 'until' : 'till'} ${status.freeUntilTime}</p>` : '';
+                    detailsHtml = `<p class="font-semibold text-lg ${headerColor}">In class until ${status.currentClassEnd}</p><div class="mt-2 text-sm ${detailsTextColor}"><p><span class="font-medium">Subject:</span> ${status.currentClassSubject}</p><p><span class="font-medium">Venue:</span> ${status.currentClassVenue}</p><p><span class="font-medium">Faculty:</span> ${status.currentClassFaculty}</p>${freeAtHtml}</div>`;
+                }
+
+                const timetableContainer = card.querySelector('.card-timetable-view');
+                if (timetableContainer) {
+                    let newTimetableHtml = status.dayScheduleForView && status.dayScheduleForView.length > 0 ? `<div class="p-5 h-full flex flex-col"><p class="font-bold text-lg text-gray-800 dark:text-gray-200 text-center mb-2">Today's Schedule</p><div class="flex-grow overflow-y-auto space-y-1 -mr-2 pr-2">${status.dayScheduleForView.map(slot => `<div class="grid grid-cols-3 gap-2 text-xs py-1.5 px-2 rounded-md ${slot.isCurrent ? 'bg-blue-100 dark:bg-blue-900/50' : ''}"><span class="text-left col-span-1">${slot.time}</span><span class="text-left col-span-2 ${slot.subject ? 'font-semibold' : 'text-gray-400'}">${slot.subject ? `${slot.subject} <span class="font-normal text-gray-500">(${slot.venue})</span>` : 'Free Period'}</span></div>`).join('')}</div></div>` : `<div class="p-5 h-full flex flex-col justify-center items-center text-center"><h3 class="text-lg font-bold text-gray-700 dark:text-gray-300">No Classes Today</h3></div>`;
+                    if (timetableContainer.innerHTML !== newTimetableHtml) timetableContainer.innerHTML = newTimetableHtml;
+                }
+                
+                const nextClassContainer = card.querySelector('.card-next-class-view');
+                if (nextClassContainer) {
+                    let newNextClassHtml = status.nextClassForSwipe ? `<div class="p-5 h-full flex flex-col justify-center"><p class="font-bold text-lg text-gray-800 dark:text-gray-200">Next Up</p><div class="mt-2 text-sm text-gray-700 dark:text-gray-300 space-y-1.5"><p><span class="font-medium text-gray-500 dark:text-gray-400 w-16 inline-block">Time:</span> ${status.nextClassForSwipe.time}</p><p><span class="font-medium text-gray-500 dark:text-gray-400 w-16 inline-block">Subject:</span> ${status.nextClassForSwipe.subject}</p><p><span class="font-medium text-gray-500 dark:text-gray-400 w-16 inline-block">Venue:</span> ${status.nextClassForSwipe.venue}</p><p><span class="font-medium text-gray-500 dark:text-gray-400 w-16 inline-block">Faculty:</span> ${status.nextClassForSwipe.faculty}</p></div></div>` : `<div class="p-5 h-full flex flex-col justify-center items-center text-center"><svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-gray-400 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.293 2.293a1 1 0 010 1.414L11 12l4.293 4.293a1 1 0 01-1.414 1.414L10 13.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 12 4.293 7.707a1 1 0 011.414-1.414L10 10.586 14.293 6.293a1 1 0 011.414 0L18 8.586m-5 5l2.293-2.293a1 1 0 011.414 0L21 15m-4-4l-2.293 2.293a1 1 0 01-1.414 0L9 11" /></svg><h3 class="text-lg font-bold text-gray-700 dark:text-gray-300">All Done!</h3><p class="text-sm text-gray-500">No further classes are scheduled.</p></div>`;
+                    if (nextClassContainer.innerHTML !== newNextClassHtml) nextClassContainer.innerHTML = newNextClassHtml;
+                }
+            } else { // status.type === 'group'
+                 if (status.isFree) {
+                    detailsHtml = `<p class="font-semibold text-lg ${headerColor}">Everyone is free until ${status.freeUntil}</p><p class="text-sm ${detailsTextColor} mt-2">${status.nextUp ? `Next up is ${status.nextUp.name} at ${status.nextUp.time} for ${status.nextUp.subject}.` : 'No more classes scheduled for anyone.'}</p>`;
+                } else {
+                    const busyList = status.busyMembers.map(m => `<li class="text-sm">${m.name} is busy until ${m.until} (${m.subject})</li>`).join('');
+                    detailsHtml = `<p class="font-semibold text-lg ${headerColor}">Some members are busy</p><ul class="list-disc list-inside mt-2 ${detailsTextColor}">${busyList}</ul>`;
+                }
             }
+            
             const detailsContainer = card.querySelector('.details-container');
             if (detailsContainer && detailsContainer.innerHTML !== detailsHtml) {
                  detailsContainer.innerHTML = detailsHtml;
             }
-
-            // *** FIX: Update "Today's Schedule" view every second ***
-            const timetableContainer = card.querySelector('.card-timetable-view');
-            if (timetableContainer) {
-                let newTimetableHtml;
-                if (status.dayScheduleForView && status.dayScheduleForView.length > 0) {
-                    const scheduleRows = status.dayScheduleForView.map(slot => `<div class="grid grid-cols-3 gap-2 text-xs py-1.5 px-2 rounded-md ${slot.isCurrent ? 'bg-blue-100 dark:bg-blue-900/50' : ''}"><span class="text-left col-span-1">${slot.time}</span><span class="text-left col-span-2 ${slot.subject ? 'font-semibold' : 'text-gray-400'}">${slot.subject ? `${slot.subject} <span class="font-normal text-gray-500">(${slot.venue})</span>` : 'Free Period'}</span></div>`).join('');
-                    newTimetableHtml = `<div class="p-5 h-full flex flex-col"><p class="font-bold text-lg text-gray-800 dark:text-gray-200 text-center mb-2">Today's Schedule</p><div class="flex-grow overflow-y-auto space-y-1 -mr-2 pr-2">${scheduleRows}</div></div>`;
-                } else {
-                    newTimetableHtml = `<div class="p-5 h-full flex flex-col justify-center items-center text-center"><h3 class="text-lg font-bold text-gray-700 dark:text-gray-300">No Classes Today</h3></div>`;
-                }
-                // Only update the DOM if the content has actually changed.
-                if (timetableContainer.innerHTML !== newTimetableHtml) {
-                    timetableContainer.innerHTML = newTimetableHtml;
-                }
-            }
-            
-            // =================================================================
-            // === START: FIX FOR "NEXT UP" VIEW not updating in real-time ===
-            // =================================================================
-            const nextClassContainer = card.querySelector('.card-next-class-view');
-            if (nextClassContainer) {
-                let newNextClassHtml;
-                if (status.nextClassForSwipe) {
-                    const nc = status.nextClassForSwipe;
-                    newNextClassHtml = `<div class="p-5 h-full flex flex-col justify-center"><p class="font-bold text-lg text-gray-800 dark:text-gray-200">Next Up</p><div class="mt-2 text-sm text-gray-700 dark:text-gray-300 space-y-1.5"><p><span class="font-medium text-gray-500 dark:text-gray-400 w-16 inline-block">Time:</span> ${nc.time}</p><p><span class="font-medium text-gray-500 dark:text-gray-400 w-16 inline-block">Subject:</span> ${nc.subject}</p><p><span class="font-medium text-gray-500 dark:text-gray-400 w-16 inline-block">Venue:</span> ${nc.venue}</p><p><span class="font-medium text-gray-500 dark:text-gray-400 w-16 inline-block">Faculty:</span> ${nc.faculty}</p></div></div>`;
-                } else {
-                    newNextClassHtml = `<div class="p-5 h-full flex flex-col justify-center items-center text-center"><svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-gray-400 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.293 2.293a1 1 0 010 1.414L11 12l4.293 4.293a1 1 0 01-1.414 1.414L10 13.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 12 4.293 7.707a1 1 0 011.414-1.414L10 10.586 14.293 6.293a1 1 0 011.414 0L18 8.586m-5 5l2.293-2.293a1 1 0 011.414 0L21 15m-4-4l-2.293 2.293a1 1 0 01-1.414 0L9 11" /></svg><h3 class="text-lg font-bold text-gray-700 dark:text-gray-300">All Done!</h3><p class="text-sm text-gray-500">No further classes are scheduled.</p></div>`;
-                }
-                // Only update the DOM if the content has actually changed.
-                if (nextClassContainer.innerHTML !== newNextClassHtml) {
-                    nextClassContainer.innerHTML = newNextClassHtml;
-                }
-            }
-            // ===============================================================
-            // === END: FIX FOR "NEXT UP" VIEW                             ===
-            // ===============================================================
         });
     };
 
@@ -1054,69 +1181,35 @@ document.addEventListener('DOMContentLoaded', () => {
         return lastClassEndTime;
     };
 
-    const calculateAllStatuses = () => {
+    const calculateAllStatusesAndGroups = () => {
         const now = getCurrentTime();
-        return Object.keys(state.sections).map(sectionName => {
+        
+        // 1. Calculate all individual section statuses first
+        const sectionStatuses = Object.keys(state.sections).map(sectionName => {
             const { timetable, pinned, highlighted } = state.sections[sectionName];
+            const baseStatus = { type: 'section', name: sectionName, isPinned: pinned, isHighlighted: highlighted };
+
             if (!timetable || !timetable.schedule) {
-                logger(`Invalid timetable for ${sectionName}`);
-                return { sectionName, isFree: true, progress: 0, error: 'Invalid Timetable', isPinned: pinned, isHighlighted: highlighted, ledColor: 'red' };
+                return { ...baseStatus, isFree: true, progress: 0, error: 'Invalid Timetable', ledColor: 'red' };
             }
+            
             const currentClass = getClassAtTime(timetable, now);
             const absoluteNextClass = getNextClass(timetable, now);
 
-            // --- START: LED INDICATOR LOGIC ---
-            let hasClassesRemainingToday = false;
-            if (absoluteNextClass) {
-                const nextClassDate = absoluteNextClass.startTime;
-                // Check if the next class is on the same calendar day
-                if (nextClassDate.getDate() === now.getDate() &&
-                    nextClassDate.getMonth() === now.getMonth() &&
-                    nextClassDate.getFullYear() === now.getFullYear()) {
-                    hasClassesRemainingToday = true;
-                }
-            }
-            // Green light only if they are not in class AND have no more classes today.
-            // Otherwise, it's red.
+            let hasClassesRemainingToday = absoluteNextClass && absoluteNextClass.startTime.getDate() === now.getDate();
             const isDoneForTheDay = !currentClass && !hasClassesRemainingToday;
             const ledColor = isDoneForTheDay ? 'green' : 'red';
-            // --- END: LED INDICATOR LOGIC ---
 
-            let nextClassForSwipeData = null;
-            if (absoluteNextClass) {
-                nextClassForSwipeData = {
-                    time: formatTimeWithDay(absoluteNextClass.startTime),
-                    subject: absoluteNextClass.subject,
-                    venue: absoluteNextClass.venue || 'N/A',
-                    faculty: absoluteNextClass.faculty || 'N/A'
-                };
-            }
+            let nextClassForSwipeData = absoluteNextClass ? { time: formatTimeWithDay(absoluteNextClass.startTime), subject: absoluteNextClass.subject, venue: absoluteNextClass.venue || 'N/A', faculty: absoluteNextClass.faculty || 'N/A' } : null;
 
             let dayScheduleForView = null;
             const todaySchedule = getScheduleForDay(timetable, now);
             if (todaySchedule) {
                 dayScheduleForView = timetable.timeSlots.map(slot => {
-                    let classForThisSlot = null;
-                    for (const classInfo of todaySchedule.classes) {
-                        if (!classInfo.subject) continue;
-                        const startLecture = classInfo.lecture;
-                        const endLecture = startLecture + (classInfo.span || 1) - 1;
-                        if (slot.lecture >= startLecture && slot.lecture <= endLecture) {
-                            classForThisSlot = classInfo;
-                            break;
-                        }
-                    }
-                    
+                    let classForThisSlot = todaySchedule.classes.find(c => c.subject && slot.lecture >= c.lecture && slot.lecture < c.lecture + (c.span || 1));
                     const startTime = parseTime(slot.time.split('-')[0], now);
                     const endTime = parseTime(slot.time.split('-')[1], now);
-                    const isCurrent = now >= startTime && now < endTime && classForThisSlot;
-
-                    return {
-                        time: slot.time,
-                        subject: classForThisSlot ? classForThisSlot.subject : null,
-                        venue: classForThisSlot ? classForThisSlot.venue || '' : '',
-                        isCurrent: isCurrent
-                    };
+                    return { time: slot.time, subject: classForThisSlot?.subject, venue: classForThisSlot?.venue || '', isCurrent: now >= startTime && now < endTime && classForThisSlot };
                 });
             }
 
@@ -1125,26 +1218,15 @@ document.addEventListener('DOMContentLoaded', () => {
                 const weekDays = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
                 fullScheduleForView = {
                     headers: ['Time', ...weekDays.map(d => d.slice(0,3))],
-                    rows: timetable.timeSlots.map(slot => {
-                        const classData = weekDays.map(dayName => {
-                            const daySchedule = timetable.schedule.find(s => s.day.toLowerCase() === dayName.toLowerCase());
-                            if (!daySchedule) return { subject: null };
-
-                            for (const classInfo of daySchedule.classes) {
-                                const startLecture = classInfo.lecture;
-                                const endLecture = startLecture + (classInfo.span || 1) - 1;
-                                if (slot.lecture >= startLecture && slot.lecture <= endLecture) {
-                                    return {
-                                        subject: classInfo.subject,
-                                        venue: classInfo.venue,
-                                        rowSpan: slot.lecture === startLecture ? (classInfo.span || 1) : 0,
-                                    };
-                                }
-                            }
-                            return { subject: null };
-                        });
-                        return { time: slot.time, classes: classData };
-                    })
+                    rows: timetable.timeSlots.map(slot => ({
+                        time: slot.time,
+                        classes: weekDays.map(dayName => {
+                            const daySch = timetable.schedule.find(s => s.day.toLowerCase() === dayName.toLowerCase());
+                            if (!daySch) return { subject: null };
+                            const classInfo = daySch.classes.find(c => slot.lecture >= c.lecture && slot.lecture < c.lecture + (c.span || 1));
+                            return { subject: classInfo?.subject, venue: classInfo?.venue, rowSpan: classInfo && slot.lecture === classInfo.lecture ? (classInfo.span || 1) : 0 };
+                        })
+                    }))
                 };
             }
             
@@ -1155,13 +1237,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 let freeUntilInfo = 'a long while';
 
                 if (nextClassAfterBusy) {
-                    const startOfFreePeriod = busyPeriodEndTime;
-                    const endOfFreePeriod = nextClassAfterBusy.startTime;
-                    if (startOfFreePeriod.getDate() !== endOfFreePeriod.getDate()) {
-                        freeUntilInfo = `the next day (${DAYS[endOfFreePeriod.getDay()]})`;
-                    } else {
-                        freeUntilInfo = formatTime(endOfFreePeriod);
-                    }
+                    freeUntilInfo = busyPeriodEndTime.getDate() !== nextClassAfterBusy.startTime.getDate() ? `the next day (${DAYS[nextClassAfterBusy.startTime.getDay()]})` : formatTime(nextClassAfterBusy.startTime);
                 }
                 
                 const totalDuration = busyPeriodEndTime - currentClass.startTime;
@@ -1169,7 +1245,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const progress = totalDuration > 0 ? Math.min(100, (elapsed / totalDuration) * 100) : 0;
 
                 return {
-                    sectionName, isFree: false, progress, isPinned: pinned, isHighlighted: highlighted, ledColor,
+                    ...baseStatus, isFree: false, progress, ledColor,
                     currentClassSubject: currentClass.subject,
                     currentClassVenue: currentClass.venue || 'N/A',
                     currentClassFaculty: currentClass.faculty || 'N/A',
@@ -1177,69 +1253,92 @@ document.addEventListener('DOMContentLoaded', () => {
                     nextFreeTime: nextFree ? formatTimeWithDay(nextFree) : null,
                     freeUntilTime: freeUntilInfo,
                     nextClassForSwipe: nextClassForSwipeData,
-                    dayScheduleForView: dayScheduleForView,
-                    fullScheduleForView: fullScheduleForView
+                    dayScheduleForView, fullScheduleForView
                 };
             } else {
-                const nextClass = getNextClass(timetable, now);
-                if (nextClass) {
+                if (absoluteNextClass) {
                     const daySchedule = getScheduleForDay(timetable, now);
-                    const lastClassOfTheDay = daySchedule ? [...daySchedule.classes].reverse().find(c => c.subject) : null;
+                    const lastClass = daySchedule ? [...daySchedule.classes].filter(c => c.subject).pop() : null;
                     let freePeriodStart;
-                    if (lastClassOfTheDay) {
-                         const lastSlot = timetable.timeSlots.find(ts => ts.lecture === lastClassOfTheDay.lecture);
-                         const [, lastEndTimeStr] = lastSlot.time.split('-');
-                         const lastEndTime = parseTime(lastEndTimeStr, now);
-                         if (now > lastEndTime) {
-                             freePeriodStart = lastEndTime;
-                         } else {
-                            const reversedClasses = [...daySchedule.classes].reverse();
-                            const prevClassInfo = reversedClasses.find(c => {
-                                if(!c.subject) return false;
-                                const slot = timetable.timeSlots.find(ts => ts.lecture === c.lecture);
-                                const [, endTimeStr] = slot.time.split('-');
-                                return parseTime(endTimeStr, now) <= now;
-                            });
-                            if(prevClassInfo) {
-                                const prevSlot = timetable.timeSlots.find(ts => ts.lecture === prevClassInfo.lecture);
-                                const [, prevEndTimeStr] = prevSlot.time.split('-');
-                                freePeriodStart = parseTime(prevEndTimeStr, now);
-                            } else {
-                                freePeriodStart = new Date(now);
-                                freePeriodStart.setHours(0,0,0,0);
-                            }
-                         }
+                    if (lastClass) {
+                         const lastSlot = timetable.timeSlots.find(ts => ts.lecture === lastClass.lecture);
+                         const lastEndTime = parseTime(lastSlot.time.split('-')[1], now);
+                         freePeriodStart = now > lastEndTime ? lastEndTime : (parseTime(timetable.timeSlots[0].time.split('-')[0], now));
                     } else {
                          freePeriodStart = new Date(now);
                          freePeriodStart.setHours(0,0,0,0);
                     }
-                    const totalDuration = nextClass.startTime - freePeriodStart;
+                    const totalDuration = absoluteNextClass.startTime - freePeriodStart;
                     const elapsed = now - freePeriodStart;
                     const progress = totalDuration > 0 ? Math.min(100, (elapsed / totalDuration) * 100) : 0;
                     return {
-                        sectionName, isFree: true, progress, isPinned: pinned, isHighlighted: highlighted, ledColor,
-                        nextClassTime: formatTimeWithDay(nextClass.startTime),
-                        nextClassSubject: nextClass.subject,
-                        nextClassVenue: nextClass.venue || 'N/A',
-                        nextClassFaculty: nextClass.faculty || 'N/A',
+                        ...baseStatus, isFree: true, progress, ledColor,
+                        nextClassTime: formatTimeWithDay(absoluteNextClass.startTime),
+                        nextClassSubject: absoluteNextClass.subject,
+                        nextClassVenue: absoluteNextClass.venue || 'N/A',
+                        nextClassFaculty: absoluteNextClass.faculty || 'N/A',
                         nextClassForSwipe: nextClassForSwipeData,
-                        dayScheduleForView: dayScheduleForView,
-                        fullScheduleForView: fullScheduleForView
+                        dayScheduleForView, fullScheduleForView
                     };
                 } else {
                     return {
-                        sectionName, isFree: true, progress: 100, isPinned: pinned, isHighlighted: highlighted, ledColor,
-                        nextClassTime: 'a long while',
-                        nextClassSubject: 'Nothing scheduled',
-                        nextClassVenue: '-',
-                        nextClassFaculty: '-',
+                        ...baseStatus, isFree: true, progress: 100, ledColor,
+                        nextClassTime: 'a long while', nextClassSubject: 'Nothing scheduled',
+                        nextClassVenue: '-', nextClassFaculty: '-',
                         nextClassForSwipe: nextClassForSwipeData,
-                        dayScheduleForView: dayScheduleForView,
-                        fullScheduleForView: fullScheduleForView
+                        dayScheduleForView, fullScheduleForView
                     };
                 }
             }
         });
+
+        // 2. Calculate group statuses based on section statuses
+        const groupStatuses = Object.keys(state.groups).map(groupName => {
+            const group = state.groups[groupName];
+            const baseStatus = { type: 'group', name: groupName, isPinned: group.pinned, isHighlighted: group.highlighted };
+
+            const memberStatuses = group.members.map(member => {
+                const sectionStatus = sectionStatuses.find(s => s.name === member.section);
+                return { ...member, status: sectionStatus };
+            });
+
+            const busyMembers = memberStatuses.filter(m => m.status && !m.status.isFree);
+
+            if (busyMembers.length > 0) {
+                return {
+                    ...baseStatus,
+                    isFree: false,
+                    busyMembers: busyMembers.map(m => ({
+                        name: m.name,
+                        until: m.status.currentClassEnd,
+                        subject: m.status.currentClassSubject
+                    }))
+                };
+            } else {
+                let earliestNextClass = null;
+                memberStatuses.forEach(m => {
+                    if (m.status && m.status.nextClassTime !== 'a long while') {
+                        const nextClassDate = getNextClass(state.sections[m.section].timetable, now)?.startTime;
+                        if (nextClassDate && (!earliestNextClass || nextClassDate < earliestNextClass.time)) {
+                            earliestNextClass = {
+                                time: nextClassDate,
+                                name: m.name,
+                                subject: m.status.nextClassSubject
+                            };
+                        }
+                    }
+                });
+
+                return {
+                    ...baseStatus,
+                    isFree: true,
+                    freeUntil: earliestNextClass ? formatTimeWithDay(earliestNextClass.time) : 'a long while',
+                    nextUp: earliestNextClass ? { name: earliestNextClass.name, time: formatTimeWithDay(earliestNextClass.time), subject: earliestNextClass.subject } : null
+                };
+            }
+        });
+
+        return [...sectionStatuses, ...groupStatuses];
     };
 
     // --- MODAL & EVENT HANDLERS ---
@@ -1270,28 +1369,18 @@ document.addEventListener('DOMContentLoaded', () => {
             try {
                 const timetable = JSON.parse(event.target.result);
                 const sectionName = timetable.timetableInfo?.section;
-
-                if (!sectionName) {
-                    throw new Error("Timetable file must contain a 'timetableInfo.section' property.");
-                }
-
-                if (state.sections[sectionName]) {
-                    showToast(`Section "${sectionName}" already exists.`, 'error');
-                    return;
-                }
-                
-                if (!timetable.schedule || !timetable.timeSlots) {
-                    throw new Error("Invalid timetable format.");
-                }
+                if (!sectionName) throw new Error("Timetable must contain a 'timetableInfo.section' property.");
+                if (state.sections[sectionName]) throw new Error(`Section "${sectionName}" already exists.`);
+                if (!timetable.schedule || !timetable.timeSlots) throw new Error("Invalid timetable format.");
 
                 state.sections[sectionName] = { timetable, friends: [], pinned: false, highlighted: false, isLocal: true };
                 saveState();
                 renderSettings();
-                renderDashboard(calculateAllStatuses());
+                renderDashboard();
                 addSectionForm.reset();
                 showToast(`Local section "${sectionName}" added successfully.`);
             } catch (error) {
-                showToast(`Error parsing timetable file: ${error.message}`, 'error');
+                showToast(`Error: ${error.message}`, 'error');
                 logger("Timetable parsing error:", error);
             }
         };
@@ -1301,18 +1390,20 @@ document.addEventListener('DOMContentLoaded', () => {
     const handleRemoveSection = (name) => {
         showConfirm(
             `Remove Section "${name}"?`,
-            'This will also remove all friends in this section. This action cannot be undone.',
+            'This will also remove all friends and group associations with this section. This action cannot be undone.',
             () => {
                 if (state.sections[name] && !state.sections[name].isLocal) {
-                    if (!state.removedSections) {
-                        state.removedSections = [];
-                    }
+                    if (!state.removedSections) state.removedSections = [];
                     state.removedSections.push(name);
                 }
                 delete state.sections[name];
+                // Also remove friends from groups if their section is deleted
+                Object.values(state.groups).forEach(group => {
+                    group.members = group.members.filter(m => m.section !== name);
+                });
                 saveState();
                 renderSettings();
-                renderDashboard(calculateAllStatuses());
+                renderDashboard();
                 showToast(`Section "${name}" removed.`);
             }
         );
@@ -1322,7 +1413,7 @@ document.addEventListener('DOMContentLoaded', () => {
         state.sections[name].pinned = !state.sections[name].pinned;
         saveState();
         renderSettings();
-        renderDashboard(calculateAllStatuses());
+        renderDashboard();
         showToast(state.sections[name].pinned ? `Pinned ${name}.` : `Unpinned ${name}.`);
     };
 
@@ -1330,7 +1421,7 @@ document.addEventListener('DOMContentLoaded', () => {
         state.sections[name].highlighted = !state.sections[name].highlighted;
         saveState();
         renderSettings();
-        renderDashboard(calculateAllStatuses());
+        renderDashboard();
         showToast(state.sections[name].highlighted ? `Highlighted ${name}.` : `Removed highlight from ${name}.`);
     };
 
@@ -1348,7 +1439,8 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         state.sections[section].friends.push(name);
         saveState();
-        renderDashboard(calculateAllStatuses());
+        renderDashboard();
+        renderSettings(); // Re-render settings to update group creation form
         addFriendForm.reset();
         showToast(`${name} added to section ${section}.`);
     };
@@ -1356,27 +1448,87 @@ document.addEventListener('DOMContentLoaded', () => {
     const handleRemoveFriend = (friend, section) => {
         showConfirm(
             `Remove ${friend}?`,
-            `Are you sure you want to remove ${friend} from section ${section}?`,
+            `This will also remove them from any groups they are in.`,
             () => {
                 const friendsList = state.sections[section].friends;
                 const index = friendsList.indexOf(friend);
                 if (index > -1) {
                     friendsList.splice(index, 1);
+                    // Also remove from groups
+                    Object.values(state.groups).forEach(group => {
+                        group.members = group.members.filter(m => !(m.name === friend && m.section === section));
+                    });
                     saveState();
-                    renderDashboard(calculateAllStatuses());
+                    renderDashboard();
+                    renderSettings();
                     showToast(`${friend} removed from section ${section}.`);
                 }
             }
         );
     };
 
-    const handleDebugTimeChange = (e) => {
-        const value = e.target.value;
-        if (value) {
-            state.debugTime = new Date(value);
-        } else {
-            state.debugTime = null;
+    const handleAddGroup = (e) => {
+        e.preventDefault();
+        const name = newGroupNameInput.value.trim();
+        if (!name) {
+            showToast('Please enter a group name.', 'error');
+            return;
         }
+        if (state.groups[name]) {
+            showToast(`Group "${name}" already exists.`, 'error');
+            return;
+        }
+        const selectedMemberElements = addGroupForm.querySelectorAll('input[name="group-members"]:checked');
+        if (selectedMemberElements.length === 0) {
+            showToast('Please select at least one member for the group.', 'error');
+            return;
+        }
+        const members = Array.from(selectedMemberElements).map(el => {
+            const [memberName, sectionName] = el.value.split('|');
+            return { name: memberName, section: sectionName };
+        });
+
+        state.groups[name] = { members, pinned: false, highlighted: false };
+        saveState();
+        renderSettings();
+        renderDashboard();
+        addGroupForm.reset();
+        showToast(`Group "${name}" created successfully.`);
+    };
+
+    const handleRemoveGroup = (name) => {
+        showConfirm(
+            `Remove Group "${name}"?`,
+            'This action cannot be undone.',
+            () => {
+                delete state.groups[name];
+                saveState();
+                renderSettings();
+                renderDashboard();
+                showToast(`Group "${name}" removed.`);
+            }
+        );
+    };
+    
+    const handlePinGroup = (name) => {
+        state.groups[name].pinned = !state.groups[name].pinned;
+        saveState();
+        renderSettings();
+        renderDashboard();
+        showToast(state.groups[name].pinned ? `Pinned ${name}.` : `Unpinned ${name}.`);
+    };
+
+    const handleHighlightGroup = (name) => {
+        state.groups[name].highlighted = !state.groups[name].highlighted;
+        saveState();
+        renderSettings();
+        renderDashboard();
+        showToast(state.groups[name].highlighted ? `Highlighted ${name}.` : `Removed highlight from ${name}.`);
+    };
+
+
+    const handleDebugTimeChange = (e) => {
+        state.debugTime = e.target.value ? new Date(e.target.value) : null;
         saveState();
         updateClock();
         updateDashboardStatuses();
@@ -1392,27 +1544,19 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     const handleClearData = () => {
-        showConfirm(
-            'Clear All Data?',
-            'This action cannot be undone and will reset the application to its default state.',
-            () => {
-                localStorage.removeItem('syncUpState');
-                location.reload();
-            }
-        );
+        showConfirm('Clear All Data?', 'This will reset the application to its default state.', () => {
+            localStorage.removeItem('syncUpState');
+            location.reload();
+        });
     };
 
     const handleExportData = () => {
-        const dataToExport = { ...state };
-        const dataStr = JSON.stringify(dataToExport, null, 2);
-        const dataBlob = new Blob([dataStr], {type: "application/json"});
-        const url = URL.createObjectURL(dataBlob);
+        const dataStr = JSON.stringify({ ...state }, null, 2);
+        const url = URL.createObjectURL(new Blob([dataStr], {type: "application/json"}));
         const link = document.createElement('a');
         link.href = url;
         link.download = `syncup-backup-${new Date().toISOString().split('T')[0]}.json`;
-        document.body.appendChild(link);
         link.click();
-        document.body.removeChild(link);
         URL.revokeObjectURL(url);
         showToast("Data exported successfully.");
     };
@@ -1424,17 +1568,14 @@ document.addEventListener('DOMContentLoaded', () => {
         reader.onload = (event) => {
             try {
                 const importedData = JSON.parse(event.target.result);
-                if (importedData && importedData.sections) {
-                    state = importedData;
-                    saveState();
-                    applyTheme();
-                    applyLedIndicatorSetting();
-                    renderSettings();
-                    renderDashboard(calculateAllStatuses());
-                    showToast("Data imported successfully.");
-                } else {
-                    throw new Error("Invalid data format.");
-                }
+                if (!importedData || !importedData.sections) throw new Error("Invalid data format.");
+                state = importedData;
+                saveState();
+                applyTheme();
+                applyLedIndicatorSetting();
+                renderSettings();
+                renderDashboard();
+                showToast("Data imported successfully.");
             } catch (error) {
                 showToast(`Error importing data: ${error.message}`, 'error');
             } finally {
@@ -1445,80 +1586,236 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     // --- SWIPE HANDLING ---
-    let touchStartX = 0;
-    let touchCurrentX = 0;
-    let swipedCard = null;
-    let isSwiping = false;
+    let touchStartX = 0, touchCurrentX = 0, swipedCard = null, isSwiping = false;
     const swipeThreshold = 50;
 
     const handleTouchStart = (e) => {
-        const card = e.target.closest('[data-section]');
+        const card = e.target.closest('[data-type="section"]');
         if (!card) return;
-        
         touchStartX = e.targetTouches[0].clientX;
-        touchCurrentX = touchStartX;
         swipedCard = card;
-        isSwiping = false;
-        
-        const wrapper = swipedCard.querySelector('.card-inner-wrapper');
-        if (wrapper) {
-            wrapper.style.transition = 'none';
-        }
+        swipedCard.querySelector('.card-inner-wrapper').style.transition = 'none';
     };
 
     const handleTouchMove = (e) => {
         if (!swipedCard) return;
-        
         touchCurrentX = e.targetTouches[0].clientX;
-        const diffX = touchCurrentX - touchStartX;
-
-        if (Math.abs(diffX) < 10 && !isSwiping) {
-            return;
-        }
-
+        if (Math.abs(touchCurrentX - touchStartX) > 10) isSwiping = true;
+        
         const fullScheduleScroller = e.target.closest('.card-full-timetable-view .overflow-auto');
         const currentState = parseInt(swipedCard.dataset.swipeState || '0', 10);
-
-        const canSwipeCard = !fullScheduleScroller || (currentState === 3 && diffX > 0 && fullScheduleScroller.scrollLeft === 0);
-
-        if (canSwipeCard) {
-            if (!isSwiping) isSwiping = true;
-            e.preventDefault(); 
-            
-            const wrapper = swipedCard.querySelector('.card-inner-wrapper');
-            if (!wrapper) return;
-
-            const baseTranslate = -currentState * swipedCard.offsetWidth;
-            const newTranslate = Math.max(-swipedCard.offsetWidth * 3, Math.min(0, baseTranslate + diffX));
-            wrapper.style.transform = `translateX(${newTranslate}px)`;
+        if (fullScheduleScroller && !(currentState === 3 && (touchCurrentX - touchStartX) > 0 && fullScheduleScroller.scrollLeft === 0)) {
+            return; // Don't prevent default if scrolling inside the full timetable
         }
+        
+        e.preventDefault();
+        const baseTranslate = -currentState * swipedCard.offsetWidth;
+        const newTranslate = Math.max(-swipedCard.offsetWidth * 3, Math.min(0, baseTranslate + (touchCurrentX - touchStartX)));
+        swipedCard.querySelector('.card-inner-wrapper').style.transform = `translateX(${newTranslate}px)`;
     };
 
     const handleTouchEnd = () => {
         if (!swipedCard) return;
-
         const wrapper = swipedCard.querySelector('.card-inner-wrapper');
-        if (wrapper) {
-            wrapper.style.transition = 'transform 0.4s cubic-bezier(0.25, 0.8, 0.25, 1)';
-            wrapper.style.transform = '';
-        }
-
+        wrapper.style.transition = 'transform 0.4s cubic-bezier(0.25, 0.8, 0.25, 1)';
+        wrapper.style.transform = '';
         if (isSwiping) {
             const diffX = touchCurrentX - touchStartX;
-            const currentState = parseInt(swipedCard.dataset.swipeState || '0', 10);
-            let newState = currentState;
-
-            if (diffX < -swipeThreshold) {
-                newState = Math.min(currentState + 1, 3);
-            } else if (diffX > swipeThreshold) {
-                newState = Math.max(currentState - 1, 0);
-            }
+            let newState = parseInt(swipedCard.dataset.swipeState || '0', 10);
+            if (diffX < -swipeThreshold) newState = Math.min(newState + 1, 3);
+            else if (diffX > swipeThreshold) newState = Math.max(newState - 1, 0);
             swipedCard.dataset.swipeState = newState;
             updateCardHeight(swipedCard);
         }
-        
         swipedCard = null;
         isSwiping = false;
+    };
+
+    // --- TIMELINE MODAL ---
+    const openTimelineModal = (groupName) => {
+        const group = state.groups[groupName];
+        if (!group) return;
+
+        timelineGroupName.textContent = `${groupName}'s Timeline`;
+        
+        const now = getCurrentTime();
+        
+        const TIMELINE_START_MIN = 8 * 60; // 8:00 AM
+        const TIMELINE_END_MIN = 12 * 60 + 50; // 12:50 PM
+        const TOTAL_DURATION_MIN = TIMELINE_END_MIN - TIMELINE_START_MIN;
+
+        const HOUR_WIDTH = 240;
+        const totalWidth = (TOTAL_DURATION_MIN / 60) * HOUR_WIDTH;
+
+        const periodTimes = ["8:00", "8:50", "9:40", "10:30", "11:20", "12:05", "12:50"];
+        let headerLabelsHtml = '';
+        periodTimes.forEach(timeStr => {
+            const [hour, minute] = timeStr.split(':').map(Number);
+            const minutesFromMidnight = hour * 60 + minute;
+            const minutesFromStart = minutesFromMidnight - TIMELINE_START_MIN;
+            const leftPosition = (minutesFromStart / TOTAL_DURATION_MIN) * totalWidth;
+            if (leftPosition >= 0 && leftPosition <= totalWidth) {
+                headerLabelsHtml += `<div class="absolute top-1/2 -translate-y-1/2 text-xs text-gray-500 dark:text-gray-400" style="left: ${leftPosition}px; transform: translateX(-50%);">${timeStr}</div>`;
+            }
+        });
+
+        // --- Common Free Time Logic ---
+        let allBusySlots = [];
+        group.members.forEach(member => {
+            const { timetable } = state.sections[member.section];
+            if (!timetable) return;
+            const daySchedule = getScheduleForDay(timetable, now);
+            if (daySchedule) {
+                daySchedule.classes.forEach(classInfo => {
+                    if (!classInfo.subject) return;
+                    const slot = timetable.timeSlots.find(ts => ts.lecture === classInfo.lecture);
+                    if (!slot) return;
+                    const [startTimeStr, endTimeStr] = slot.time.split('-');
+                    const startTime = parseTime(startTimeStr, now);
+                    let endTime = parseTime(endTimeStr, now);
+                    if (classInfo.span && classInfo.span > 1) {
+                        const endLectureNum = classInfo.lecture + classInfo.span - 1;
+                        const endSlot = timetable.timeSlots.find(ts => ts.lecture === endLectureNum);
+                        if (endSlot) endTime = parseTime(endSlot.time.split('-')[1], now);
+                    }
+                    allBusySlots.push({ start: startTime.getHours() * 60 + startTime.getMinutes(), end: endTime.getHours() * 60 + endTime.getMinutes() });
+                });
+            }
+        });
+
+        allBusySlots.sort((a, b) => a.start - b.start);
+        const mergedBusySlots = [];
+        if (allBusySlots.length > 0) {
+            let currentMerge = { ...allBusySlots[0] };
+            for (let i = 1; i < allBusySlots.length; i++) {
+                const nextSlot = allBusySlots[i];
+                if (nextSlot.start < currentMerge.end) {
+                    currentMerge.end = Math.max(currentMerge.end, nextSlot.end);
+                } else {
+                    mergedBusySlots.push(currentMerge);
+                    currentMerge = { ...nextSlot };
+                }
+            }
+            mergedBusySlots.push(currentMerge);
+        }
+
+        const commonEvents = [{ time: TIMELINE_START_MIN, type: 'start' }];
+        mergedBusySlots.forEach(slot => {
+            commonEvents.push({ time: slot.start, type: 'busy' });
+            commonEvents.push({ time: slot.end, type: 'free' });
+        });
+        commonEvents.push({ time: TIMELINE_END_MIN, type: 'end' });
+        commonEvents.sort((a, b) => a.time - b.time);
+        
+        let commonSegmentsHtml = '';
+        let lastCommonTime = TIMELINE_START_MIN;
+        let isGroupBusy = mergedBusySlots.some(slot => slot.start <= lastCommonTime && slot.end > lastCommonTime);
+
+        for (const event of commonEvents) {
+            const currentTime = Math.max(TIMELINE_START_MIN, Math.min(event.time, TIMELINE_END_MIN));
+            const duration = currentTime - lastCommonTime;
+            if (duration > 0) {
+                const width = (duration / TOTAL_DURATION_MIN) * 100;
+                const segmentClass = isGroupBusy ? 'timeline-segment-busy' : 'timeline-segment-free';
+                commonSegmentsHtml += `<div class="timeline-segment ${segmentClass}" style="width: ${width}%"></div>`;
+            }
+            if (event.type === 'busy') isGroupBusy = true;
+            if (event.type === 'free') isGroupBusy = false;
+            lastCommonTime = currentTime;
+        }
+
+        const commonRowHtml = `
+            <div class="timeline-member-row">
+                <div class="timeline-member-name text-sm font-bold text-purple-600 dark:text-purple-400 border-b-2 border-purple-300 dark:border-purple-500">Common</div>
+                <div class="timeline-track-container border-b-2 border-purple-300 dark:border-purple-500">
+                    <div class="timeline-bar">${commonSegmentsHtml}</div>
+                </div>
+            </div>`;
+
+
+        // --- Individual Member Rows ---
+        const memberRowsHtml = group.members.map(member => {
+            const { timetable } = state.sections[member.section];
+            if (!timetable) return '';
+
+            const daySchedule = getScheduleForDay(timetable, now);
+            const events = [{ time: TIMELINE_START_MIN, type: 'start' }, { time: TIMELINE_END_MIN, type: 'end' }];
+            if (daySchedule) {
+                daySchedule.classes.forEach(classInfo => {
+                    if (!classInfo.subject) return;
+                    const slot = timetable.timeSlots.find(ts => ts.lecture === classInfo.lecture);
+                    if (!slot) return;
+                    const [startTimeStr, endTimeStr] = slot.time.split('-');
+                    const startTime = parseTime(startTimeStr, now);
+                    let endTime = parseTime(endTimeStr, now);
+                    if (classInfo.span && classInfo.span > 1) {
+                        const endLectureNum = classInfo.lecture + classInfo.span - 1;
+                        const endSlot = timetable.timeSlots.find(ts => ts.lecture === endLectureNum);
+                        if (endSlot) endTime = parseTime(endSlot.time.split('-')[1], now);
+                    }
+                    events.push({ time: startTime.getHours() * 60 + startTime.getMinutes(), type: 'busy' });
+                    events.push({ time: endTime.getHours() * 60 + endTime.getMinutes(), type: 'free' });
+                });
+            }
+            
+            events.sort((a, b) => a.time - b.time);
+
+            let segmentsHtml = '';
+            let lastTime = TIMELINE_START_MIN;
+            let isBusy = daySchedule ? daySchedule.classes.some(c => {
+                if (!c.subject) return false;
+                const s = timetable.timeSlots.find(ts => ts.lecture === c.lecture);
+                const start = parseTime(s.time.split('-')[0], now);
+                return start.getHours() * 60 + start.getMinutes() <= lastTime;
+            }) : false;
+
+            for (const event of events) {
+                const currentTime = Math.max(TIMELINE_START_MIN, Math.min(event.time, TIMELINE_END_MIN));
+                const duration = currentTime - lastTime;
+                if (duration > 0) {
+                    const width = (duration / TOTAL_DURATION_MIN) * 100;
+                    const segmentClass = isBusy ? 'timeline-segment-busy' : 'timeline-segment-free';
+                    segmentsHtml += `<div class="timeline-segment ${segmentClass}" style="width: ${width}%" title="${isBusy ? 'Busy' : 'Free'}"></div>`;
+                }
+                if (event.type === 'busy') isBusy = true;
+                if (event.type === 'free') isBusy = false;
+                lastTime = currentTime;
+            }
+
+            return `
+                <div class="timeline-member-row">
+                    <div class="timeline-member-name text-sm font-medium text-gray-800 dark:text-gray-200">${member.name}</div>
+                    <div class="timeline-track-container">
+                        <div class="timeline-bar">${segmentsHtml}</div>
+                    </div>
+                </div>
+            `;
+        }).join('');
+
+        const nowMinutes = now.getHours() * 60 + now.getMinutes();
+        let currentTimeHtml = '';
+        if (nowMinutes >= TIMELINE_START_MIN && nowMinutes <= TIMELINE_END_MIN) {
+            const nowPosition = ((nowMinutes - TIMELINE_START_MIN) / TOTAL_DURATION_MIN) * 100;
+            currentTimeHtml = `<div class="timeline-current-time" style="left: ${nowPosition}%;"></div>`;
+        }
+        
+        timelineContainer.innerHTML = `
+            <div class="timeline-wrapper" style="width: ${totalWidth}px">
+                <div class="timeline-header-names h-8"></div>
+                <div class="relative h-8">
+                    <div class="timeline-header-times h-full">${headerLabelsHtml}</div>
+                </div>
+                ${commonRowHtml}
+                ${memberRowsHtml}
+            </div>
+            ${currentTimeHtml}
+        `;
+        
+        timelineModal.classList.remove('hidden');
+
+        const containerWidth = timelineContainer.offsetWidth;
+        const scrollPosition = (totalWidth * ((nowMinutes - TIMELINE_START_MIN) / TOTAL_DURATION_MIN)) - (containerWidth / 2);
+        timelineContainer.scrollLeft = Math.max(0, scrollPosition);
     };
 
 
@@ -1526,7 +1823,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const initializeApp = async () => {
         loadState();
         applyTheme();
-        applyLedIndicatorSetting(); // Apply setting on load
+        applyLedIndicatorSetting();
         updateClock();
         
         await fetchAndUpdateTimetables();
@@ -1537,7 +1834,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }, 1000);
 
         window.addEventListener('resize', () => {
-            dashboard.querySelectorAll('[data-section]').forEach(updateCardHeight);
+            dashboard.querySelectorAll('[data-name]').forEach(updateCardHeight);
         });
     };
 
@@ -1545,17 +1842,10 @@ document.addEventListener('DOMContentLoaded', () => {
     settingsBtn.addEventListener('click', () => toggleSettingsPanel(true));
     addSectionShortcut.addEventListener('click', () => toggleSettingsPanel(true));
     closeSettingsBtn.addEventListener('click', () => toggleSettingsPanel(false));
-    settingsPanel.addEventListener('click', (e) => {
-        if (e.target === settingsPanel) {
-            toggleSettingsPanel(false);
-        }
-    });
-    closeWelcomeModalBtn.addEventListener('click', () => {
-        welcomeModal.classList.add('hidden');
-    });
-    closeChangelogModalBtn.addEventListener('click', () => {
-        changelogModal.classList.add('hidden');
-    });
+    settingsPanel.addEventListener('click', (e) => e.target === settingsPanel && toggleSettingsPanel(false));
+    closeWelcomeModalBtn.addEventListener('click', () => welcomeModal.classList.add('hidden'));
+    closeChangelogModalBtn.addEventListener('click', () => changelogModal.classList.add('hidden'));
+    closeTimelineModalBtn.addEventListener('click', () => timelineModal.classList.add('hidden'));
 
     darkModeToggle.addEventListener('click', () => {
         state.settings.darkMode = !state.settings.darkMode;
@@ -1567,12 +1857,12 @@ document.addEventListener('DOMContentLoaded', () => {
         state.settings.ledIndicatorEnabled = !state.settings.ledIndicatorEnabled;
         applyLedIndicatorSetting();
         saveState();
-        // A full re-render is needed to add/remove the LED elements
-        renderDashboard(calculateAllStatuses()); 
+        renderDashboard(); 
     });
 
     addSectionForm.addEventListener('submit', handleAddSection);
     addFriendForm.addEventListener('submit', handleAddFriend);
+    addGroupForm.addEventListener('submit', handleAddGroup); // New listener
     debugTimeInput.addEventListener('change', handleDebugTimeChange);
     resetTimeBtn.addEventListener('click', handleResetTime);
     clearDataBtn.addEventListener('click', handleClearData);
@@ -1587,31 +1877,35 @@ document.addEventListener('DOMContentLoaded', () => {
 
     confirmCancelBtn.addEventListener('click', hideConfirm);
     confirmOkBtn.addEventListener('click', () => {
-        if (confirmCallback) {
-            confirmCallback();
-        }
+        if (confirmCallback) confirmCallback();
         hideConfirm();
     });
 
     sectionsList.addEventListener('click', (e) => {
         const removeBtn = e.target.closest('.remove-section-btn');
-        if (removeBtn) {
-            handleRemoveSection(removeBtn.dataset.section);
-        }
+        if (removeBtn) handleRemoveSection(removeBtn.dataset.section);
         const pinBtn = e.target.closest('.pin-section-btn');
-        if (pinBtn) {
-            handlePinSection(pinBtn.dataset.section);
-        }
+        if (pinBtn) handlePinSection(pinBtn.dataset.section);
         const highlightBtn = e.target.closest('.highlight-section-btn');
-        if (highlightBtn) {
-            handleHighlightSection(highlightBtn.dataset.section);
-        }
+        if (highlightBtn) handleHighlightSection(highlightBtn.dataset.section);
+    });
+
+    groupsList.addEventListener('click', (e) => {
+        const removeBtn = e.target.closest('.remove-group-btn');
+        if (removeBtn) handleRemoveGroup(removeBtn.dataset.group);
+        const pinBtn = e.target.closest('.pin-group-btn');
+        if (pinBtn) handlePinGroup(pinBtn.dataset.group);
+        const highlightBtn = e.target.closest('.highlight-group-btn');
+        if (highlightBtn) handleHighlightGroup(highlightBtn.dataset.group);
     });
 
     dashboard.addEventListener('click', (e) => {
         const removeBtn = e.target.closest('.remove-friend-btn');
-        if (removeBtn) {
-            handleRemoveFriend(removeBtn.dataset.friend, removeBtn.dataset.section);
+        if (removeBtn) handleRemoveFriend(removeBtn.dataset.friend, removeBtn.dataset.section);
+        
+        const timelineBtn = e.target.closest('.view-timeline-btn');
+        if (timelineBtn) {
+            openTimelineModal(timelineBtn.dataset.groupName);
         }
     });
     
@@ -1628,14 +1922,9 @@ document.addEventListener('DOMContentLoaded', () => {
 <script>
     if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
-            // Use a relative path for the service worker registration
             navigator.serviceWorker.register('./sw.js')
-                .then(registration => {
-                    console.log('ServiceWorker registration successful with scope: ', registration.scope);
-                })
-                .catch(err => {
-                    console.log('ServiceWorker registration failed: ', err);
-                });
+                .then(registration => console.log('ServiceWorker registration successful with scope: ', registration.scope))
+                .catch(err => console.log('ServiceWorker registration failed: ', err));
         });
     }
 </script>
