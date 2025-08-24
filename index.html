@@ -119,6 +119,34 @@
             box-shadow: 0 0 15px 3px rgba(252, 211, 77, 0.4); /* Amber-300 glow */
             border: 1px solid rgba(252, 211, 77, 0.5);
         }
+        
+        /* --- START: LED INDICATOR STYLES --- */
+        .led-indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-left: 10px;
+            flex-shrink: 0; /* Prevents shrinking in flex container */
+        }
+        .led-green {
+            background-color: #22c55e; /* green-500 */
+            box-shadow: 0 0 8px 2px rgba(34, 197, 94, 0.7);
+            animation: glow-green 1.5s infinite alternate;
+        }
+        .led-red {
+            background-color: #ef4444; /* red-500 */
+            box-shadow: 0 0 8px 2px rgba(239, 68, 68, 0.7);
+            animation: glow-red 1.5s infinite alternate;
+        }
+        @keyframes glow-green {
+            from { box-shadow: 0 0 8px 2px rgba(34, 197, 94, 0.7); }
+            to { box-shadow: 0 0 12px 4px rgba(34, 197, 94, 0.5); }
+        }
+        @keyframes glow-red {
+            from { box-shadow: 0 0 8px 2px rgba(239, 68, 68, 0.7); }
+            to { box-shadow: 0 0 12px 4px rgba(239, 68, 68, 0.5); }
+        }
+        /* --- END: LED INDICATOR STYLES --- */
     </style>
     <script>
         // Tailwind dark mode configuration
@@ -233,13 +261,24 @@
             </div>
 
             <div class="flex-grow overflow-y-auto pr-2 -mr-2">
-                <!-- Theme Toggle -->
-                <div class="flex justify-between items-center p-3 bg-gray-100 dark:bg-gray-700 rounded-lg mb-6">
-                    <label for="dark-mode-toggle" class="font-medium">Dark Mode</label>
-                    <button id="dark-mode-toggle" class="relative inline-flex items-center h-6 rounded-full w-11 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-gray-800">
-                        <span class="sr-only">Enable dark mode</span>
-                        <span class="inline-block w-4 h-4 transform bg-white rounded-full transition-transform"></span>
-                    </button>
+                <!-- Theme Toggles -->
+                <div class="space-y-3 mb-6">
+                    <div class="flex justify-between items-center p-3 bg-gray-100 dark:bg-gray-700 rounded-lg">
+                        <label for="dark-mode-toggle" class="font-medium">Dark Mode</label>
+                        <button id="dark-mode-toggle" class="relative inline-flex items-center h-6 rounded-full w-11 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-gray-800">
+                            <span class="sr-only">Enable dark mode</span>
+                            <span class="inline-block w-4 h-4 transform bg-white rounded-full transition-transform"></span>
+                        </button>
+                    </div>
+                    <!-- START: LED Indicator Toggle -->
+                    <div class="flex justify-between items-center p-3 bg-gray-100 dark:bg-gray-700 rounded-lg">
+                        <label for="led-indicator-toggle" class="font-medium">LED Indicator</label>
+                        <button id="led-indicator-toggle" class="relative inline-flex items-center h-6 rounded-full w-11 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-gray-800">
+                            <span class="sr-only">Enable LED Indicator</span>
+                            <span class="inline-block w-4 h-4 transform bg-white rounded-full transition-transform"></span>
+                        </button>
+                    </div>
+                    <!-- END: LED Indicator Toggle -->
                 </div>
 
                 <!-- Manage Sections -->
@@ -327,7 +366,8 @@ document.addEventListener('DOMContentLoaded', () => {
         sections: {}, // { sectionName: { timetable: {}, friends: [], pinned: false, highlighted: false, isLocal: false } }
         settings: {
             darkMode: true,
-            debugMode: false
+            debugMode: false,
+            ledIndicatorEnabled: false // Default to disabled
         },
         debugTime: null, // Stores the manual time as a Date object
         remoteTimetablesVersion: 0,
@@ -342,6 +382,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const settingsPanel = document.getElementById('settings-panel');
     const settingsContent = document.getElementById('settings-content');
     const darkModeToggle = document.getElementById('dark-mode-toggle');
+    const ledIndicatorToggle = document.getElementById('led-indicator-toggle'); // New element
     const addSectionForm = document.getElementById('add-section-form');
     const timetableFileInput = document.getElementById('timetable-file');
     const sectionsList = document.getElementById('sections-list');
@@ -415,6 +456,12 @@ document.addEventListener('DOMContentLoaded', () => {
                     if (!parsedState.removedSections) {
                         parsedState.removedSections = [];
                     }
+                    // Add default for new settings if they don't exist in saved state
+                    if (!parsedState.settings) parsedState.settings = {};
+                    if (typeof parsedState.settings.ledIndicatorEnabled === 'undefined') {
+                        parsedState.settings.ledIndicatorEnabled = false; 
+                    }
+
                     Object.assign(state, parsedState);
                     if (state.debugTime) {
                         state.debugTime = new Date(state.debugTime);
@@ -563,11 +610,21 @@ document.addEventListener('DOMContentLoaded', () => {
         if (state.settings.darkMode) {
             document.documentElement.classList.add('dark');
             darkModeToggle.classList.add('bg-indigo-600');
-            darkModeToggle.firstElementChild.classList.add('translate-x-5');
+            darkModeToggle.lastElementChild.classList.add('translate-x-5');
         } else {
             document.documentElement.classList.remove('dark');
             darkModeToggle.classList.remove('bg-indigo-600');
-            darkModeToggle.firstElementChild.classList.remove('translate-x-5');
+            darkModeToggle.lastElementChild.classList.remove('translate-x-5');
+        }
+    };
+
+    const applyLedIndicatorSetting = () => {
+        if (state.settings.ledIndicatorEnabled) {
+            ledIndicatorToggle.classList.add('bg-indigo-600');
+            ledIndicatorToggle.lastElementChild.classList.add('translate-x-5');
+        } else {
+            ledIndicatorToggle.classList.remove('bg-indigo-600');
+            ledIndicatorToggle.lastElementChild.classList.remove('translate-x-5');
         }
     };
 
@@ -699,6 +756,11 @@ document.addEventListener('DOMContentLoaded', () => {
             let timetableHtml = ''; // Populated on creation
             let fullTimetableHtml = ''; // Populated on creation
 
+            // Conditionally create the LED indicator HTML based on the setting
+            const ledIndicatorHtml = state.settings.ledIndicatorEnabled
+                ? `<div class="led-indicator led-${status.ledColor}"></div>`
+                : '';
+
             // Since this is a full render, we can build all the views
             // Next Class View
             if (status.nextClassForSwipe) {
@@ -744,7 +806,10 @@ document.addEventListener('DOMContentLoaded', () => {
                     <div class="relative z-10 p-5">
                         <div class="flex justify-between items-start">
                             <h2 class="text-2xl font-bold text-gray-800 dark:text-white">${status.sectionName}</h2>
-                            <div class="main-status-text text-right ${textColor} font-bold text-lg">${status.isFree ? 'FREE' : 'IN CLASS'}</div>
+                            <div class="flex items-center">
+                                <div class="main-status-text text-right ${textColor} font-bold text-lg">${status.isFree ? 'FREE' : 'IN CLASS'}</div>
+                                ${ledIndicatorHtml}
+                            </div>
                         </div>
                         <div class="details-container mt-4">
                             ${detailsHtml}
@@ -799,6 +864,13 @@ document.addEventListener('DOMContentLoaded', () => {
                     statusTextElement.className = `main-status-text text-right font-bold text-lg ${textColor}`;
                 }
                 card.dataset.isFree = status.isFree;
+            }
+
+            // Update LED indicator color if it's enabled and exists
+            const ledIndicator = card.querySelector('.led-indicator');
+            if (ledIndicator) {
+                ledIndicator.classList.remove('led-green', 'led-red');
+                ledIndicator.classList.add(`led-${status.ledColor}`);
             }
 
             // Re-generate and update only the details HTML block
@@ -988,11 +1060,27 @@ document.addEventListener('DOMContentLoaded', () => {
             const { timetable, pinned, highlighted } = state.sections[sectionName];
             if (!timetable || !timetable.schedule) {
                 logger(`Invalid timetable for ${sectionName}`);
-                return { sectionName, isFree: true, progress: 0, error: 'Invalid Timetable', isPinned: pinned, isHighlighted: highlighted };
+                return { sectionName, isFree: true, progress: 0, error: 'Invalid Timetable', isPinned: pinned, isHighlighted: highlighted, ledColor: 'red' };
             }
             const currentClass = getClassAtTime(timetable, now);
-            
             const absoluteNextClass = getNextClass(timetable, now);
+
+            // --- START: LED INDICATOR LOGIC ---
+            let hasClassesRemainingToday = false;
+            if (absoluteNextClass) {
+                const nextClassDate = absoluteNextClass.startTime;
+                // Check if the next class is on the same calendar day
+                if (nextClassDate.getDate() === now.getDate() &&
+                    nextClassDate.getMonth() === now.getMonth() &&
+                    nextClassDate.getFullYear() === now.getFullYear()) {
+                    hasClassesRemainingToday = true;
+                }
+            }
+            // Green light only if they are not in class AND have no more classes today.
+            // Otherwise, it's red.
+            const isDoneForTheDay = !currentClass && !hasClassesRemainingToday;
+            const ledColor = isDoneForTheDay ? 'green' : 'red';
+            // --- END: LED INDICATOR LOGIC ---
 
             let nextClassForSwipeData = null;
             if (absoluteNextClass) {
@@ -1081,7 +1169,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const progress = totalDuration > 0 ? Math.min(100, (elapsed / totalDuration) * 100) : 0;
 
                 return {
-                    sectionName, isFree: false, progress, isPinned: pinned, isHighlighted: highlighted,
+                    sectionName, isFree: false, progress, isPinned: pinned, isHighlighted: highlighted, ledColor,
                     currentClassSubject: currentClass.subject,
                     currentClassVenue: currentClass.venue || 'N/A',
                     currentClassFaculty: currentClass.faculty || 'N/A',
@@ -1129,7 +1217,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     const elapsed = now - freePeriodStart;
                     const progress = totalDuration > 0 ? Math.min(100, (elapsed / totalDuration) * 100) : 0;
                     return {
-                        sectionName, isFree: true, progress, isPinned: pinned, isHighlighted: highlighted,
+                        sectionName, isFree: true, progress, isPinned: pinned, isHighlighted: highlighted, ledColor,
                         nextClassTime: formatTimeWithDay(nextClass.startTime),
                         nextClassSubject: nextClass.subject,
                         nextClassVenue: nextClass.venue || 'N/A',
@@ -1140,7 +1228,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     };
                 } else {
                     return {
-                        sectionName, isFree: true, progress: 100, isPinned: pinned, isHighlighted: highlighted,
+                        sectionName, isFree: true, progress: 100, isPinned: pinned, isHighlighted: highlighted, ledColor,
                         nextClassTime: 'a long while',
                         nextClassSubject: 'Nothing scheduled',
                         nextClassVenue: '-',
@@ -1340,6 +1428,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     state = importedData;
                     saveState();
                     applyTheme();
+                    applyLedIndicatorSetting();
                     renderSettings();
                     renderDashboard(calculateAllStatuses());
                     showToast("Data imported successfully.");
@@ -1437,6 +1526,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const initializeApp = async () => {
         loadState();
         applyTheme();
+        applyLedIndicatorSetting(); // Apply setting on load
         updateClock();
         
         await fetchAndUpdateTimetables();
@@ -1471,6 +1561,14 @@ document.addEventListener('DOMContentLoaded', () => {
         state.settings.darkMode = !state.settings.darkMode;
         applyTheme();
         saveState();
+    });
+
+    ledIndicatorToggle.addEventListener('click', () => {
+        state.settings.ledIndicatorEnabled = !state.settings.ledIndicatorEnabled;
+        applyLedIndicatorSetting();
+        saveState();
+        // A full re-render is needed to add/remove the LED elements
+        renderDashboard(calculateAllStatuses()); 
     });
 
     addSectionForm.addEventListener('submit', handleAddSection);
