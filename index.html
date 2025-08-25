@@ -148,7 +148,7 @@
         }
         /* --- END: LED INDICATOR STYLES --- */
 
-        /* --- START: TIMELINE MODAL STYLES (NEW) --- */
+        /* --- START: TIMELINE MODAL STYLES --- */
         .timeline-grid {
             display: grid;
             grid-template-columns: 120px 1fr; /* Names column and timeline column */
@@ -231,6 +231,55 @@
             z-index: 15;
         }
         /* --- END: TIMELINE MODAL STYLES --- */
+
+        /* --- START: CARD TIMELINE STYLES (MODIFIED) --- */
+        .card-timeline-container {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 10px;
+            background-color: transparent; /* Background is now handled by segments */
+            border-top: 1px solid #000000;
+            overflow: hidden;
+            border-bottom-left-radius: 0.75rem;
+            border-bottom-right-radius: 0.75rem;
+        }
+        .timeline-card-segment-free, .timeline-card-segment-busy {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            height: 100%;
+        }
+        .timeline-card-segment-free {
+            background-color: #4ade80; /* green-400 */
+        }
+        .dark .timeline-card-segment-free {
+            background-color: #22c55e; /* green-500 */
+        }
+        .timeline-card-segment-busy {
+            background-color: #f87171; /* red-400 */
+        }
+        .dark .timeline-card-segment-busy {
+            background-color: #ef4444; /* red-500 */
+        }
+        .timeline-marker {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 1px;
+            background-color: #000000;
+            z-index: 2; /* Ensure markers are on top of segments */
+        }
+        .timeline-current-indicator {
+            position: absolute;
+            top: -2px; /* Slightly taller */
+            bottom: -2px; /* Slightly taller */
+            width: 2px; /* Slightly thicker */
+            background-color: #fbbf24; /* amber-400 */
+            z-index: 5;
+        }
+        /* --- END: CARD TIMELINE STYLES --- */
 
     </style>
     <script>
@@ -355,7 +404,6 @@
                             <span class="inline-block w-4 h-4 transform bg-white rounded-full transition-transform"></span>
                         </button>
                     </div>
-                    <!-- START: LED Indicator Toggle -->
                     <div class="flex justify-between items-center p-3 bg-gray-100 dark:bg-gray-700 rounded-lg">
                         <label for="led-indicator-toggle" class="font-medium">LED Indicator</label>
                         <button id="led-indicator-toggle" class="relative inline-flex items-center h-6 rounded-full w-11 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-gray-800">
@@ -363,7 +411,13 @@
                             <span class="inline-block w-4 h-4 transform bg-white rounded-full transition-transform"></span>
                         </button>
                     </div>
-                    <!-- END: LED Indicator Toggle -->
+                    <div class="flex justify-between items-center p-3 bg-gray-100 dark:bg-gray-700 rounded-lg">
+                        <label for="card-timeline-toggle" class="font-medium">Show Card Timeline</label>
+                        <button id="card-timeline-toggle" class="relative inline-flex items-center h-6 rounded-full w-11 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-gray-800">
+                            <span class="sr-only">Enable Card Timeline</span>
+                            <span class="inline-block w-4 h-4 transform bg-white rounded-full transition-transform"></span>
+                        </button>
+                    </div>
                 </div>
 
                 <!-- Manage Sections -->
@@ -490,7 +544,8 @@ document.addEventListener('DOMContentLoaded', () => {
         settings: {
             darkMode: true,
             debugMode: false,
-            ledIndicatorEnabled: false
+            ledIndicatorEnabled: false,
+            cardTimelineEnabled: false // New setting
         },
         debugTime: null,
         remoteTimetablesVersion: 0,
@@ -506,6 +561,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const settingsContent = document.getElementById('settings-content');
     const darkModeToggle = document.getElementById('dark-mode-toggle');
     const ledIndicatorToggle = document.getElementById('led-indicator-toggle');
+    const cardTimelineToggle = document.getElementById('card-timeline-toggle'); // New element
     const addSectionForm = document.getElementById('add-section-form');
     const timetableFileInput = document.getElementById('timetable-file');
     const sectionsList = document.getElementById('sections-list');
@@ -595,6 +651,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     if (!parsedState.settings) parsedState.settings = {};
                     if (typeof parsedState.settings.ledIndicatorEnabled === 'undefined') {
                         parsedState.settings.ledIndicatorEnabled = false; 
+                    }
+                    if (typeof parsedState.settings.cardTimelineEnabled === 'undefined') {
+                        parsedState.settings.cardTimelineEnabled = false; 
                     }
 
                     Object.assign(state, parsedState);
@@ -754,6 +813,16 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
+    const applyCardTimelineSetting = () => {
+        if (state.settings.cardTimelineEnabled) {
+            cardTimelineToggle.classList.add('bg-indigo-600');
+            cardTimelineToggle.lastElementChild.classList.add('translate-x-5');
+        } else {
+            cardTimelineToggle.classList.remove('bg-indigo-600');
+            cardTimelineToggle.lastElementChild.classList.remove('translate-x-5');
+        }
+    };
+
     const showToast = (message, type = 'success') => {
         toastMessage.textContent = message;
         toast.className = `fixed bottom-5 right-5 text-white py-2 px-4 rounded-lg shadow-lg opacity-0 translate-y-2 transition-all duration-300 ${type === 'error' ? 'bg-red-600' : 'bg-gray-800'}`;
@@ -871,6 +940,103 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
+    // --- START: Timeline Helper ---
+    const getStandardPeriodTimes = () => {
+        return ["8:00", "8:50", "9:40", "10:30", "11:20", "12:50"];
+    };
+
+    const generateCardTimelineSegments = (status, now) => {
+        const TIMELINE_START_MIN = 8 * 60;
+        const TIMELINE_END_MIN = 12 * 60 + 50;
+        const TOTAL_DURATION_MIN = TIMELINE_END_MIN - TIMELINE_START_MIN;
+
+        let busySlots = []; // Array of {start, end} in minutes from midnight
+
+        if (status.type === 'section') {
+            const { timetable } = state.sections[status.name];
+            if (!timetable) return '';
+            const daySchedule = getScheduleForDay(timetable, now);
+            if (daySchedule) {
+                daySchedule.classes.forEach(classInfo => {
+                    if (!classInfo.subject) return;
+                    const slot = timetable.timeSlots.find(ts => ts.lecture === classInfo.lecture);
+                    if (!slot) return;
+                    const [startTimeStr, endTimeStr] = slot.time.split('-');
+                    const startTime = parseTime(startTimeStr, now);
+                    let endTime = parseTime(endTimeStr, now);
+                    if (classInfo.span && classInfo.span > 1) {
+                        const endLectureNum = classInfo.lecture + classInfo.span - 1;
+                        const endSlot = timetable.timeSlots.find(ts => ts.lecture === endLectureNum);
+                        if (endSlot) endTime = parseTime(endSlot.time.split('-')[1], now);
+                    }
+                    busySlots.push({
+                        start: startTime.getHours() * 60 + startTime.getMinutes(),
+                        end: endTime.getHours() * 60 + endTime.getMinutes()
+                    });
+                });
+            }
+        } else { // It's a group
+            const group = state.groups[status.name];
+            group.members.forEach(member => {
+                const { timetable } = state.sections[member.section];
+                if (!timetable) return;
+                const daySchedule = getScheduleForDay(timetable, now);
+                if (daySchedule) {
+                    daySchedule.classes.forEach(classInfo => {
+                        if (!classInfo.subject) return;
+                        const slot = timetable.timeSlots.find(ts => ts.lecture === classInfo.lecture);
+                        if (!slot) return;
+                        const [startTimeStr, endTimeStr] = slot.time.split('-');
+                        const startTime = parseTime(startTimeStr, now);
+                        let endTime = parseTime(endTimeStr, now);
+                        if (classInfo.span && classInfo.span > 1) {
+                            const endLectureNum = classInfo.lecture + classInfo.span - 1;
+                            const endSlot = timetable.timeSlots.find(ts => ts.lecture === endLectureNum);
+                            if (endSlot) endTime = parseTime(endSlot.time.split('-')[1], now);
+                        }
+                        busySlots.push({
+                            start: startTime.getHours() * 60 + startTime.getMinutes(),
+                            end: endTime.getHours() * 60 + endTime.getMinutes()
+                        });
+                    });
+                }
+            });
+        }
+
+        // Create a continuous timeline with colored segments
+        const events = [{ time: TIMELINE_START_MIN, type: 'free' }];
+        busySlots.forEach(slot => {
+            events.push({ time: slot.start, type: 'busy' });
+            events.push({ time: slot.end, type: 'free' });
+        });
+        events.push({ time: TIMELINE_END_MIN, type: 'end' });
+
+        events.sort((a, b) => a.time - b.time);
+
+        let segmentsHtml = '';
+        let lastTime = TIMELINE_START_MIN;
+        let isBusy = busySlots.some(slot => slot.start <= lastTime && slot.end > lastTime);
+
+        for (const event of events) {
+            const currentTime = Math.max(TIMELINE_START_MIN, Math.min(event.time, TIMELINE_END_MIN));
+            const duration = currentTime - lastTime;
+
+            if (duration > 0) {
+                const width = (duration / TOTAL_DURATION_MIN) * 100;
+                const left = ((lastTime - TIMELINE_START_MIN) / TOTAL_DURATION_MIN) * 100;
+                const segmentClass = isBusy ? 'timeline-card-segment-busy' : 'timeline-card-segment-free';
+                segmentsHtml += `<div class="${segmentClass}" style="left: ${left}%; width: ${width}%;"></div>`;
+            }
+
+            if (event.type === 'busy') isBusy = true;
+            if (event.type === 'free') isBusy = false;
+            lastTime = currentTime;
+        }
+        return segmentsHtml;
+    };
+    // --- END: Timeline Helper ---
+
+
     const renderDashboard = () => {
         const statuses = calculateAllStatusesAndGroups();
         if (statuses.length === 0) {
@@ -901,11 +1067,37 @@ document.addEventListener('DOMContentLoaded', () => {
             return a.name.localeCompare(b.name);
         });
 
+        const now = getCurrentTime();
+
         statuses.forEach((status, index) => {
             const cardColor = status.isFree ? 'bg-green-500/20 dark:bg-green-500/10' : 'bg-red-500/20 dark:bg-red-500/10';
             const progressColor = status.isFree ? 'bg-green-500/50' : 'bg-red-500/50';
             const textColor = status.isFree ? 'text-green-800 dark:text-green-200' : 'text-red-800 dark:text-red-200';
             
+            let timelineHtml = '';
+            if (state.settings.cardTimelineEnabled) {
+                const periodTimes = getStandardPeriodTimes();
+                const TIMELINE_START_MIN = 8 * 60;
+                const TIMELINE_END_MIN = 12 * 60 + 50;
+                const TOTAL_DURATION_MIN = TIMELINE_END_MIN - TIMELINE_START_MIN;
+
+                const timelineSegmentsHtml = generateCardTimelineSegments(status, now);
+
+                const timelineMarkersHtml = periodTimes.map(timeStr => {
+                    const [hour, minute] = timeStr.split(':').map(Number);
+                    const minutesFromStart = (hour * 60 + minute) - TIMELINE_START_MIN;
+                    if (minutesFromStart >= 0 && minutesFromStart <= TOTAL_DURATION_MIN) {
+                        const leftPosition = (minutesFromStart / TOTAL_DURATION_MIN) * 100;
+                        return `<div class="timeline-marker" style="left: ${leftPosition}%;"></div>`;
+                    }
+                    return '';
+                }).join('');
+                
+                timelineHtml = `<div class="card-timeline-container">${timelineSegmentsHtml}${timelineMarkersHtml}<div class="timeline-current-indicator-wrapper"></div></div>`;
+            }
+            
+            const contentPadding = state.settings.cardTimelineEnabled ? 'p-5 pb-8' : 'p-5';
+
             let cardHtml = '';
 
             if (status.type === 'section') {
@@ -925,7 +1117,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 <div class="card-inner-wrapper">
                     <div class="card-normal-view">
                         <div class="progress-bar-bg ${progressColor}" style="width: ${status.progress}%;"></div>
-                        <div class="relative z-10 p-5">
+                        <div class="relative z-10 ${contentPadding}">
                             <div class="flex justify-between items-start">
                                 <h2 class="text-2xl font-bold text-gray-800 dark:text-white">${status.name}</h2>
                                 <div class="flex items-center">
@@ -936,6 +1128,7 @@ document.addEventListener('DOMContentLoaded', () => {
                             <div class="details-container mt-4"></div>
                             <div class="friends-container mt-4 flex flex-wrap gap-2">${friendsHtml}</div>
                         </div>
+                        ${timelineHtml}
                         <div class="swipe-indicator text-gray-500 dark:text-gray-400">
                             <div class="swipe-indicator-dot"></div><div class="swipe-indicator-dot"></div><div class="swipe-indicator-dot"></div><div class="swipe-indicator-dot"></div>
                         </div>
@@ -952,7 +1145,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 cardHtml = `
                 <div class="card-normal-view">
-                    <div class="relative z-10 p-5">
+                    <div class="relative z-10 ${contentPadding}">
                         <div class="flex justify-between items-start">
                             <h2 class="text-2xl font-bold text-gray-800 dark:text-white flex items-center">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 opacity-70" viewBox="0 0 20 20" fill="currentColor"><path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3zM6 8a2 2 0 11-4 0 2 2 0 014 0zM16 18v-3a5.972 5.972 0 00-.75-2.906A3.005 3.005 0 0119 15v3h-3zM4.75 12.094A5.973 5.973 0 004 15v3H1v-3a3 3 0 013.75-2.906z" /></svg>
@@ -966,6 +1159,7 @@ document.addEventListener('DOMContentLoaded', () => {
                             <button data-group-name="${status.name}" class="view-timeline-btn w-full bg-purple-600 text-white py-2 rounded-md hover:bg-purple-700 transition-colors font-semibold">View Timeline</button>
                         </div>
                     </div>
+                    ${timelineHtml}
                 </div>`;
             }
 
@@ -1005,11 +1199,16 @@ document.addEventListener('DOMContentLoaded', () => {
             return a.name.localeCompare(b.name);
         });
         
+        const now = getCurrentTime();
+        const TIMELINE_START_MIN = 8 * 60;
+        const TIMELINE_END_MIN = 12 * 60 + 50;
+        const TOTAL_DURATION_MIN = TIMELINE_END_MIN - TIMELINE_START_MIN;
+        const nowMinutes = now.getHours() * 60 + now.getMinutes();
+
         statuses.forEach((status, index) => {
             const card = dashboard.querySelector(`[data-name="${status.name}"][data-type="${status.type}"]`);
             if (!card) return;
 
-            // Update the card's order based on the new sort
             card.style.order = index;
 
             const currentIsFree = card.dataset.isFree === 'true';
@@ -1030,7 +1229,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
                 card.dataset.isFree = status.isFree;
 
-                // FIX: Update progress bar color on status change
                 const progressBar = card.querySelector('.progress-bar-bg');
                 if (progressBar) {
                     const newProgressColor = status.isFree ? 'bg-green-500/50' : 'bg-red-500/50';
@@ -1094,6 +1292,21 @@ document.addEventListener('DOMContentLoaded', () => {
             const detailsContainer = card.querySelector('.details-container');
             if (detailsContainer && detailsContainer.innerHTML !== detailsHtml) {
                  detailsContainer.innerHTML = detailsHtml;
+            }
+
+            const indicatorWrapper = card.querySelector('.timeline-current-indicator-wrapper');
+            if (indicatorWrapper) {
+                if (nowMinutes >= TIMELINE_START_MIN && nowMinutes <= TIMELINE_END_MIN) {
+                    const nowPosition = ((nowMinutes - TIMELINE_START_MIN) / TOTAL_DURATION_MIN) * 100;
+                    let indicator = indicatorWrapper.querySelector('.timeline-current-indicator');
+                    if (!indicator) {
+                        indicatorWrapper.innerHTML = `<div class="timeline-current-indicator" style="left: ${nowPosition}%;"></div>`;
+                    } else {
+                        indicator.style.left = `${nowPosition}%`;
+                    }
+                } else {
+                    indicatorWrapper.innerHTML = '';
+                }
             }
         });
     };
@@ -1652,7 +1865,7 @@ document.addEventListener('DOMContentLoaded', () => {
         reader.readAsText(file);
     };
 
-    // --- SWIPE HANDLING (FIXED) ---
+    // --- SWIPE HANDLING ---
     let touchStartX = 0, touchStartY = 0, touchCurrentX = 0, swipedCard = null, swipeDirection = null;
     const swipeThreshold = 50;
 
@@ -1663,7 +1876,7 @@ document.addEventListener('DOMContentLoaded', () => {
         touchStartY = e.targetTouches[0].clientY;
         touchCurrentX = touchStartX;
         swipedCard = card;
-        swipeDirection = null; // Reset swipe direction
+        swipeDirection = null;
         swipedCard.querySelector('.card-inner-wrapper').style.transition = 'none';
     };
 
@@ -1673,12 +1886,10 @@ document.addEventListener('DOMContentLoaded', () => {
         touchCurrentX = e.targetTouches[0].clientX;
         const touchCurrentY = e.targetTouches[0].clientY;
 
-        // Determine swipe direction on the first significant move
         if (!swipeDirection) {
             const diffX = Math.abs(touchCurrentX - touchStartX);
             const diffY = Math.abs(touchCurrentY - touchStartY);
             
-            // Use a small threshold to avoid accidental direction lock
             if (diffX > 5 || diffY > 5) { 
                 if (diffX > diffY) {
                     swipeDirection = 'horizontal';
@@ -1689,14 +1900,12 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         if (swipeDirection === 'horizontal') {
-            // This is a horizontal swipe, prevent vertical scrolling and handle the swipe
             e.preventDefault();
             const currentState = parseInt(swipedCard.dataset.swipeState || '0', 10);
             const baseTranslate = -currentState * swipedCard.offsetWidth;
             const newTranslate = Math.max(-swipedCard.offsetWidth * 3, Math.min(0, baseTranslate + (touchCurrentX - touchStartX)));
             swipedCard.querySelector('.card-inner-wrapper').style.transform = `translateX(${newTranslate}px)`;
         }
-        // If swipeDirection is 'vertical', we do nothing, allowing the browser's default scroll behavior.
     };
 
     const handleTouchEnd = () => {
@@ -1704,15 +1913,15 @@ document.addEventListener('DOMContentLoaded', () => {
         
         const wrapper = swipedCard.querySelector('.card-inner-wrapper');
         wrapper.style.transition = 'transform 0.4s cubic-bezier(0.25, 0.8, 0.25, 1)';
-        wrapper.style.transform = ''; // Reset transform to let CSS take over
+        wrapper.style.transform = '';
 
         if (swipeDirection === 'horizontal') {
             const diffX = touchCurrentX - touchStartX;
             let newState = parseInt(swipedCard.dataset.swipeState || '0', 10);
             
-            if (diffX < -swipeThreshold) { // Swiped left
+            if (diffX < -swipeThreshold) {
                 newState = Math.min(newState + 1, 3);
-            } else if (diffX > swipeThreshold) { // Swiped right
+            } else if (diffX > swipeThreshold) {
                 newState = Math.max(newState - 1, 0);
             }
             
@@ -1720,7 +1929,6 @@ document.addEventListener('DOMContentLoaded', () => {
             updateCardHeight(swipedCard);
         }
         
-        // Reset state for the next touch
         swipedCard = null;
         swipeDirection = null;
     };
@@ -1739,19 +1947,14 @@ document.addEventListener('DOMContentLoaded', () => {
         const TIMELINE_END_MIN = 12 * 60 + 50; // 12:50 PM
         const TOTAL_DURATION_MIN = TIMELINE_END_MIN - TIMELINE_START_MIN;
 
-        const HOUR_WIDTH = 240;
-        const totalWidth = (TOTAL_DURATION_MIN / 60) * HOUR_WIDTH;
-
-        const periodTimes = ["8:00", "8:50", "9:40", "10:30", "11:20", "12:05", "12:50"];
+        const periodTimes = ["8:00", "8:50", "9:40", "10:30", "11:20", "12:50"];
         let headerLabelsHtml = '';
         periodTimes.forEach(timeStr => {
             const [hour, minute] = timeStr.split(':').map(Number);
             const minutesFromMidnight = hour * 60 + minute;
             const minutesFromStart = minutesFromMidnight - TIMELINE_START_MIN;
-            const leftPosition = (minutesFromStart / TOTAL_DURATION_MIN) * totalWidth;
-            if (leftPosition >= 0 && leftPosition <= totalWidth) {
-                headerLabelsHtml += `<div class="absolute top-1/2 -translate-y-1/2 text-xs text-gray-500 dark:text-gray-400" style="left: ${leftPosition}px; transform: translateX(-50%);">${timeStr}</div>`;
-            }
+            const leftPosition = (minutesFromStart / TOTAL_DURATION_MIN) * 100;
+            headerLabelsHtml += `<div class="absolute top-1/2 -translate-y-1/2 text-xs text-gray-500 dark:text-gray-400" style="left: ${leftPosition}%; transform: translateX(-50%);">${timeStr}</div>`;
         });
 
         // --- Common Free Time Logic ---
@@ -1895,22 +2098,18 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         
         timelineContainer.innerHTML = `
-            <div class="timeline-wrapper" style="width: ${totalWidth}px">
+            <div class="timeline-wrapper relative w-full">
                 <div class="timeline-header-names h-8"></div>
                 <div class="relative h-8">
                     <div class="timeline-header-times h-full">${headerLabelsHtml}</div>
                 </div>
                 ${commonRowHtml}
                 ${memberRowsHtml}
+                ${currentTimeHtml}
             </div>
-            ${currentTimeHtml}
         `;
         
         timelineModal.classList.remove('hidden');
-
-        const containerWidth = timelineContainer.offsetWidth;
-        const scrollPosition = (totalWidth * ((nowMinutes - TIMELINE_START_MIN) / TOTAL_DURATION_MIN)) - (containerWidth / 2);
-        timelineContainer.scrollLeft = Math.max(0, scrollPosition);
     };
 
 
@@ -1919,6 +2118,7 @@ document.addEventListener('DOMContentLoaded', () => {
         loadState();
         applyTheme();
         applyLedIndicatorSetting();
+        applyCardTimelineSetting(); // New call
         updateClock();
         
         await fetchAndUpdateTimetables();
@@ -1955,9 +2155,16 @@ document.addEventListener('DOMContentLoaded', () => {
         renderDashboard(); 
     });
 
+    cardTimelineToggle.addEventListener('click', () => {
+        state.settings.cardTimelineEnabled = !state.settings.cardTimelineEnabled;
+        applyCardTimelineSetting();
+        saveState();
+        renderDashboard(); 
+    });
+
     addSectionForm.addEventListener('submit', handleAddSection);
     addFriendForm.addEventListener('submit', handleAddFriend);
-    addGroupForm.addEventListener('submit', handleAddGroup); // New listener
+    addGroupForm.addEventListener('submit', handleAddGroup);
     debugTimeInput.addEventListener('change', handleDebugTimeChange);
     resetTimeBtn.addEventListener('click', handleResetTime);
     clearDataBtn.addEventListener('click', handleClearData);
