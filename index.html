@@ -39,7 +39,7 @@
             left: 0;
             height: 100%;
             z-index: -1;
-            transition: width 1s linear; /* Smoother transition for real-time update */
+            transition: width 1s linear, background-color 0.5s ease; /* Smoother transition for real-time update */
             border-radius: 0.75rem; /* rounded-xl */
         }
         /* Animation for cards */
@@ -50,7 +50,7 @@
         .card-fade-in {
             animation: fadeIn 0.5s ease-out forwards;
             /* Add smooth height transition */
-            transition: height 0.4s cubic-bezier(0.25, 0.8, 0.25, 1), box-shadow 0.3s ease-in-out, border 0.3s ease-in-out;
+            transition: height 0.4s cubic-bezier(0.25, 0.8, 0.25, 1), box-shadow 0.3s ease-in-out, border 0.3s ease-in-out, order 0.5s ease;
         }
         /* Styles for swipeable cards */
         .card-inner-wrapper {
@@ -986,10 +986,31 @@ document.addEventListener('DOMContentLoaded', () => {
     
     const updateDashboardStatuses = () => {
         const statuses = calculateAllStatusesAndGroups();
+
+        // Sort statuses to get the correct visual order
+        statuses.sort((a, b) => {
+            const getSortOrder = (item) => {
+                if (item.isPinned && item.type === 'group') return 0;
+                if (item.isPinned && item.type === 'section') return 1;
+                if (item.type === 'group') return 2;
+                if (item.type === 'section') return 3;
+                return 4;
+            };
+
+            const orderA = getSortOrder(a);
+            const orderB = getSortOrder(b);
+
+            if (orderA !== orderB) return orderA - orderB;
+            if (a.isFree !== b.isFree) return a.isFree ? -1 : 1;
+            return a.name.localeCompare(b.name);
+        });
         
-        statuses.forEach(status => {
+        statuses.forEach((status, index) => {
             const card = dashboard.querySelector(`[data-name="${status.name}"][data-type="${status.type}"]`);
             if (!card) return;
+
+            // Update the card's order based on the new sort
+            card.style.order = index;
 
             const currentIsFree = card.dataset.isFree === 'true';
             if (currentIsFree !== status.isFree) {
@@ -1008,6 +1029,15 @@ document.addEventListener('DOMContentLoaded', () => {
                     statusTextElement.className = `main-status-text text-right font-bold text-lg ${textColor}`;
                 }
                 card.dataset.isFree = status.isFree;
+
+                // FIX: Update progress bar color on status change
+                const progressBar = card.querySelector('.progress-bar-bg');
+                if (progressBar) {
+                    const newProgressColor = status.isFree ? 'bg-green-500/50' : 'bg-red-500/50';
+                    const oldProgressColor = status.isFree ? 'bg-red-500/50' : 'bg-green-500/50';
+                    progressBar.classList.remove(oldProgressColor);
+                    progressBar.classList.add(newProgressColor);
+                }
             }
 
             let detailsHtml = '';
@@ -1042,8 +1072,19 @@ document.addEventListener('DOMContentLoaded', () => {
                     if (nextClassContainer.innerHTML !== newNextClassHtml) nextClassContainer.innerHTML = newNextClassHtml;
                 }
             } else { // status.type === 'group'
-                 if (status.isFree) {
-                    detailsHtml = `<p class="font-semibold text-lg ${headerColor}">Everyone is free until ${status.freeUntil}</p><p class="text-sm ${detailsTextColor} mt-2">${status.nextUp ? `Next up is ${status.nextUp.name} at ${status.nextUp.time} for ${status.nextUp.subject}.` : 'No more classes scheduled for anyone.'}</p>`;
+                if (status.isFree) {
+                    let nextUpText = 'No more classes scheduled for anyone.';
+                    if (status.nextUp && status.nextUp.subjectGroups.length > 0) {
+                        const allNames = status.nextUp.subjectGroups.flatMap(g => g.names);
+                        const verb = allNames.length > 1 ? 'are' : 'is';
+                        
+                        const details = status.nextUp.subjectGroups.map(group => {
+                            return `${group.names.join(' & ')} for ${group.subject}`;
+                        }).join(', and ');
+
+                        nextUpText = `Next up ${verb} ${details} ${status.nextUp.time}.`;
+                    }
+                    detailsHtml = `<p class="font-semibold text-lg ${headerColor}">Everyone is free until ${status.freeUntil}</p><p class="text-sm ${detailsTextColor} mt-2">${nextUpText}</p>`;
                 } else {
                     const busyList = status.busyMembers.map(m => `<li class="text-sm">${m.name} is busy until ${m.until} (${m.subject})</li>`).join('');
                     detailsHtml = `<p class="font-semibold text-lg ${headerColor}">Some members are busy</p><ul class="list-disc list-inside mt-2 ${detailsTextColor}">${busyList}</ul>`;
@@ -1085,9 +1126,9 @@ document.addEventListener('DOMContentLoaded', () => {
         const now = getCurrentTime();
         const isToday = date.getDate() === now.getDate() && date.getMonth() === now.getMonth() && date.getFullYear() === now.getFullYear();
         if (isToday) {
-            return formatTime(date);
+            return `at ${formatTime(date)}`;
         }
-        return `${DAYS[date.getDay()]} at ${formatTime(date)}`;
+        return `on ${DAYS[date.getDay()]} at ${formatTime(date)}`;
     };
 
     const getScheduleForDay = (timetable, date) => {
@@ -1315,25 +1356,51 @@ document.addEventListener('DOMContentLoaded', () => {
                     }))
                 };
             } else {
-                let earliestNextClass = null;
-                memberStatuses.forEach(m => {
-                    if (m.status && m.status.nextClassTime !== 'a long while') {
-                        const nextClassDate = getNextClass(state.sections[m.section].timetable, now)?.startTime;
-                        if (nextClassDate && (!earliestNextClass || nextClassDate < earliestNextClass.time)) {
-                            earliestNextClass = {
-                                time: nextClassDate,
-                                name: m.name,
-                                subject: m.status.nextClassSubject
-                            };
+                const membersWithNextClass = memberStatuses
+                    .map(m => {
+                        if (m.status && m.status.nextClassTime !== 'a long while') {
+                            const nextClassDate = getNextClass(state.sections[m.section].timetable, now)?.startTime;
+                            if (nextClassDate) {
+                                return {
+                                    time: nextClassDate,
+                                    name: m.name,
+                                    subject: m.status.nextClassSubject || 'Unknown'
+                                };
+                            }
                         }
+                        return null;
+                    })
+                    .filter(Boolean);
+
+                let nextUpInfo = null;
+                if (membersWithNextClass.length > 0) {
+                    const earliestTimeValue = Math.min(...membersWithNextClass.map(m => m.time.getTime()));
+                    const earliestTimeDate = new Date(earliestTimeValue);
+
+                    const nextUpMembers = membersWithNextClass.filter(m => m.time.getTime() === earliestTimeValue);
+                    
+                    if (nextUpMembers.length > 0) {
+                        const time = formatTimeWithDay(earliestTimeDate);
+                        
+                        const subjectMap = new Map();
+                        nextUpMembers.forEach(member => {
+                            if (!subjectMap.has(member.subject)) {
+                                subjectMap.set(member.subject, []);
+                            }
+                            subjectMap.get(member.subject).push(member.name);
+                        });
+                        
+                        const subjectGroups = Array.from(subjectMap, ([subject, names]) => ({ subject, names }));
+
+                        nextUpInfo = { time, subjectGroups };
                     }
-                });
+                }
 
                 return {
                     ...baseStatus,
                     isFree: true,
-                    freeUntil: earliestNextClass ? formatTimeWithDay(earliestNextClass.time) : 'a long while',
-                    nextUp: earliestNextClass ? { name: earliestNextClass.name, time: formatTimeWithDay(earliestNextClass.time), subject: earliestNextClass.subject } : null
+                    freeUntil: nextUpInfo ? nextUpInfo.time : 'a long while',
+                    nextUp: nextUpInfo
                 };
             }
         });
