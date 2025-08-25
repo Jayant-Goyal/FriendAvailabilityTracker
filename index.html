@@ -1585,51 +1585,79 @@ document.addEventListener('DOMContentLoaded', () => {
         reader.readAsText(file);
     };
 
-    // --- SWIPE HANDLING ---
-    let touchStartX = 0, touchCurrentX = 0, swipedCard = null, isSwiping = false;
+    // --- SWIPE HANDLING (FIXED) ---
+    let touchStartX = 0, touchStartY = 0, touchCurrentX = 0, swipedCard = null, swipeDirection = null;
     const swipeThreshold = 50;
 
     const handleTouchStart = (e) => {
         const card = e.target.closest('[data-type="section"]');
         if (!card) return;
         touchStartX = e.targetTouches[0].clientX;
+        touchStartY = e.targetTouches[0].clientY;
+        touchCurrentX = touchStartX;
         swipedCard = card;
+        swipeDirection = null; // Reset swipe direction
         swipedCard.querySelector('.card-inner-wrapper').style.transition = 'none';
     };
 
     const handleTouchMove = (e) => {
         if (!swipedCard) return;
+
         touchCurrentX = e.targetTouches[0].clientX;
-        if (Math.abs(touchCurrentX - touchStartX) > 10) isSwiping = true;
-        
-        const fullScheduleScroller = e.target.closest('.card-full-timetable-view .overflow-auto');
-        const currentState = parseInt(swipedCard.dataset.swipeState || '0', 10);
-        if (fullScheduleScroller && !(currentState === 3 && (touchCurrentX - touchStartX) > 0 && fullScheduleScroller.scrollLeft === 0)) {
-            return; // Don't prevent default if scrolling inside the full timetable
+        const touchCurrentY = e.targetTouches[0].clientY;
+
+        // Determine swipe direction on the first significant move
+        if (!swipeDirection) {
+            const diffX = Math.abs(touchCurrentX - touchStartX);
+            const diffY = Math.abs(touchCurrentY - touchStartY);
+            
+            // Use a small threshold to avoid accidental direction lock
+            if (diffX > 5 || diffY > 5) { 
+                if (diffX > diffY) {
+                    swipeDirection = 'horizontal';
+                } else {
+                    swipeDirection = 'vertical';
+                }
+            }
         }
-        
-        e.preventDefault();
-        const baseTranslate = -currentState * swipedCard.offsetWidth;
-        const newTranslate = Math.max(-swipedCard.offsetWidth * 3, Math.min(0, baseTranslate + (touchCurrentX - touchStartX)));
-        swipedCard.querySelector('.card-inner-wrapper').style.transform = `translateX(${newTranslate}px)`;
+
+        if (swipeDirection === 'horizontal') {
+            // This is a horizontal swipe, prevent vertical scrolling and handle the swipe
+            e.preventDefault();
+            const currentState = parseInt(swipedCard.dataset.swipeState || '0', 10);
+            const baseTranslate = -currentState * swipedCard.offsetWidth;
+            const newTranslate = Math.max(-swipedCard.offsetWidth * 3, Math.min(0, baseTranslate + (touchCurrentX - touchStartX)));
+            swipedCard.querySelector('.card-inner-wrapper').style.transform = `translateX(${newTranslate}px)`;
+        }
+        // If swipeDirection is 'vertical', we do nothing, allowing the browser's default scroll behavior.
     };
 
     const handleTouchEnd = () => {
         if (!swipedCard) return;
+        
         const wrapper = swipedCard.querySelector('.card-inner-wrapper');
         wrapper.style.transition = 'transform 0.4s cubic-bezier(0.25, 0.8, 0.25, 1)';
-        wrapper.style.transform = '';
-        if (isSwiping) {
+        wrapper.style.transform = ''; // Reset transform to let CSS take over
+
+        if (swipeDirection === 'horizontal') {
             const diffX = touchCurrentX - touchStartX;
             let newState = parseInt(swipedCard.dataset.swipeState || '0', 10);
-            if (diffX < -swipeThreshold) newState = Math.min(newState + 1, 3);
-            else if (diffX > swipeThreshold) newState = Math.max(newState - 1, 0);
+            
+            if (diffX < -swipeThreshold) { // Swiped left
+                newState = Math.min(newState + 1, 3);
+            } else if (diffX > swipeThreshold) { // Swiped right
+                newState = Math.max(newState - 1, 0);
+            }
+            
             swipedCard.dataset.swipeState = newState;
             updateCardHeight(swipedCard);
         }
+        
+        // Reset state for the next touch
         swipedCard = null;
-        isSwiping = false;
+        swipeDirection = null;
     };
+
 
     // --- TIMELINE MODAL ---
     const openTimelineModal = (groupName) => {
