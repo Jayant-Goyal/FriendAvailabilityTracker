@@ -72,31 +72,6 @@
         [data-swipe-state="3"] .card-inner-wrapper {
             transform: translateX(-300%);
         }
-        .swipe-indicator {
-            position: absolute;
-            bottom: 10px;
-            right: 15px;
-            display: flex;
-            gap: 4px;
-            opacity: 0.5;
-        }
-        .swipe-indicator-dot {
-            width: 6px;
-            height: 6px;
-            border-radius: 50%;
-            background-color: currentColor;
-            transition: all 0.3s ease;
-            transform: scale(0.8);
-            opacity: 0.6;
-        }
-        /* Handle 4 indicator dots */
-        [data-swipe-state="0"] .swipe-indicator-dot:nth-child(1),
-        [data-swipe-state="1"] .swipe-indicator-dot:nth-child(2),
-        [data-swipe-state="2"] .swipe-indicator-dot:nth-child(3),
-        [data-swipe-state="3"] .swipe-indicator-dot:nth-child(4) {
-            transform: scale(1.2);
-            opacity: 1;
-        }
         /* Gold corner for pinned cards */
         .card-fade-in.is-pinned::before {
             content: '';
@@ -1129,9 +1104,6 @@ document.addEventListener('DOMContentLoaded', () => {
                             <div class="friends-container mt-4 flex flex-wrap gap-2">${friendsHtml}</div>
                         </div>
                         ${timelineHtml}
-                        <div class="swipe-indicator text-gray-500 dark:text-gray-400">
-                            <div class="swipe-indicator-dot"></div><div class="swipe-indicator-dot"></div><div class="swipe-indicator-dot"></div><div class="swipe-indicator-dot"></div>
-                        </div>
                     </div>
                     <div class="card-next-class-view bg-gray-50 dark:bg-gray-800/50">${nextClassDetailsHtml}</div>
                     <div class="card-timetable-view bg-gray-50 dark:bg-gray-800/50">${timetableHtml}</div>
@@ -1254,7 +1226,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (status.isFree) {
                     detailsHtml = `<p class="font-semibold text-lg ${headerColor}">Free until ${status.nextClassTime}</p><div class="mt-2 text-sm ${detailsTextColor}"><p><span class="font-medium">Next:</span> ${status.nextClassSubject}</p><p><span class="font-medium">At:</span> ${status.nextClassVenue} <span class="font-medium">with</span> ${status.nextClassFaculty}</p></div>`;
                 } else {
-                    let freeAtHtml = status.nextFreeTime ? `<p class="mt-1 opacity-80"><span class="font-medium">${status.freeUntilTime.includes('day') || status.freeUntilTime.includes('while') ? 'Free from:' : 'Free at:'}</span> ${status.nextFreeTime} ${status.freeUntilTime.includes('day') || status.freeUntilTime.includes('while') ? 'until' : 'till'} ${status.freeUntilTime}</p>` : '';
+                    let freeAtHtml = status.nextFreeTime ? `<p class="mt-1 opacity-80"><span class="font-medium">Free at</span> ${status.nextFreeTime} <span class="font-medium">until</span> ${status.freeUntilTime}</p>` : '';
                     detailsHtml = `<p class="font-semibold text-lg ${headerColor}">In class until ${status.currentClassEnd}</p><div class="mt-2 text-sm ${detailsTextColor}"><p><span class="font-medium">Subject:</span> ${status.currentClassSubject}</p><p><span class="font-medium">Venue:</span> ${status.currentClassVenue}</p><p><span class="font-medium">Faculty:</span> ${status.currentClassFaculty}</p>${freeAtHtml}</div>`;
                 }
 
@@ -1271,6 +1243,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             } else { // status.type === 'group'
                 if (status.isFree) {
+                    const freeUntil = status.nextUp ? formatTimeOrDay(status.nextUp.date) : 'a long while';
                     let nextUpText = 'No more classes scheduled for anyone.';
                     if (status.nextUp && status.nextUp.subjectGroups.length > 0) {
                         const allNames = status.nextUp.subjectGroups.flatMap(g => g.names);
@@ -1280,9 +1253,11 @@ document.addEventListener('DOMContentLoaded', () => {
                             return `${group.names.join(' & ')} for ${group.subject}`;
                         }).join(', and ');
 
-                        nextUpText = `Next up ${verb} ${details} ${status.nextUp.time}.`;
+                        const timeText = formatTimeWithDay(status.nextUp.date);
+
+                        nextUpText = `Next up ${verb} ${details} ${timeText}.`;
                     }
-                    detailsHtml = `<p class="font-semibold text-lg ${headerColor}">Everyone is free until ${status.freeUntil}</p><p class="text-sm ${detailsTextColor} mt-2">${nextUpText}</p>`;
+                    detailsHtml = `<p class="font-semibold text-lg ${headerColor}">Everyone is free until ${freeUntil}</p><p class="text-sm ${detailsTextColor} mt-2">${nextUpText}</p>`;
                 } else {
                     const busyList = status.busyMembers.map(m => `<li class="text-sm">${m.name} is busy until ${m.until} (${m.subject})</li>`).join('');
                     detailsHtml = `<p class="font-semibold text-lg ${headerColor}">Some members are busy</p><ul class="list-disc list-inside mt-2 ${detailsTextColor}">${busyList}</ul>`;
@@ -1292,6 +1267,8 @@ document.addEventListener('DOMContentLoaded', () => {
             const detailsContainer = card.querySelector('.details-container');
             if (detailsContainer && detailsContainer.innerHTML !== detailsHtml) {
                  detailsContainer.innerHTML = detailsHtml;
+                 // THIS IS THE FIX: Recalculate height after content change
+                 updateCardHeight(card);
             }
 
             const indicatorWrapper = card.querySelector('.timeline-current-indicator-wrapper');
@@ -1343,6 +1320,19 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         return `on ${DAYS[date.getDay()]} at ${formatTime(date)}`;
     };
+
+    // --- START: GRAMMAR FIX ---
+    // New function that formats time without adding prepositions like "at" or "on".
+    const formatTimeOrDay = (date) => {
+        if (!date) return 'N/A';
+        const now = getCurrentTime();
+        const isToday = date.getDate() === now.getDate() && date.getMonth() === now.getMonth() && date.getFullYear() === now.getFullYear();
+        if (isToday) {
+            return formatTime(date); // e.g., "11:20"
+        }
+        return `${DAYS[date.getDay()]} at ${formatTime(date)}`; // e.g., "Wednesday at 08:00"
+    };
+    // --- END: GRAMMAR FIX ---
 
     const getScheduleForDay = (timetable, date) => {
         const dayName = DAYS[date.getDay()];
@@ -1504,7 +1494,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     currentClassVenue: currentClass.venue || 'N/A',
                     currentClassFaculty: currentClass.faculty || 'N/A',
                     currentClassEnd: formatTime(busyPeriodEndTime),
-                    nextFreeTime: nextFree ? formatTimeWithDay(nextFree) : null,
+                    nextFreeTime: nextFree ? formatTimeOrDay(nextFree) : null,
                     freeUntilTime: freeUntilInfo,
                     nextClassForSwipe: nextClassForSwipeData,
                     dayScheduleForView, fullScheduleForView: fullTimetableForView
@@ -1527,7 +1517,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     const progress = totalDuration > 0 ? Math.min(100, (elapsed / totalDuration) * 100) : 0;
                     return {
                         ...baseStatus, isFree: true, progress, ledColor,
-                        nextClassTime: formatTimeWithDay(absoluteNextClass.startTime),
+                        nextClassTime: formatTimeOrDay(absoluteNextClass.startTime),
                         nextClassSubject: absoluteNextClass.subject,
                         nextClassVenue: absoluteNextClass.venue || 'N/A',
                         nextClassFaculty: absoluteNextClass.faculty || 'N/A',
@@ -1593,8 +1583,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     const nextUpMembers = membersWithNextClass.filter(m => m.time.getTime() === earliestTimeValue);
                     
                     if (nextUpMembers.length > 0) {
-                        const time = formatTimeWithDay(earliestTimeDate);
-                        
                         const subjectMap = new Map();
                         nextUpMembers.forEach(member => {
                             if (!subjectMap.has(member.subject)) {
@@ -1605,14 +1593,13 @@ document.addEventListener('DOMContentLoaded', () => {
                         
                         const subjectGroups = Array.from(subjectMap, ([subject, names]) => ({ subject, names }));
 
-                        nextUpInfo = { time, subjectGroups };
+                        nextUpInfo = { date: earliestTimeDate, subjectGroups };
                     }
                 }
 
                 return {
                     ...baseStatus,
                     isFree: true,
-                    freeUntil: nextUpInfo ? nextUpInfo.time : 'a long while',
                     nextUp: nextUpInfo
                 };
             }
