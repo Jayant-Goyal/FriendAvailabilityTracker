@@ -9,88 +9,271 @@
     "type": "LT"
   },
   "timeSlots": [
-    { "lecture": 1, "time": "8.00-8.50" },
-    { "lecture": 2, "time": "8.50-9.40" },
-    { "lecture": 3, "time": "9.40-10.30" },
-    { "lecture": 4, "time": "10.30-11.20" },
-    { "lecture": 5, "time": "11.20-12.05" },
-    { "lecture": 6, "time": "12.05-12.50" }
+    {
+      "lecture": 1,
+      "time": "8.00-8.50"
+    },
+    {
+      "lecture": 2,
+      "time": "8.50-9.40"
+    },
+    {
+      "lecture": 3,
+      "time": "9.40-10.30"
+    },
+    {
+      "lecture": 4,
+      "time": "10.30-11.20"
+    },
+    {
+      "lecture": 5,
+      "time": "11.20-12.05"
+    },
+    {
+      "lecture": 6,
+      "time": "12.05-12.50"
+    }
   ],
   "schedule": [
     {
       "day": "Monday",
       "classes": [
-        { "lecture": 1, "subject": "Data Science", "venue": "NYB 006", "faculty": "Mr. Uplav" },
-        { "lecture": 2, "details": null },
-        { "lecture": 3, "subject": "Computer Network Lab", "venue": "VIB 412", "faculty": "Dr. Ravi", "span": 2 },
-        { "lecture": 5, "details": null },
-        { "lecture": 6, "subject": "Life Skills", "venue": "NYB 002", "faculty": "Ms. Priyanka" }
+        {
+          "lecture": 1,
+          "subject": "Data Science",
+          "venue": "NYB 006",
+          "faculty": "Mr. Uplav"
+        },
+        {
+          "lecture": 2,
+          "details": null
+        },
+        {
+          "lecture": 3,
+          "subject": "Computer Network Lab",
+          "venue": "VIB 412",
+          "faculty": "Dr. Ravi",
+          "span": 2
+        },
+        {
+          "lecture": 5,
+          "details": null
+        },
+        {
+          "lecture": 6,
+          "subject": "Life Skills",
+          "venue": "NYB 002",
+          "faculty": "Ms. Priyanka"
+        }
       ]
     },
     {
       "day": "Tuesday",
       "classes": [
-        { "lecture": 1, "subject": "Data Science", "venue": "NYB 006", "faculty": "Mr. Uplav" },
-        { "lecture": 2, "details": null },
-        { "lecture": 3, "subject": "Operating System", "venue": "NYB 006", "faculty": "Mr. Sameep" },
-        { "lecture": 4, "subject": "Python", "venue": "VIB 105", "faculty": "Ms. Purva" },
-        { "lecture": 5, "subject": "Computer Network", "venue": "VIB 105", "faculty": "Dr. Ravi" },
-        { "lecture": 6, "details": null }
+        {
+          "lecture": 1,
+          "subject": "Data Science",
+          "venue": "NYB 006",
+          "faculty": "Mr. Uplav"
+        },
+        {
+          "lecture": 2,
+          "details": null
+        },
+        {
+          "lecture": 3,
+          "subject": "Operating System",
+          "venue": "NYB 006",
+          "faculty": "Mr. Sameep"
+        },
+        {
+          "lecture": 4,
+          "subject": "Python",
+          "venue": "VIB 105",
+          "faculty": "Ms. Purva"
+        },
+        {
+          "lecture": 5,
+          "subject": "Computer Network",
+          "venue": "VIB 105",
+          "faculty": "Dr. Ravi"
+        },
+        {
+          "lecture": 6,
+          "details": null
+        }
       ]
     },
     {
       "day": "Wednesday",
       "classes": [
-        { "lecture": 1, "details": null },
-        { "lecture": 2, "subject": "Python", "venue": "VIB 103", "faculty": "Ms. Purva" },
-        { "lecture": 3, "subject": "Data Science", "venue": "VIB 109", "faculty": "Mr. Uplav" },
-        { "lecture": 4, "details": null },
-        { "lecture": 5, "subject": "Computer Network", "venue": "NYB 001", "faculty": "Dr. Ravi" },
-        { "lecture": 6, "subject": "Operating System", "venue": "NYB 001", "faculty": "Mr. Sameep" }
+        {
+          "lecture": 1,
+          "details": null
+        },
+        {
+          "lecture": 2,
+          "subject": "Python",
+          "venue": "VIB 103",
+          "faculty": "Ms. Purva"
+        },
+        {
+          "lecture": 3,
+          "subject": "Data Science",
+          "venue": "VIB 109",
+          "faculty": "Mr. Uplav"
+        },
+        {
+          "lecture": 4,
+          "details": null
+        },
+        {
+          "lecture": 5,
+          "subject": "Computer Network",
+          "venue": "NYB 001",
+          "faculty": "Dr. Ravi"
+        },
+        {
+          "lecture": 6,
+          "subject": "Operating System",
+          "venue": "NYB 001",
+          "faculty": "Mr. Sameep"
+        }
       ]
     },
     {
       "day": "Thursday",
       "classes": [
-        { "lecture": 1, "subject": "Discrete Mathematics", "venue": "NYB 002", "faculty": "Dr. Puneet Yadav" },
-        { "lecture": 2, "details": null },
-        { "lecture": 3, "subject": "Python", "venue": "NYB 002", "faculty": "Ms. Purva" },
-        { "lecture": 4, "details": null },
-        { "lecture": 5, "subject": "Computer Network", "venue": "NYB 002", "faculty": "Dr. Ravi" },
-        { "lecture": 6, "details": null }
+        {
+          "lecture": 1,
+          "subject": "Discrete Mathematics",
+          "venue": "NYB 002",
+          "faculty": "Dr. Puneet Yadav"
+        },
+        {
+          "lecture": 2,
+          "details": null
+        },
+        {
+          "lecture": 3,
+          "subject": "Python",
+          "venue": "NYB 002",
+          "faculty": "Ms. Purva"
+        },
+        {
+          "lecture": 4,
+          "details": null
+        },
+        {
+          "lecture": 5,
+          "subject": "Computer Network",
+          "venue": "NYB 002",
+          "faculty": "Dr. Ravi"
+        },
+        {
+          "lecture": 6,
+          "details": null
+        }
       ]
     },
     {
       "day": "Friday",
       "classes": [
-        { "lecture": 1, "subject": "Discrete Mathematics", "venue": "NYB 002", "faculty": "Dr. Puneet Yadav" },
-        { "lecture": 2, "details": null },
-        { "lecture": 3, "subject": "Life Skills", "venue": "VIB 110", "faculty": "Ms. Priyanka" },
-        { "lecture": 4, "details": null },
-        { "lecture": 5, "subject": "Computer Network Tutorial", "venue": "NYB 001", "faculty": "Dr. Ravi" },
-        { "lecture": 6, "subject": "Operating System", "venue": "NYB 001", "faculty": "Mr. Sameep" }
+        {
+          "lecture": 1,
+          "subject": "Discrete Mathematics",
+          "venue": "NYB 002",
+          "faculty": "Dr. Puneet Yadav"
+        },
+        {
+          "lecture": 2,
+          "details": null
+        },
+        {
+          "lecture": 3,
+          "subject": "Life Skills Lab",
+          "venue": "VIB 110",
+          "faculty": "Ms. Priyanka",
+          "span": 2
+        },
+        {
+          "lecture": 5,
+          "subject": "Computer Network Tutorial",
+          "venue": "NYB 001",
+          "faculty": "Dr. Ravi"
+        },
+        {
+          "lecture": 6,
+          "subject": "Operating System",
+          "venue": "NYB 001",
+          "faculty": "Mr. Sameep"
+        }
       ]
     },
     {
       "day": "Saturday",
       "classes": [
-        { "lecture": 1, "subject": "Discrete Mathematics", "venue": "NYB 216", "faculty": "Dr. Puneet Yadav" },
-        { "lecture": 2, "details": null },
-        { "lecture": 3, "subject": "Python Lab", "venue": "VIB 412", "faculty": "Ms. Purva", "span": 2 },
-        { "lecture": 5, "subject": "Operating System Lab", "venue": "VIB 403", "faculty": "Mr. Sameep", "span": 2 }
+        {
+          "lecture": 1,
+          "subject": "Discrete Mathematics",
+          "venue": "KAB 407",
+          "faculty": "Dr. Puneet Yadav"
+        },
+        {
+          "lecture": 2,
+          "details": null
+        },
+        {
+          "lecture": 3,
+          "subject": "Python Lab",
+          "venue": "VIB 412",
+          "faculty": "Ms. Purva",
+          "span": 2
+        },
+        {
+          "lecture": 5,
+          "subject": "Operating System Lab",
+          "venue": "VIB 403",
+          "faculty": "Mr. Sameep",
+          "span": 2
+        }
       ]
     }
   ],
   "faculty": [
-    { "subject": "Python", "name": "Ms. Purva" },
-    { "subject": "Data Science", "name": "Mr. Uplav" },
-    { "subject": "Operating System", "name": "Mr. Sameep" },
-    { "subject": "Computer Network", "name": "Dr. Ravi" },
-    { "subject": "Discrete Mathematics", "name": "Dr. Puneet Yadav" },
-    { "subject": "Life Skills", "name": "Ms. Priyanka" }
+    {
+      "subject": "Python",
+      "name": "Ms. Purva"
+    },
+    {
+      "subject": "Data Science",
+      "name": "Mr. Uplav"
+    },
+    {
+      "subject": "Operating System",
+      "name": "Mr. Sameep"
+    },
+    {
+      "subject": "Computer Network",
+      "name": "Dr. Ravi"
+    },
+    {
+      "subject": "Discrete Mathematics",
+      "name": "Dr. Puneet Yadav"
+    },
+    {
+      "subject": "Life Skills",
+      "name": "Ms. Priyanka"
+    }
   ],
   "staff": [
-    { "role": "Time-Table Coordinator", "name": "Nidhi Gour" },
-    { "role": "HOD", "name": "Dr. Bhavna Sharma" }
+    {
+      "role": "Time-Table Coordinator",
+      "name": "Nidhi Gour"
+    },
+    {
+      "role": "HOD",
+      "name": "Dr. Bhavna Sharma"
+    }
   ]
 }
