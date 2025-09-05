@@ -126,7 +126,7 @@
         /* --- START: TIMELINE MODAL STYLES (SHARED) --- */
         .timeline-grid {
             display: grid;
-            grid-template-columns: 120px 1fr; /* Names column and timeline column */
+            grid-template-columns: 80px 1fr; /* Names column and timeline column */
             width: fit-content;
             min-width: 100%;
         }
@@ -501,7 +501,7 @@
 
     <!-- START: Group Timeline Modal -->
     <div id="timeline-modal" class="fixed inset-0 bg-black bg-opacity-70 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-4xl h-[80vh] flex flex-col p-4">
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-4xl h-[80vh] flex flex-col p-2 sm:p-4">
             <div class="flex justify-between items-center mb-2 pb-2 border-b border-gray-200 dark:border-gray-700">
                 <h2 id="timeline-group-name" class="text-xl font-bold">Group Timeline</h2>
                 <button id="close-timeline-modal" class="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">
@@ -522,7 +522,7 @@
 
     <!-- START: Daily Timeline Modal -->
     <div id="daily-timeline-modal" class="fixed inset-0 bg-black bg-opacity-70 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-4xl h-[80vh] flex flex-col p-4">
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-4xl h-[80vh] flex flex-col p-2 sm:p-4">
             <div class="flex justify-between items-center mb-2 pb-2 border-b border-gray-200 dark:border-gray-700">
                 <h2 class="text-xl font-bold">Daily Timeline</h2>
                 <button id="close-daily-timeline-modal" class="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">
@@ -954,7 +954,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- START: Timeline Helper ---
     const getStandardPeriodTimes = () => {
-        return ["8:00", "8:50", "9:40", "10:30", "11:20", "12:50"];
+        return ["8:00", "8:50", "9:40", "10:30", "11:20", "12:05", "12:50"];
     };
 
     const generateCardTimelineSegments = (status, now) => {
@@ -2432,3 +2432,5 @@ document.addEventListener('DOMContentLoaded', () => {
 </script>
 </body>
 </html>
+
+
