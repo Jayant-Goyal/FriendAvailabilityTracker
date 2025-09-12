@@ -278,9 +278,12 @@
 
         <!-- Header -->
         <header class="flex justify-between items-center mb-6">
-            <div>
-                <h1 class="text-2xl font-bold text-gray-800 dark:text-white">SyncUp</h1>
-                <p id="real-time-clock" class="text-sm text-gray-500 dark:text-gray-400">Loading time...</p>
+            <div id="header-left">
+                <h1 id="app-title" class="text-2xl font-bold text-gray-800 dark:text-white cursor-pointer select-none">SyncUp</h1>
+                <div class="flex items-center mt-1">
+                    <p id="real-time-clock" class="text-sm text-gray-500 dark:text-gray-400 transition-colors"></p>
+                    <div id="time-travel-indicator" class="hidden ml-2 px-2 py-0.5 text-xs font-semibold rounded-full"></div>
+                </div>
             </div>
             <div class="flex items-center space-x-2">
                 <!-- NEW: Daily Timeline Button -->
@@ -628,6 +631,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const closeWelcomeModalBtn = document.getElementById('close-welcome-modal');
     const changelogModal = document.getElementById('changelog-modal');
     const closeChangelogModalBtn = document.getElementById('close-changelog-modal');
+    // New elements for time travel
+    const appTitle = document.getElementById('app-title');
+    const timeTravelIndicator = document.getElementById('time-travel-indicator');
 
 
     // --- CONSTANTS ---
@@ -1518,6 +1524,35 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         return lastClassEndTime;
     };
+    
+    const findNextPeriodStart = (date) => {
+        const standardTimes = getStandardPeriodTimes();
+        for (const timeStr of standardTimes) {
+            const periodStart = parseTime(timeStr, date);
+            if (periodStart > date) {
+                return periodStart;
+            }
+        }
+        // If no more periods today, go to the first period of the next day
+        const nextDay = new Date(date);
+        nextDay.setDate(date.getDate() + 1);
+        return parseTime(standardTimes[0], nextDay);
+    };
+
+    const findPreviousPeriodStart = (date) => {
+        const standardTimes = getStandardPeriodTimes().slice().reverse();
+        for (const timeStr of standardTimes) {
+            const periodStart = parseTime(timeStr, date);
+            if (periodStart < date) {
+                return periodStart;
+            }
+        }
+        // If no earlier periods today, go to the last period of the previous day
+        const prevDay = new Date(date);
+        prevDay.setDate(date.getDate() - 1);
+        return parseTime(standardTimes[0], prevDay);
+    };
+
 
     const calculateAllStatusesAndGroups = () => {
         const now = getCurrentTime();
@@ -1917,6 +1952,7 @@ document.addEventListener('DOMContentLoaded', () => {
         saveState();
         updateClock();
         updateDashboardStatuses();
+        updateDebugIndicator();
     };
 
     const handleResetTime = () => {
@@ -1925,7 +1961,32 @@ document.addEventListener('DOMContentLoaded', () => {
         saveState();
         updateClock();
         updateDashboardStatuses();
+        updateDebugIndicator();
         showToast('Time reset to real-time.');
+    };
+    
+    const updateDebugIndicator = () => {
+        if (!state.debugTime) {
+            timeTravelIndicator.classList.add('hidden');
+            clockElement.classList.remove('text-amber-500', 'text-blue-500', 'dark:text-amber-400', 'dark:text-blue-400', 'font-semibold');
+            return;
+        }
+
+        const now = new Date();
+        timeTravelIndicator.classList.remove('hidden');
+        clockElement.classList.add('font-semibold');
+
+        if (state.debugTime.getTime() > now.getTime()) {
+            timeTravelIndicator.textContent = 'Future';
+            timeTravelIndicator.className = 'ml-2 px-2 py-0.5 text-xs font-semibold rounded-full bg-blue-100 text-blue-800 dark:bg-blue-900/50 dark:text-blue-300';
+            clockElement.classList.add('text-blue-500', 'dark:text-blue-400');
+            clockElement.classList.remove('text-amber-500', 'dark:text-amber-400');
+        } else {
+            timeTravelIndicator.textContent = 'Past';
+            timeTravelIndicator.className = 'ml-2 px-2 py-0.5 text-xs font-semibold rounded-full bg-amber-100 text-amber-800 dark:bg-amber-900/50 dark:text-amber-300';
+            clockElement.classList.add('text-amber-500', 'dark:text-amber-400');
+            clockElement.classList.remove('text-blue-500', 'dark:text-blue-400');
+        }
     };
 
     const handleClearData = () => {
@@ -2042,6 +2103,43 @@ document.addEventListener('DOMContentLoaded', () => {
         swipedCard = null;
         swipeDirection = null;
         isCardSwiping = false;
+    };
+    
+    // --- HEADER TIME TRAVEL SWIPE ---
+    let headerTouchStartX = 0;
+    
+    const handleHeaderTouchStart = (e) => {
+        headerTouchStartX = e.touches[0].clientX;
+    };
+    
+    const handleHeaderTouchEnd = (e) => {
+        const headerTouchEndX = e.changedTouches[0].clientX;
+        const diffX = headerTouchEndX - headerTouchStartX;
+        const now = new Date();
+        const currentTime = getCurrentTime();
+
+        if (Math.abs(diffX) < swipeThreshold) return;
+
+        if (diffX < 0) { // Swipe Left
+            if (state.debugTime && state.debugTime < now) {
+                handleResetTime();
+            } else {
+                state.debugTime = findNextPeriodStart(currentTime);
+                showToast(`Jumped to next period: ${formatTime(state.debugTime)}`);
+            }
+        } else { // Swipe Right
+            if (state.debugTime && state.debugTime > now) {
+                handleResetTime();
+            } else {
+                state.debugTime = findPreviousPeriodStart(currentTime);
+                 showToast(`Jumped to previous period: ${formatTime(state.debugTime)}`);
+            }
+        }
+        
+        saveState();
+        updateClock();
+        updateDashboardStatuses();
+        updateDebugIndicator();
     };
 
 
@@ -2371,6 +2469,7 @@ document.addEventListener('DOMContentLoaded', () => {
         applyCardTimelineSetting();
         applyPreviousVenueSetting();
         updateClock();
+        updateDebugIndicator();
         
         await fetchAndUpdateTimetables();
         
@@ -2525,6 +2624,10 @@ document.addEventListener('DOMContentLoaded', () => {
     dashboard.addEventListener('touchmove', handleTouchMove, { passive: false });
     dashboard.addEventListener('touchend', handleTouchEnd);
     dashboard.addEventListener('touchcancel', handleTouchEnd);
+
+    appTitle.addEventListener('touchstart', handleHeaderTouchStart);
+    appTitle.addEventListener('touchend', handleHeaderTouchEnd);
+
 
     // --- APP START ---
     initializeApp();
