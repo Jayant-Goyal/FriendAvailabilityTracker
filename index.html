@@ -291,7 +291,7 @@
                 </button>
                 <button id="settings-btn" class="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826 3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                     </svg>
                 </button>
@@ -380,6 +380,7 @@
             <div class="flex-grow overflow-y-auto pr-2 -mr-2">
                 <!-- Theme Toggles -->
                 <div class="space-y-3 mb-6">
+                     <h3 class="font-semibold mb-2 border-b border-gray-200 dark:border-gray-600 pb-1">Display</h3>
                     <div class="flex justify-between items-center p-3 bg-gray-100 dark:bg-gray-700 rounded-lg">
                         <label for="dark-mode-toggle" class="font-medium">Dark Mode</label>
                         <button id="dark-mode-toggle" class="relative inline-flex items-center h-6 rounded-full w-11 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-gray-800">
@@ -400,6 +401,17 @@
                             <span class="sr-only">Enable Card Timeline</span>
                             <span class="inline-block w-4 h-4 transform bg-white rounded-full transition-transform"></span>
                         </button>
+                    </div>
+                    <div class="flex justify-between items-center p-3 bg-gray-100 dark:bg-gray-700 rounded-lg">
+                        <label for="previous-venue-toggle" class="font-medium">Show Previous Venue</label>
+                        <button id="previous-venue-toggle" class="relative inline-flex items-center h-6 rounded-full w-11 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-gray-800">
+                            <span class="sr-only">Enable Previous Venue Widget</span>
+                            <span class="inline-block w-4 h-4 transform bg-white rounded-full transition-transform"></span>
+                        </button>
+                    </div>
+                    <div id="previous-venue-options" class="space-y-2 p-3 bg-gray-100 dark:bg-gray-700 rounded-lg hidden">
+                        <label for="previous-venue-time-limit" class="font-medium text-sm">Time Limit (minutes)</label>
+                        <input type="number" id="previous-venue-time-limit" min="1" max="60" class="w-full bg-gray-200 dark:bg-gray-600 border-gray-300 dark:border-gray-500 rounded-md p-2 text-sm focus:ring-indigo-500 focus:border-indigo-500">
                     </div>
                 </div>
 
@@ -552,7 +564,9 @@ document.addEventListener('DOMContentLoaded', () => {
             darkMode: true,
             debugMode: false,
             ledIndicatorEnabled: false,
-            cardTimelineEnabled: false
+            cardTimelineEnabled: false,
+            previousVenueWidgetEnabled: true,
+            previousVenueTimeLimit: 5
         },
         debugTime: null,
         remoteTimetablesVersion: 0,
@@ -569,6 +583,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const darkModeToggle = document.getElementById('dark-mode-toggle');
     const ledIndicatorToggle = document.getElementById('led-indicator-toggle');
     const cardTimelineToggle = document.getElementById('card-timeline-toggle');
+    const previousVenueToggle = document.getElementById('previous-venue-toggle');
+    const previousVenueOptions = document.getElementById('previous-venue-options');
+    const previousVenueTimeLimitInput = document.getElementById('previous-venue-time-limit');
     const addSectionForm = document.getElementById('add-section-form');
     const timetableFileInput = document.getElementById('timetable-file');
     const sectionsList = document.getElementById('sections-list');
@@ -666,6 +683,12 @@ document.addEventListener('DOMContentLoaded', () => {
                     }
                     if (typeof parsedState.settings.cardTimelineEnabled === 'undefined') {
                         parsedState.settings.cardTimelineEnabled = false; 
+                    }
+                    if (typeof parsedState.settings.previousVenueWidgetEnabled === 'undefined') {
+                        parsedState.settings.previousVenueWidgetEnabled = true;
+                    }
+                    if (typeof parsedState.settings.previousVenueTimeLimit === 'undefined') {
+                        parsedState.settings.previousVenueTimeLimit = 5;
                     }
 
                     Object.assign(state, parsedState);
@@ -832,6 +855,19 @@ document.addEventListener('DOMContentLoaded', () => {
         } else {
             cardTimelineToggle.classList.remove('bg-indigo-600');
             cardTimelineToggle.lastElementChild.classList.remove('translate-x-5');
+        }
+    };
+
+    const applyPreviousVenueSetting = () => {
+        previousVenueTimeLimitInput.value = state.settings.previousVenueTimeLimit;
+        if (state.settings.previousVenueWidgetEnabled) {
+            previousVenueToggle.classList.add('bg-indigo-600');
+            previousVenueToggle.lastElementChild.classList.add('translate-x-5');
+            previousVenueOptions.classList.remove('hidden');
+        } else {
+            previousVenueToggle.classList.remove('bg-indigo-600');
+            previousVenueToggle.lastElementChild.classList.remove('translate-x-5');
+            previousVenueOptions.classList.add('hidden');
         }
     };
 
@@ -1263,8 +1299,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (status.isFree) {
                     detailsHtml = `<p class="font-semibold text-lg ${headerColor}">Free until ${status.nextClassTime}</p><div class="mt-2 text-sm ${detailsTextColor}"><p><span class="font-medium">Next:</span> ${status.nextClassSubject}</p><p><span class="font-medium">At:</span> ${status.nextClassVenue} <span class="font-medium">with</span> ${status.nextClassFaculty}</p></div>`;
                 } else {
+                    const previousVenueWidgetHtml = status.previousVenueInfo
+                        ? `<span class="ml-2 px-2 py-0.5 text-xs font-semibold bg-gray-200 text-gray-700 rounded-full dark:bg-gray-700 dark:text-gray-300 whitespace-nowrap">${status.previousVenueInfo.text}</span>`
+                        : '';
                     let freeAtHtml = status.nextFreeTime ? `<p class="mt-1 opacity-80"><span class="font-medium">Free at</span> ${status.nextFreeTime} <span class="font-medium">until</span> ${status.freeUntilTime}</p>` : '';
-                    detailsHtml = `<p class="font-semibold text-lg ${headerColor}">In class until ${status.currentClassEnd}</p><div class="mt-2 text-sm ${detailsTextColor}"><p><span class="font-medium">Subject:</span> ${status.currentClassSubject}</p><p><span class="font-medium">Venue:</span> ${status.currentClassVenue}</p><p><span class="font-medium">Faculty:</span> ${status.currentClassFaculty}</p>${freeAtHtml}</div>`;
+                    detailsHtml = `<p class="font-semibold text-lg ${headerColor}">In class until ${status.currentClassEnd}</p><div class="mt-2 text-sm ${detailsTextColor}"><p><span class="font-medium">Subject:</span> ${status.currentClassSubject}</p><p class="flex items-center"><span class="font-medium mr-1">Venue:</span> ${status.currentClassVenue}${previousVenueWidgetHtml}</p><p><span class="font-medium">Faculty:</span> ${status.currentClassFaculty}</p>${freeAtHtml}</div>`;
                 }
 
                 const timetableContainer = card.querySelector('.card-timetable-view');
@@ -1418,6 +1457,28 @@ document.addEventListener('DOMContentLoaded', () => {
         return null;
     };
     
+    // --- NEW FEATURE: Helper function to get the previous class ---
+    const getPreviousClassInfo = (daySchedule, currentLectureNumber) => {
+        if (!daySchedule || currentLectureNumber <= 1) {
+            return { type: 'first' };
+        }
+
+        const previousLectureNumber = currentLectureNumber - 1;
+
+        // Find the class that was happening in the previous lecture slot
+        const previousClass = daySchedule.classes.find(c =>
+            c.subject && // It must be an actual class
+            previousLectureNumber >= c.lecture &&
+            previousLectureNumber < c.lecture + (c.span || 1)
+        );
+
+        if (previousClass) {
+            return { type: 'class', venue: previousClass.venue || 'N/A' };
+        } else {
+            return { type: 'free' };
+        }
+    };
+
     const findClassStartingAt = (timetable, date) => {
         const daySchedule = getScheduleForDay(timetable, date);
         if (!daySchedule) return null;
@@ -1520,6 +1581,33 @@ document.addEventListener('DOMContentLoaded', () => {
                 const elapsed = now - currentClass.startTime;
                 const progress = totalDuration > 0 ? Math.min(100, (elapsed / totalDuration) * 100) : 0;
 
+                // --- NEW FEATURE LOGIC ---
+                let previousVenueInfo = null;
+                if (state.settings.previousVenueWidgetEnabled) {
+                    const timeLimitInMs = state.settings.previousVenueTimeLimit * 60 * 1000;
+
+                    if (now.getTime() < currentClass.startTime.getTime() + timeLimitInMs) {
+                        const prevClassResult = getPreviousClassInfo(todaySchedule, currentClass.lecture);
+                        
+                        switch (prevClassResult.type) {
+                            case 'first':
+                                previousVenueInfo = { text: 'First Class' };
+                                break;
+                            case 'free':
+                                previousVenueInfo = { text: 'From Free Period' };
+                                break;
+                            case 'class':
+                                if (prevClassResult.venue === (currentClass.venue || 'N/A')) {
+                                    previousVenueInfo = { text: 'Same Venue' };
+                                } else {
+                                    previousVenueInfo = { text: `From ${prevClassResult.venue}` };
+                                }
+                                break;
+                        }
+                    }
+                }
+                // --- END NEW FEATURE LOGIC ---
+
                 return {
                     ...baseStatus, isFree: false, progress, ledColor,
                     currentClassSubject: currentClass.subject,
@@ -1529,7 +1617,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     nextFreeTime: nextFree ? formatTimeOrDay(nextFree) : null,
                     freeUntilTime: freeUntilInfo,
                     nextClassForSwipe: nextClassForSwipeData,
-                    dayScheduleForView, fullScheduleForView: fullTimetableForView
+                    dayScheduleForView, fullScheduleForView: fullTimetableForView,
+                    previousVenueInfo // Pass new data
                 };
             } else {
                 if (absoluteNextClass) {
@@ -2280,6 +2369,7 @@ document.addEventListener('DOMContentLoaded', () => {
         applyTheme();
         applyLedIndicatorSetting();
         applyCardTimelineSetting();
+        applyPreviousVenueSetting();
         updateClock();
         
         await fetchAndUpdateTimetables();
@@ -2327,6 +2417,26 @@ document.addEventListener('DOMContentLoaded', () => {
         applyCardTimelineSetting();
         saveState();
         renderDashboard(); 
+    });
+    
+    previousVenueToggle.addEventListener('click', () => {
+        state.settings.previousVenueWidgetEnabled = !state.settings.previousVenueWidgetEnabled;
+        applyPreviousVenueSetting();
+        saveState();
+        updateDashboardStatuses();
+    });
+
+    previousVenueTimeLimitInput.addEventListener('change', (e) => {
+        const value = parseInt(e.target.value, 10);
+        if (value >= 1 && value <= 60) {
+            state.settings.previousVenueTimeLimit = value;
+            saveState();
+            updateDashboardStatuses();
+            showToast(`Time limit set to ${value} minutes.`);
+        } else {
+            e.target.value = state.settings.previousVenueTimeLimit;
+            showToast('Please enter a value between 1 and 60.', 'error');
+        }
     });
 
     addSectionForm.addEventListener('submit', handleAddSection);
@@ -2432,5 +2542,4 @@ document.addEventListener('DOMContentLoaded', () => {
 </script>
 </body>
 </html>
-
 
