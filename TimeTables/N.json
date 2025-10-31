@@ -1,0 +1,99 @@
+{
+  "university": "JECRC UNIVERSITY",
+  "department": "DEPARTMENT OF COMPUTER SCIENCE AND ENGINEERING",
+  "timetableInfo": {
+    "title": "TIME-TABLE",
+    "section": "N",
+    "year": "II",
+    "semester": "III Sem",
+    "type": "LT"
+  },
+  "timeSlots": [
+    { "lecture": 1, "time": "8.00-8.50" },
+    { "lecture": 2, "time": "8.50-9.40" },
+    { "lecture": 3, "time": "9.40-10.30" },
+    { "lecture": 4, "time": "10.30-11.20" },
+    { "lecture": 5, "time": "11.20-12.05" },
+    { "lecture": 6, "time": "12.05-12.50" }
+  ],
+  "schedule": [
+    {
+      "day": "Monday",
+      "classes": [
+        { "lecture": 1, "details": null },
+        { "lecture": 2, "subject": "Operating System", "venue": "NYB 311", "faculty": "Ms. Laxmi" },
+        { "lecture": 3, "details": null },
+        { "lecture": 4, "details": null },
+        { "lecture": 5, "subject": "Computer Organization and Design", "venue": "NYB 313", "faculty": "Ms.Jyoti" },
+        { "lecture": 6, "subject": "Computer Network", "venue": "NYB 313", "faculty": "Mr. Siddharth" }
+      ]
+    },
+    {
+      "day": "Tuesday",
+      "classes": [
+        { "lecture": 1, "details": null },
+        { "lecture": 2, "subject": "Software Engineering and Project Management", "venue": "NYB 314", "faculty": "Ms. Priyanka Khatana" },
+        { "lecture": 3, "subject": "Data Structure and Algorithms", "venue": "NYB 314", "faculty": "Mr. Pushpendra" },
+        { "lecture": 4, "subject": "Computer Network", "venue": "NYB 314", "faculty": "Mr. Siddharth" },
+        { "lecture": 5, "subject": "Computer Organization and Design", "venue": "NYB 314", "faculty": "Ms.Jyoti" },
+        { "lecture": 6, "subject": "Operating System", "venue": "NYB 314", "faculty": "Ms. Laxmi" }
+      ]
+    },
+    {
+      "day": "Wednesday",
+      "classes": [
+        { "lecture": 1, "subject": "Life Skills", "venue": "NYB 311", "faculty": "Mr. Rakesh Saini" },
+        { "lecture": 2, "subject": "Life Skills", "venue": "NYB 311", "faculty": "Dr. Tanya Sharma" },
+        { "lecture": 3, "details": null },
+        { "lecture": 4, "details": null },
+        { "lecture": 5, "subject": "Computer Organization and Design", "venue": "VIB 013", "faculty": "Ms.Jyoti" },
+        { "lecture": 6, "details": null }
+      ]
+    },
+    {
+      "day": "Thursday",
+      "classes": [
+        { "lecture": 1, "subject": "Data Structure and Algorithms", "venue": "VIB 211", "faculty": "Mr. Pushpendra" },
+        { "lecture": 2, "details": null },
+        { "lecture": 3, "details": null },
+        { "lecture": 4, "subject": "Software Engineering and Project Management", "venue": "VIB 207", "faculty": "Ms. Priyanka Khatana" },
+        { "lecture": 5, "subject": "Computer Network", "venue": "NYB 313", "faculty": "Mr. Siddharth" },
+        { "lecture": 6, "details": null }
+      ]
+    },
+    {
+      "day": "Friday",
+      "classes": [
+        { "lecture": 1, "subject": "Data Structure and Algorithms", "venue": "NYB 314", "faculty": "Mr. Pushpendra" },
+        { "lecture": 2, "subject": "Life Skills", "venue": "NYB 001", "faculty": "Mr. Rakesh Saini" },
+        { "lecture": 3, "subject": "Operating System Lab", "venue": "VIB 402", "faculty": "Ms. Laxmi", "span": 2 },
+        { "lecture": 5, "details": null },
+        { "lecture": 6, "subject": "Data Structure and Algorithms Tutorial", "venue": "NYB 313", "faculty": "Mr. Pushpendra" }
+      ]
+    },
+    {
+      "day": "Saturday",
+      "classes": [
+        { "lecture": 1, "details": null },
+        { "lecture": 2, "subject": "Computer Network Tutorial", "venue": "NYB 311", "faculty": "Mr. Siddharth" },
+        { "lecture": 3, "subject": "Data Structure and Algorithms Lab", "venue": "VIB 407", "faculty": "Mr. Pushpendra", "span": 2 },
+        { "lecture": 5, "details": null },
+        { "lecture": 6, "subject": "Operating System", "venue": "VIB 206", "faculty": "Ms. Laxmi" }
+      ]
+    }
+  ],
+  "faculty": [
+    { "subject": "Life Skills", "name": "Mr.  Rakesh Saini" },
+    { "subject": "Life Skills (N1)", "name": "Mr. Rakesh Saini" },
+    { "subject": "Life Skills (N2)", "name": "Dr. Tanya Sharma" },
+    { "subject": "Computer Network", "name": "Mr. Siddharth" },
+    { "subject": "Data Structure and Algorithms", "name": "Mr. Pushpendra" },
+    { "subject": "Computer Organization and Design", "name": "Ms.Jyoti" },
+    { "subject": "Operating System", "name": "Ms. Laxmi" },
+    { "subject": "Software Engineering and Project Management", "name": "Ms. Priyanka Khatana" }
+  ],
+  "staff": [
+    { "role": "Time-Table Coordinator", "name": "Nidhi Gour" },
+    { "role": "HOD", "name": "Dr. Bhavna Sharma" }
+  ]
+}
