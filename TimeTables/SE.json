@@ -31,7 +31,7 @@
     {
       "day": "Tuesday",
       "classes": [
-        { "lecture": 1, "subject": "UI Specialist (Full Stack)", "venue": "VIB 206", "faculty": "" },
+        { "lecture": 1, "details": null },
         { "lecture": 2, "subject": "Supervised Learning (AIML)", "venue": "VIB 502", "faculty": "" },
         { "lecture": 3, "details": null },
         { "lecture": 4, "details": null },
@@ -62,7 +62,7 @@
     {
       "day": "Friday",
       "classes": [
-        { "lecture": 1, "subject": "Think Python (Full Stack)", "venue": "VIB 206", "faculty": "" },
+        { "lecture": 1, "details": null },
         { "lecture": 2, "details": null },
         { "lecture": 3, "details": null },
         { "lecture": 4, "details": null },
