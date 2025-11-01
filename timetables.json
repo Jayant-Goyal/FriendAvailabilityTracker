@@ -1,5 +1,5 @@
 {
-  "version": 10,
+  "version": 11,
   "files": [
     "DA.json",
 	"DB.json",
@@ -9,7 +9,7 @@
 	"DF.json",
 	"DG.json",
 	"DH.json",
-	"DI.json","N.json"
+	"DI.json","N.json","SE.json"
   ]
 
 }
