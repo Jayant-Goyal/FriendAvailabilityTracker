@@ -1,0 +1,97 @@
+{
+  "university": "JECRC UNIVERSITY",
+  "department": "DEPARTMENT OF COMPUTER SCIENCE AND ENGINEERING",
+  "timetableInfo": {
+    "title": "TIME-TABLE",
+    "section": "SE",
+    "year": "II",
+    "semester": "III Sem",
+    "type": "LT"
+  },
+  "timeSlots": [
+    { "lecture": 1, "time": "8.00-8.50" },
+    { "lecture": 2, "time": "8.50-9.40" },
+    { "lecture": 3, "time": "9.40-10.30" },
+    { "lecture": 4, "time": "10.30-11.20" },
+    { "lecture": 5, "time": "11.20-12.05" },
+    { "lecture": 6, "time": "12.05-12.50" }
+  ],
+  "schedule": [
+    {
+      "day": "Monday",
+      "classes": [
+        { "lecture": 1, "subject": "Data Structure and Algorithms", "venue": "VIB 206", "faculty": "Mr. Ankur" },
+        { "lecture": 2, "subject": "Software Engineering Project and Management", "venue": "VIB 110", "faculty": "Ms. Priya" },
+        { "lecture": 3, "subject": "Discrete Mathematics", "venue": "VIB 110", "faculty": "Ms. Monika Yadav" },
+        { "lecture": 4, "subject": "Operating System", "venue": "VIB 110", "faculty": "Ms. Ruchi" },
+        { "lecture": 5, "subject": "Life Skills", "venue": "VIB 110", "faculty": "Dr. Rakhi" },
+        { "lecture": 6, "details": null }
+      ]
+    },
+    {
+      "day": "Tuesday",
+      "classes": [
+        { "lecture": 1, "subject": "UI Specialist (Full Stack)", "venue": "VIB 206", "faculty": "" },
+        { "lecture": 2, "subject": "Supervised Learning (AIML)", "venue": "VIB 502", "faculty": "" },
+        { "lecture": 3, "details": null },
+        { "lecture": 4, "details": null },
+        { "lecture": 5, "subject": "Data Structure and Algorithms Tutorial", "venue": "NYB 311", "faculty": "Mr. Ankur" },
+        { "lecture": 6, "details": null }
+      ]
+    },
+    {
+      "day": "Wednesday",
+      "classes": [
+        { "lecture": 1, "details": null },
+        { "lecture": 2, "details": null },
+        { "lecture": 3, "subject": "Data Structure and Algorithms", "venue": "VIB 206", "faculty": "Mr. Ankur" },
+        { "lecture": 4, "subject": "Computer Network", "venue": "VIB 206", "faculty": "Mr. Abhishek" },
+        { "lecture": 5, "subject": "Data Structure and Algorithms Lab", "venue": "VIB 402", "faculty": "Mr. Ankur", "span": 2 }
+      ]
+    },
+    {
+      "day": "Thursday",
+      "classes": [
+        { "lecture": 1, "details": null },
+        { "lecture": 2, "subject": "Data Structure and Algorithms", "venue": "VIB 206", "faculty": "Mr. Ankur" },
+        { "lecture": 3, "subject": "Software Engineering Project and Management", "venue": "VIB 206", "faculty": "Ms. Priya" },
+        { "lecture": 4, "subject": "Discrete Mathematics", "venue": "VIB 206", "faculty": "Ms. Monika Yadav" },
+        { "lecture": 5, "subject": "Operating System Lab", "venue": "VIB 402", "faculty": "Ms. Ruchi", "span": 2 }
+      ]
+    },
+    {
+      "day": "Friday",
+      "classes": [
+        { "lecture": 1, "subject": "Think Python (Full Stack)", "venue": "VIB 206", "faculty": "" },
+        { "lecture": 2, "details": null },
+        { "lecture": 3, "details": null },
+        { "lecture": 4, "details": null },
+        { "lecture": 5, "details": null },
+        { "lecture": 6, "subject": "Computer Network", "venue": "NYB 303", "faculty": "Mr. Abhishek" }
+      ]
+    },
+    {
+      "day": "Saturday",
+      "classes": [
+        { "lecture": 1, "subject": "Operating System", "venue": "NYB 314", "faculty": "Ms. Ruchi" },
+        { "lecture": 2, "subject": "Computer Network Tutorial", "venue": "NYB 003", "faculty": "Mr. Abhishek" },
+        { "lecture": 3, "subject": "Operating System", "venue": "NYB 002", "faculty": "Ms. Ruchi" },
+        { "lecture": 4, "subject": "Life Skills", "venue": "NYB 002", "faculty": "Dr. Rakhi" },
+        { "lecture": 5, "subject": "Computer Network", "venue": "NYB 001", "faculty": "Mr. Abhishek" },
+        { "lecture": 6, "subject": "Discrete Mathematics", "venue": "VIB 502", "faculty": "Ms. Monika Yadav" }
+      ]
+    }
+  ],
+  "faculty": [
+    { "subject": "Software Engineering Project and Management", "name": "Ms. Priya" },
+    { "subject": "Operating System", "name": "Ms. Ruchi" },
+    { "subject": "Computer Network", "name": "Mr. Abhishek" },
+    { "subject": "Data Structure and Algorithms", "name": "Mr. Ankur" },
+    { "subject": "Discrete Mathematics", "name": "Ms. Monika Yadav" },
+    { "subject": "Life Skills", "name": "Dr. Rakhi" }
+  ],
+  "staff": [
+    { "role": "Time-Table Coordinator", "name": "Nidhi Gour" },
+    { "role": "HOD", "name": "Dr. Bhavna Sharma" }
+  ]
+}
