@@ -22,7 +22,7 @@
       "classes": [
         { "lecture": 1, "subject": "Database Management System", "venue": "NYB 312", "faculty": "Mr. Tahir" },
         { "lecture": 2, "details": null },
-        { "lecture": 3, "subject": "Java Lab", "venue": "VIB 412", "faculty": "Faculty", "span": 2 },
+        { "lecture": 3, "subject": "Java Lab", "venue": "VIB 412", "faculty": "Dr. Archita", "span": 2 },
         { "lecture": 5, "subject": "Computer Organization and Design", "venue": "NYB 312", "faculty": "Mr. Archana" },
         { "lecture": 6, "subject": "Artificial Neural Network", "venue": "NYB 312", "faculty": "Ms. Tanvi" }
       ]
@@ -30,7 +30,7 @@
     {
       "day": "Tuesday",
       "classes": [
-        { "lecture": 1, "subject": "Java", "venue": "NYB 312", "faculty": "Faculty" },
+        { "lecture": 1, "subject": "Java", "venue": "NYB 312", "faculty": "Dr. Archita" },
         { "lecture": 2, "details": null },
         { "lecture": 3, "details": null },
         { "lecture": 4, "details": null },
@@ -44,7 +44,7 @@
         { "lecture": 2, "details": null },
         { "lecture": 3, "subject": "Life Skills Lab", "venue": "NYB 312", "faculty": "Dr. Dinesh Kumar + Mr. Jitendra Silu", "span": 2 },
         { "lecture": 5, "subject": "Computer Organization and Design", "venue": "NYB 005", "faculty": "Mr. Archana" },
-        { "lecture": 6, "subject": "Java", "venue": "NYB 005", "faculty": "Faculty" }
+        { "lecture": 6, "subject": "Java", "venue": "NYB 005", "faculty": "Dr. Archita" }
       ]
     },
     {
@@ -62,7 +62,7 @@
       "classes": [
         { "lecture": 1, "subject": "Artificial Neural Network", "venue": "NYB 005", "faculty": "Ms. Tanvi" },
         { "lecture": 2, "subject": "Artificial Neural Network", "venue": "NYB 005", "faculty": "Ms. Tanvi" },
-        { "lecture": 3, "subject": "Java", "venue": "NYB 005", "faculty": "Faculty" },
+        { "lecture": 3, "subject": "Java", "venue": "NYB 005", "faculty": "Dr. Archita" },
         { "lecture": 4, "subject": "Database Management System Tutorial", "venue": "NYB 002", "faculty": "Mr. Tahir" },
         { "lecture": 5, "subject": "Life Skills (Aptitude)", "venue": "NYB 005", "faculty": "Dr. Dinesh Kumar" },
         { "lecture": 6, "subject": "Computer Organization and Design", "venue": "NYB 005", "faculty": "Mr. Archana" }
@@ -86,11 +86,10 @@
     { "subject": "Computer Organization and Design", "faculty": "Mr. Archana" },
     { "subject": "Database Management System", "faculty": "Mr. Tahir" },
     { "subject": "Artificial Neural Network", "faculty": "Ms. Tanvi" },
-    { "subject": "Java", "faculty": "Faculty" },
+    { "subject": "Java", "faculty": "Dr. Archita" },
     { "subject": "Database Management System Lab", "faculty": "Mr. Tahir" },
     { "subject": "Database Management System Tutorial", "faculty": "Mr. Tahir" },
     { "subject": "Artificial Neural Network Lab", "faculty": "Ms. Tanvi" },
-    { "subject": "Java Lab", "faculty": "Faculty" }
+    { "subject": "Java Lab", "faculty": "Dr. Archita" }
   ]
 }
-
