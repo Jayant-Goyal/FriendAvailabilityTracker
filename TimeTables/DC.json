@@ -5,275 +5,92 @@
     "title": "TIME-TABLE",
     "section": "DC",
     "year": "II",
-    "semester": "III Sem",
+    "semester": "IV Sem",
     "type": "LT"
   },
   "timeSlots": [
-    {
-      "lecture": 1,
-      "time": "8.00-8.50"
-    },
-    {
-      "lecture": 2,
-      "time": "8.50-9.40"
-    },
-    {
-      "lecture": 3,
-      "time": "9.40-10.30"
-    },
-    {
-      "lecture": 4,
-      "time": "10.30-11.20"
-    },
-    {
-      "lecture": 5,
-      "time": "11.20-12.05"
-    },
-    {
-      "lecture": 6,
-      "time": "12.05-12.50"
-    }
+    { "lecture": 1, "time": "8.00-8.50" },
+    { "lecture": 2, "time": "8.50-9.40" },
+    { "lecture": 3, "time": "9.40-10.30" },
+    { "lecture": 4, "time": "10.30-11.20" },
+    { "lecture": 5, "time": "11.20-12.05" },
+    { "lecture": 6, "time": "12.05-12.50" }
   ],
   "schedule": [
     {
       "day": "Monday",
       "classes": [
-        {
-          "lecture": 1,
-          "subject": "Discrete Mathematics",
-          "venue": "VIB 212",
-          "faculty": "Mr. Krishan Yadav"
-        },
-        {
-          "lecture": 2,
-          "details": null
-        },
-        {
-          "lecture": 3,
-          "subject": "Operating System Lab",
-          "venue": "VIB 403",
-          "faculty": "Mr. Manish",
-          "span": 2
-        },
-        {
-          "lecture": 5,
-          "subject": "Computer Network Lab",
-          "venue": "VIB 412",
-          "faculty": "Ms. Nidhi",
-          "span": 2
-        }
+        { "lecture": 1, "subject": "Database Management System", "venue": "NYB 312", "faculty": "Mr. Tahir" },
+        { "lecture": 2, "details": null },
+        { "lecture": 3, "subject": "Java Lab", "venue": "VIB 412", "faculty": "Faculty", "span": 2 },
+        { "lecture": 5, "subject": "Computer Organization and Design", "venue": "NYB 312", "faculty": "Mr. Archana" },
+        { "lecture": 6, "subject": "Artificial Neural Network", "venue": "NYB 312", "faculty": "Ms. Tanvi" }
       ]
     },
     {
       "day": "Tuesday",
       "classes": [
-        {
-          "lecture": 1,
-          "subject": "Data Science",
-          "venue": "VIB 109",
-          "faculty": "Mr. Deep"
-        },
-        {
-          "lecture": 2,
-          "details": null
-        },
-        {
-          "lecture": 3,
-          "subject": "Operating System",
-          "venue": "VIB 103",
-          "faculty": "Mr. Manish"
-        },
-        {
-          "lecture": 4,
-          "details": null
-        },
-        {
-          "lecture": 5,
-          "subject": "Computer Network",
-          "venue": "VIB 110",
-          "faculty": "Ms. Nidhi"
-        },
-        {
-          "lecture": 6,
-          "subject": "Python",
-          "venue": "VIB 105",
-          "faculty": "Mr. Girriraj"
-        }
+        { "lecture": 1, "subject": "Java", "venue": "NYB 312", "faculty": "Faculty" },
+        { "lecture": 2, "details": null },
+        { "lecture": 3, "details": null },
+        { "lecture": 4, "details": null },
+        { "lecture": 5, "subject": "Database Management System Lab", "venue": "VIB 403", "faculty": "Mr. Tahir", "span": 2 }
       ]
     },
     {
       "day": "Wednesday",
       "classes": [
-        {
-          "lecture": 1,
-          "details": null
-        },
-        {
-          "lecture": 2,
-          "subject": "Computer Network",
-          "venue": "VIB 109",
-          "faculty": "Ms. Nidhi"
-        },
-        {
-          "lecture": 3,
-          "subject": "Data Science",
-          "venue": "VIB 105",
-          "faculty": "Mr. Deep"
-        },
-        {
-          "lecture": 4,
-          "details": null
-        },
-        {
-          "lecture": 5,
-          "subject": "Operating System",
-          "venue": "VIB 103",
-          "faculty": "Mr. Manish"
-        },
-        {
-          "lecture": 6,
-          "details": null
-        }
+        { "lecture": 1, "subject": "Database Management System", "venue": "NYB 003", "faculty": "Mr. Tahir" },
+        { "lecture": 2, "details": null },
+        { "lecture": 3, "subject": "Life Skills Lab", "venue": "NYB 312", "faculty": "Dr. Dinesh Kumar + Mr. Jitendra Silu", "span": 2 },
+        { "lecture": 5, "subject": "Computer Organization and Design", "venue": "NYB 005", "faculty": "Mr. Archana" },
+        { "lecture": 6, "subject": "Java", "venue": "NYB 005", "faculty": "Faculty" }
       ]
     },
     {
       "day": "Thursday",
       "classes": [
-        {
-          "lecture": 1,
-          "subject": "Discrete Mathematics",
-          "venue": "VIB 212",
-          "faculty": "Mr. Krishan Yadav"
-        },
-        {
-          "lecture": 2,
-          "subject": "Python",
-          "venue": "VIB 105",
-          "faculty": "Mr. Girriraj"
-        },
-        {
-          "lecture": 3,
-          "subject": "Data Science",
-          "venue": "VIB 105",
-          "faculty": "Mr. Deep"
-        },
-        {
-          "lecture": 4,
-          "subject": "Computer Network",
-          "venue": "VIB 105",
-          "faculty": "Ms. Nidhi"
-        },
-        {
-          "lecture": 5,
-          "details": null
-        },
-        {
-          "lecture": 6,
-          "subject": "Python",
-          "venue": "NYB 312",
-          "faculty": "Mr. Girriraj"
-        }
+        { "lecture": 1, "subject": "Artificial Neural Network Lab", "venue": "VIB 412", "faculty": "Ms. Tanvi", "span": 2 },
+        { "lecture": 3, "details": null },
+        { "lecture": 4, "subject": "Database Management System", "venue": "VIB 411", "faculty": "Mr. Tahir" },
+        { "lecture": 5, "details": null },
+        { "lecture": 6, "details": null }
       ]
     },
     {
       "day": "Friday",
       "classes": [
-        {
-          "lecture": 1,
-          "subject": "Python Lab",
-          "venue": "VIB 412",
-          "faculty": "Mr. Girriraj",
-          "span": 2
-        },
-        {
-          "lecture": 3,
-          "subject": "Computer Network Tutorial",
-          "venue": "VIB 103",
-          "faculty": "Ms. Nidhi"
-        },
-        {
-          "lecture": 4,
-          "subject": "Operating System",
-          "venue": "VIB 103",
-          "faculty": "Mr. Manish"
-        },
-        {
-          "lecture": 5,
-          "details": null
-        },
-        {
-          "lecture": 6,
-          "subject": "Life Skills",
-          "venue": "NYB 006",
-          "faculty": "Ms. Pragya"
-        }
+        { "lecture": 1, "subject": "Artificial Neural Network", "venue": "NYB 005", "faculty": "Ms. Tanvi" },
+        { "lecture": 2, "subject": "Artificial Neural Network", "venue": "NYB 005", "faculty": "Ms. Tanvi" },
+        { "lecture": 3, "subject": "Java", "venue": "NYB 005", "faculty": "Faculty" },
+        { "lecture": 4, "subject": "Database Management System Tutorial", "venue": "NYB 002", "faculty": "Mr. Tahir" },
+        { "lecture": 5, "subject": "Life Skills (Aptitude)", "venue": "NYB 005", "faculty": "Dr. Dinesh Kumar" },
+        { "lecture": 6, "subject": "Computer Organization and Design", "venue": "NYB 005", "faculty": "Mr. Archana" }
       ]
     },
     {
       "day": "Saturday",
       "classes": [
-        {
-          "lecture": 1,
-          "subject": "Life Skills Lab",
-          "venue": "NYB 006",
-          "faculty": "Ms. Pragya",
-          "span": 2
-        },
-        {
-          "lecture": 3,
-          "details": null
-        },
-        {
-          "lecture": 4,
-          "details": null
-        },
-        {
-          "lecture": 5,
-          "subject": "Discrete Mathematics",
-          "venue": "NYB 313",
-          "faculty": "Mr. Krishan Yadav"
-        },
-        {
-          "lecture": 6,
-          "details": null
-        }
+        { "lecture": 1, "details": null },
+        { "lecture": 2, "details": null },
+        { "lecture": 3, "details": null },
+        { "lecture": 4, "details": null },
+        { "lecture": 5, "details": null },
+        { "lecture": 6, "details": null }
       ]
     }
   ],
   "faculty": [
-    {
-      "subject": "Python",
-      "name": "Mr. Girriraj"
-    },
-    {
-      "subject": "Data Science",
-      "name": "Mr. Deep"
-    },
-    {
-      "subject": "Operating System",
-      "name": "Mr. Manish"
-    },
-    {
-      "subject": "Computer Network",
-      "name": "Ms. Nidhi"
-    },
-    {
-      "subject": "Discrete Mathematics",
-      "name": "Mr. Krishan Yadav"
-    },
-    {
-      "subject": "Life Skills",
-      "name": "Ms. Pragya"
-    }
-  ],
-  "staff": [
-    {
-      "role": "Time-Table Coordinator",
-      "name": "Nidhi Gour"
-    },
-    {
-      "role": "HOD",
-      "name": "Dr. Bhavna Sharma"
-    }
+    { "subject": "Life Skills (Aptitude)", "faculty": "Dr. Dinesh Kumar" },
+    { "subject": "Life Skills Lab", "faculty": "Dr. Dinesh Kumar + Mr. Jitendra Silu" },
+    { "subject": "Computer Organization and Design", "faculty": "Mr. Archana" },
+    { "subject": "Database Management System", "faculty": "Mr. Tahir" },
+    { "subject": "Artificial Neural Network", "faculty": "Ms. Tanvi" },
+    { "subject": "Java", "faculty": "Faculty" },
+    { "subject": "Database Management System Lab", "faculty": "Mr. Tahir" },
+    { "subject": "Database Management System Tutorial", "faculty": "Mr. Tahir" },
+    { "subject": "Artificial Neural Network Lab", "faculty": "Ms. Tanvi" },
+    { "subject": "Java Lab", "faculty": "Faculty" }
   ]
 }
+
