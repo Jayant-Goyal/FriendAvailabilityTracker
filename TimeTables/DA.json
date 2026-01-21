@@ -23,9 +23,9 @@
         { "lecture": 1, "subject": "Life Skills (Aptitude)", "venue": "NYB 002", "faculty": "Dr. Krishan Yadav" },
         { "lecture": 2, "subject": "Computer Organization and Design", "venue": "NYB 005", "faculty": "Ms. Anita Mudgal" },
         { "lecture": 3, "subject": "Database Management System", "venue": "NYB 005", "faculty": "Mr. Tahir" },
-        { "lecture": 4, "subject": "Artificial Neural Network", "venue": "NYB 005", "faculty": "Mr. Deep" },
+        { "lecture": 4, "subject": "Artificial Neural Network", "venue": "NYB 005", "faculty": "Ms. Tanvi" },
         { "lecture": 5, "details": null },
-        { "lecture": 6, "subject": "Java", "venue": "NYB 005", "faculty": "Dr. Archita" }
+        { "lecture": 6, "subject": "Java Programming", "venue": "NYB 005", "faculty": "Dr. Archita" }
       ]
     },
     {
@@ -33,17 +33,17 @@
       "classes": [
         { "lecture": 1, "details": null },
         { "lecture": 2, "subject": "Database Management System", "venue": "VIB 308", "faculty": "Mr. Tahir" },
-        { "lecture": 3, "subject": "Java", "venue": "VIB 502", "faculty": "Dr. Archita" },
+        { "lecture": 3, "subject": "Java Programming", "venue": "VIB 502", "faculty": "Dr. Archita" },
         { "lecture": 4, "details": null },
-        { "lecture": 5, "subject": "Artificial Neural Network Lab", "venue": "VIB 412", "faculty": "Mr. Deep", "span": 2 }
+        { "lecture": 5, "subject": "Artificial Neural Network Lab", "venue": "VIB 412", "faculty": "Ms. Tanvi", "span": 2 }
       ]
     },
     {
       "day": "Wednesday",
       "classes": [
         { "lecture": 1, "subject": "Computer Organization and Design", "venue": "NYB 002", "faculty": "Ms. Anita Mudgal" },
-        { "lecture": 2, "subject": "Artificial Neural Network", "venue": "NYB 005", "faculty": "Mr. Deep" },
-        { "lecture": 3, "subject": "Java", "venue": "NYB 005", "faculty": "Dr. Archita" },
+        { "lecture": 2, "subject": "Artificial Neural Network", "venue": "NYB 005", "faculty": "Ms. Tanvi" },
+        { "lecture": 3, "subject": "Java Programming", "venue": "NYB 005", "faculty": "Dr. Archita" },
         { "lecture": 4, "subject": "Database Management System Tutorial", "venue": "NYB 005", "faculty": "Mr. Tahir" },
         { "lecture": 5, "subject": "Life Skills (Aptitude)", "venue": "NYB 002", "faculty": "Dr. Krishan Yadav" },
         { "lecture": 6, "details": null }
@@ -56,7 +56,7 @@
         { "lecture": 2, "details": null },
         { "lecture": 3, "subject": "Database Management System", "venue": "NYB 005", "faculty": "Mr. Tahir" },
         { "lecture": 4, "details": null },
-        { "lecture": 5, "subject": "Java Lab", "venue": "VIB 412", "faculty": "Dr. Archita", "span": 2 }
+        { "lecture": 5, "subject": "Java Programming Lab", "venue": "VIB 412", "faculty": "Dr. Archita", "span": 2 }
       ]
     },
     {
@@ -74,7 +74,7 @@
       "day": "Saturday",
       "classes": [
         { "lecture": 1, "subject": "Computer Organization and Design", "venue": "NYB 003", "faculty": "Ms. Anita Mudgal" },
-        { "lecture": 2, "subject": "Artificial Neural Network", "venue": "NYB 003", "faculty": "Mr. Deep" },
+        { "lecture": 2, "subject": "Artificial Neural Network", "venue": "NYB 003", "faculty": "Ms. Tanvi" },
         { "lecture": 3, "subject": "Database Management System Lab", "venue": "VIB 403", "faculty": "Mr. Tahir", "span": 2 },
         { "lecture": 5, "details": null },
         { "lecture": 6, "details": null }
@@ -83,14 +83,10 @@
   ],
   "faculty": [
     { "subject": "Life Skills (Aptitude)", "faculty": "Dr. Krishan Yadav" },
-    { "subject": "Life Skills Lab", "faculty": "Mr. Dilkhush Meena+ Mr. Jitendra Silu" },
+    { "subject": "Life Skills Lab", "faculty": "Mr. Dilkhush Meena + Mr. Jitendra Silu" },
     { "subject": "Computer Organization and Design", "faculty": "Ms. Anita Mudgal" },
     { "subject": "Database Management System", "faculty": "Mr. Tahir" },
-    { "subject": "Artificial Neural Network", "faculty": "Mr. Deep" },
-    { "subject": "Java", "faculty": "Dr. Archita" },
-    { "subject": "Database Management System Lab", "faculty": "Mr. Tahir" },
-    { "subject": "Database Management System Tutorial", "faculty": "Mr. Tahir" },
-    { "subject": "Artificial Neural Network Lab", "faculty": "Mr. Deep" },
-    { "subject": "Java Lab", "faculty": "Dr. Archita" }
+    { "subject": "Artificial Neural Network", "faculty": "Ms. Tanvi" },
+    { "subject": "Java Programming", "faculty": "Dr. Archita" }
   ]
 }
