@@ -1,1 +1,92 @@
-{"university": "JECRC UNIVERSITY","department": "DEPARTMENT OF COMPUTER SCIENCE AND ENGINEERING","timetableInfo": {"title": "TIME-TABLE","section": "DH","year": "II","semester": "IV Sem"},"timeSlots": [{ "lecture": 1, "time": "8.00-8.50" },{ "lecture": 2, "time": "8.50-9.40" },{ "lecture": 3, "time": "9.40-10.30" },{ "lecture": 4, "time": "10.30-11.20" },{ "lecture": 5, "time": "11.20-12.05" },{ "lecture": 6, "time": "12.05-12.50" }],"schedule": [{"day": "Monday","classes": [{ "lecture": 1, "subject": "Database Management System Lab", "venue": "VIB 407", "faculty": "Mr. Sameep", "span": 2 },{ "lecture": 3, "subject": "Computer Organization and Design", "venue": "NYB 312", "faculty": "Mr. Piyush" },{ "lecture": 4, "subject": "Java", "venue": "NYB 312", "faculty": "Mr. Ved Prakash" },{ "lecture": 5, "subject": "Artificial Neural Network Lab", "venue": "VIB 411", "faculty": "Mr. Ankit Taneja", "span": 2 }]},{"day": "Tuesday","classes": [{ "lecture": 1, "subject": "Computer Organization and Design", "venue": "NIB 603", "faculty": "Mr. Piyush" },{ "lecture": 2, "subject": "Database Management System", "venue": "VIB 308", "faculty": "Mr. Sameep" },{ "lecture": 3, "details": null },{ "lecture": 4, "details": null },{ "lecture": 5, "details": null },{ "lecture": 6, "details": null }]},{"day": "Wednesday","classes": [{ "lecture": 1, "details": null },{ "lecture": 2, "details": null },{ "lecture": 3, "subject": "Artificial Neural Network", "venue": "NYB 204", "faculty": "Mr. Ankit Taneja" },{ "lecture": 4, "subject": "Database Management System", "venue": "NYB 204", "faculty": "Mr. Sameep" },{ "lecture": 5, "details": null },{ "lecture": 6, "subject": "Java", "venue": "NIB 613", "faculty": "Mr. Ved Prakash" }]},{"day": "Thursday","classes": [{ "lecture": 1, "details": null },{ "lecture": 2, "details": null },{ "lecture": 3, "subject": "Artificial Neural Network", "venue": "NYB 203", "faculty": "Mr. Ankit Taneja" },{ "lecture": 4, "subject": "Computer Organization and Design", "venue": "NYB 203", "faculty": "Mr. Piyush" },{ "lecture": 5, "subject": "Java", "venue": "VIB 411", "faculty": "Mr. Ved Prakash" },{ "lecture": 6, "subject": "Database Management System", "venue": "VIB 308", "faculty": "Mr. Sameep" }]},{"day": "Friday","classes": [{ "lecture": 1, "details": null },{ "lecture": 2, "details": null },{ "lecture": 3, "details": null },{ "lecture": 4, "details": null },{ "lecture": 5, "details": null },{ "lecture": 6, "subject": "Life Skills (Aptitude)", "venue": "NIB 602", "faculty": "Dr. Ramjash Gurjar" }]},{"day": "Saturday","classes": [{ "lecture": 1, "subject": "Life Skills (Aptitude)", "venue": "VIB 207", "faculty": "Dr. Ramjash Gurjar" },{ "lecture": 2, "subject": "Database Management System Tutorial", "venue": "VIB 207", "faculty": "Mr. Sameep" },{ "lecture": 3, "subject": "Java Lab", "venue": "VIB 412", "faculty": "Mr. Ved Prakash", "span": 2 },{ "lecture": 5, "subject": "Artificial Neural Network", "venue": "VIB 013", "faculty": "Mr. Ankit Taneja" },{ "lecture": 6, "details": null }]}],"faculty": [{ "subject": "Life Skills (Aptitude)", "faculty": "Dr. Ramjash Gurjar" },{ "subject": "Life Skills Lab", "faculty": "Dr. Ramjash Gurjar" },{ "subject": "Computer Organization and Design", "faculty": "Mr. Piyush" },{ "subject": "Database Management System", "faculty": "Mr. Sameep" },{ "subject": "Artificial Neural Network", "faculty": "Mr. Ankit Taneja" },{ "subject": "Java", "faculty": "Mr. Ved Prakash" }]}
+{
+  "university": "JECRC UNIVERSITY",
+  "department": "DEPARTMENT OF COMPUTER SCIENCE AND ENGINEERING",
+  "timetableInfo": {
+    "title": "TIME-TABLE",
+    "section": "DH",
+    "year": "II",
+    "semester": "IV Sem",
+    "type": "LT"
+  },
+  "timeSlots": [
+    { "lecture": 1, "time": "8.00-8.50" },
+    { "lecture": 2, "time": "8.50-9.40" },
+    { "lecture": 3, "time": "9.40-10.30" },
+    { "lecture": 4, "time": "10.30-11.20" },
+    { "lecture": 5, "time": "11.20-12.05" },
+    { "lecture": 6, "time": "12.05-12.50" }
+  ],
+  "schedule": [
+    {
+      "day": "Monday",
+      "classes": [
+        { "lecture": 1, "subject": "DBMS Lab", "venue": "VIB 407", "faculty": "Mr. Sameep", "span": 2 },
+        { "lecture": 3, "subject": "Computer Organization and Design", "venue": "NYB 312", "faculty": "Mr. Piyush" },
+        { "lecture": 4, "subject": "Java", "venue": "NYB 312", "faculty": "Mr. Ved Prakash" },
+        { "lecture": 5, "details": null },
+        { "lecture": 6, "details": null }
+      ]
+    },
+    {
+      "day": "Tuesday",
+      "classes": [
+        { "lecture": 1, "details": null },
+        { "lecture": 2, "details": null },
+        { "lecture": 3, "details": null },
+        { "lecture": 4, "details": null },
+        { "lecture": 5, "subject": "Database Management System", "venue": "NYB 312", "faculty": "Mr. Sameep" },
+        { "lecture": 6, "subject": "Java", "venue": "KAB 302", "faculty": "Mr. Ved Prakash" }
+      ]
+    },
+    {
+      "day": "Wednesday",
+      "classes": [
+        { "lecture": 1, "details": null },
+        { "lecture": 2, "details": null },
+        { "lecture": 3, "subject": "Artificial Neural Network", "venue": "NYB 204", "faculty": "Mr. Ankit Taneja" },
+        { "lecture": 4, "subject": "Database Management System", "venue": "NYB 204", "faculty": "Mr. Sameep" },
+        { "lecture": 5, "subject": "Java Lab", "venue": "VIB 411", "faculty": "Mr. Ved Prakash", "span": 2 }
+      ]
+    },
+    {
+      "day": "Thursday",
+      "classes": [
+        { "lecture": 1, "details": null },
+        { "lecture": 2, "details": null },
+        { "lecture": 3, "subject": "Artificial Neural Network", "venue": "NYB 203", "faculty": "Mr. Ankit Taneja" },
+        { "lecture": 4, "subject": "Computer Organization and Design", "venue": "NYB 203", "faculty": "Mr. Piyush" },
+        { "lecture": 5, "subject": "Java", "venue": "VIB 411", "faculty": "Mr. Ved Prakash" },
+        { "lecture": 6, "subject": "Database Management System", "venue": "VIB 308", "faculty": "Mr. Sameep" }
+      ]
+    },
+    {
+      "day": "Friday",
+      "classes": [
+        { "lecture": 1, "details": null },
+        { "lecture": 2, "details": null },
+        { "lecture": 3, "details": null },
+        { "lecture": 4, "subject": "Computer Organization and Design", "venue": "NYB 003", "faculty": "Mr. Piyush" },
+        { "lecture": 5, "subject": "Life Skills (Aptitude)", "venue": "NIB 602", "faculty": "Dr. Ramjash Gurjar" },
+        { "lecture": 6, "details": null }
+      ]
+    },
+    {
+      "day": "Saturday",
+      "classes": [
+        { "lecture": 1, "subject": "Life Skills (Aptitude)", "venue": "VIB 207", "faculty": "Dr. Ramjash Gurjar" },
+        { "lecture": 2, "subject": "DBMS Tutorial", "venue": "VIB 207", "faculty": "Mr. Sameep" },
+        { "lecture": 3, "subject": "ANN Lab", "venue": "VIB 411", "faculty": "Mr. Ankit Taneja", "span": 2 },
+        { "lecture": 5, "subject": "Artificial Neural Network", "venue": "VIB 013", "faculty": "Mr. Ankit Taneja" },
+        { "lecture": 6, "details": null }
+      ]
+    }
+  ],
+  "faculty": [
+    { "name": "Dr. Ramjash Gurjar", "subject": "Life Skills (Aptitude)" },
+    { "name": "Mr. Piyush", "subject": "Computer Organization and Design" },
+    { "name": "Mr. Sameep", "subject": "Database Management System" },
+    { "name": "Mr. Ankit Taneja", "subject": "Artificial Neural Network" },
+    { "name": "Mr. Ved Prakash", "subject": "Java" }
+  ]
+}
+
