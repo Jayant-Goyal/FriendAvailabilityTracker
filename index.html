@@ -799,11 +799,15 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         } catch (error) {
             console.error("Could not fetch remote timetables:", error);
-            showToast("Could not check for timetable updates.", "error");
+            // Only show toast if it's not the first visit so we don't bombard new users with errors
+            if (!isFirstVisit) {
+                showToast("Could not check for timetable updates.", "error");
+            }
             if (isFirstVisit) {
                 welcomeModal.classList.remove('hidden');
             }
         } finally {
+            // Re-render UI with potentially new fetched data
             renderDashboard();
             renderSettings();
         }
@@ -2462,7 +2466,7 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     // --- INITIALIZATION ---
-    const initializeApp = async () => {
+    const initializeApp = () => {
         loadState();
         applyTheme();
         applyLedIndicatorSetting();
@@ -2471,7 +2475,12 @@ document.addEventListener('DOMContentLoaded', () => {
         updateClock();
         updateDebugIndicator();
         
-        await fetchAndUpdateTimetables();
+        // INSTANT LOAD: Render immediately using locally cached data in localStorage
+        renderSettings();
+        renderDashboard();
+        
+        // BACKGROUND FETCH: Check for remote timetable updates asynchronously without blocking the UI
+        fetchAndUpdateTimetables().catch(console.error);
         
         setInterval(() => {
             updateClock();
@@ -2645,4 +2654,3 @@ document.addEventListener('DOMContentLoaded', () => {
 </script>
 </body>
 </html>
-
