@@ -207,7 +207,7 @@
         }
         /* --- END: TIMELINE MODAL STYLES --- */
 
-        /* --- START: CARD TIMELINE STYLES (MODIFIED) --- */
+        /* --- START: CARD TIMELINE STYLES (CLASSIC) --- */
         .card-timeline-container {
             position: absolute;
             bottom: 0;
@@ -398,13 +398,24 @@
                             <span class="inline-block w-4 h-4 transform bg-white rounded-full transition-transform"></span>
                         </button>
                     </div>
-                    <div class="flex justify-between items-center p-3 bg-gray-100 dark:bg-gray-700 rounded-lg">
-                        <label for="card-timeline-toggle" class="font-medium">Show Card Timeline</label>
-                        <button id="card-timeline-toggle" class="relative inline-flex items-center h-6 rounded-full w-11 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-gray-800">
-                            <span class="sr-only">Enable Card Timeline</span>
-                            <span class="inline-block w-4 h-4 transform bg-white rounded-full transition-transform"></span>
-                        </button>
+                    
+                    <div class="flex flex-col p-3 bg-gray-100 dark:bg-gray-700 rounded-lg">
+                        <div class="flex justify-between items-center w-full">
+                            <label for="card-timeline-toggle" class="font-medium">Show Card Timeline</label>
+                            <button id="card-timeline-toggle" class="relative inline-flex items-center h-6 rounded-full w-11 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-gray-800">
+                                <span class="sr-only">Enable Card Timeline</span>
+                                <span class="inline-block w-4 h-4 transform bg-white rounded-full transition-transform"></span>
+                            </button>
+                        </div>
+                        <div id="card-timeline-options" class="mt-3 hidden w-full">
+                            <label class="font-medium text-xs mb-1.5 block text-gray-500 dark:text-gray-400 uppercase tracking-wider">Style</label>
+                            <div class="flex space-x-2">
+                                <button data-style="modern" class="timeline-style-btn flex-1 py-1.5 px-3 text-sm rounded-md bg-indigo-600 text-white font-medium transition-colors shadow-sm">Modern</button>
+                                <button data-style="classic" class="timeline-style-btn flex-1 py-1.5 px-3 text-sm rounded-md bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-300 font-medium transition-colors hover:bg-gray-300 dark:hover:bg-gray-500">Classic</button>
+                            </div>
+                        </div>
                     </div>
+
                     <div class="flex justify-between items-center p-3 bg-gray-100 dark:bg-gray-700 rounded-lg">
                         <label for="previous-venue-toggle" class="font-medium">Show Previous Venue</label>
                         <button id="previous-venue-toggle" class="relative inline-flex items-center h-6 rounded-full w-11 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-gray-800">
@@ -536,20 +547,29 @@
     <!-- END: Group Timeline Modal -->
 
     <!-- START: Daily Timeline Modal -->
-    <div id="daily-timeline-modal" class="fixed inset-0 bg-black bg-opacity-70 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-4xl h-[80vh] flex flex-col p-2 sm:p-4">
-            <div class="flex justify-between items-center mb-2 pb-2 border-b border-gray-200 dark:border-gray-700">
-                <h2 class="text-xl font-bold">Daily Timeline</h2>
-                <button id="close-daily-timeline-modal" class="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+    <div id="daily-timeline-modal" class="fixed inset-0 bg-black bg-opacity-70 backdrop-blur-sm z-50 hidden flex items-center justify-center p-0 sm:p-4">
+        <div class="bg-gray-50 dark:bg-gray-900 rounded-none sm:rounded-2xl shadow-2xl w-full max-w-2xl h-full sm:h-[85vh] flex flex-col overflow-hidden">
+            <!-- Modern Header -->
+            <div class="flex justify-between items-center px-4 py-4 sm:px-6 bg-white dark:bg-gray-800 shadow-sm z-10">
+                <div>
+                    <h2 class="text-xl font-extrabold text-gray-900 dark:text-white tracking-tight">Daily Schedule</h2>
+                    <p class="text-xs font-medium text-gray-500 dark:text-gray-400 mt-0.5">Quick overview of everyone's availability</p>
+                </div>
+                <button id="close-daily-timeline-modal" class="p-2 bg-gray-100 dark:bg-gray-700 rounded-full hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-600 dark:text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12" />
                     </svg>
                 </button>
             </div>
-            <div id="daily-timeline-day-selector" class="flex justify-center flex-wrap gap-1 mb-4">
-                <!-- Day buttons will be dynamically injected here -->
+            
+            <div class="px-4 py-3 sm:px-6 bg-white dark:bg-gray-800 border-b border-gray-100 dark:border-gray-700 z-10 flex-shrink-0">
+                <div id="daily-timeline-day-selector" class="flex overflow-x-auto hide-scroll-bar gap-2 pb-1">
+                    <!-- Day buttons will be dynamically injected here -->
+                </div>
             </div>
-            <div id="daily-timeline-container" class="flex-grow overflow-auto relative">
+
+            <!-- Content Area with Custom modern background -->
+            <div class="flex-grow overflow-auto relative bg-gray-50 dark:bg-gray-900 p-4 sm:p-6" id="daily-timeline-container">
                 <!-- Daily timeline content will be rendered here -->
             </div>
         </div>
@@ -568,6 +588,7 @@ document.addEventListener('DOMContentLoaded', () => {
             debugMode: false,
             ledIndicatorEnabled: false,
             cardTimelineEnabled: false,
+            cardTimelineStyle: 'modern', // NEW: 'modern' or 'classic'
             previousVenueWidgetEnabled: true,
             previousVenueTimeLimit: 5
         },
@@ -586,6 +607,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const darkModeToggle = document.getElementById('dark-mode-toggle');
     const ledIndicatorToggle = document.getElementById('led-indicator-toggle');
     const cardTimelineToggle = document.getElementById('card-timeline-toggle');
+    const cardTimelineOptions = document.getElementById('card-timeline-options');
+    const timelineStyleBtns = document.querySelectorAll('.timeline-style-btn');
     const previousVenueToggle = document.getElementById('previous-venue-toggle');
     const previousVenueOptions = document.getElementById('previous-venue-options');
     const previousVenueTimeLimitInput = document.getElementById('previous-venue-time-limit');
@@ -689,6 +712,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     }
                     if (typeof parsedState.settings.cardTimelineEnabled === 'undefined') {
                         parsedState.settings.cardTimelineEnabled = false; 
+                    }
+                    if (typeof parsedState.settings.cardTimelineStyle === 'undefined') {
+                        parsedState.settings.cardTimelineStyle = 'modern'; 
                     }
                     if (typeof parsedState.settings.previousVenueWidgetEnabled === 'undefined') {
                         parsedState.settings.previousVenueWidgetEnabled = true;
@@ -862,10 +888,23 @@ document.addEventListener('DOMContentLoaded', () => {
         if (state.settings.cardTimelineEnabled) {
             cardTimelineToggle.classList.add('bg-indigo-600');
             cardTimelineToggle.lastElementChild.classList.add('translate-x-5');
+            cardTimelineOptions.classList.remove('hidden');
         } else {
             cardTimelineToggle.classList.remove('bg-indigo-600');
             cardTimelineToggle.lastElementChild.classList.remove('translate-x-5');
+            cardTimelineOptions.classList.add('hidden');
         }
+
+        // Update style buttons
+        timelineStyleBtns.forEach(btn => {
+            if (btn.dataset.style === state.settings.cardTimelineStyle) {
+                btn.classList.add('bg-indigo-600', 'text-white', 'shadow-sm');
+                btn.classList.remove('bg-gray-200', 'dark:bg-gray-600', 'text-gray-700', 'dark:text-gray-300');
+            } else {
+                btn.classList.remove('bg-indigo-600', 'text-white', 'shadow-sm');
+                btn.classList.add('bg-gray-200', 'dark:bg-gray-600', 'text-gray-700', 'dark:text-gray-300');
+            }
+        });
     };
 
     const applyPreviousVenueSetting = () => {
@@ -1003,16 +1042,12 @@ document.addEventListener('DOMContentLoaded', () => {
         return ["8:00", "8:50", "9:40", "10:30", "11:20", "12:05", "12:50"];
     };
 
-    const generateCardTimelineSegments = (status, now) => {
-        const TIMELINE_START_MIN = 8 * 60;
-        const TIMELINE_END_MIN = 12 * 60 + 50;
-        const TOTAL_DURATION_MIN = TIMELINE_END_MIN - TIMELINE_START_MIN;
-
-        let busySlots = []; // Array of {start, end} in minutes from midnight
-
+    const getBusySlotsForTimeline = (status, now) => {
+        let busySlots = [];
+        
         if (status.type === 'section') {
             const { timetable } = state.sections[status.name];
-            if (!timetable) return '';
+            if (!timetable) return busySlots;
             const daySchedule = getScheduleForDay(timetable, now);
             if (daySchedule) {
                 daySchedule.classes.forEach(classInfo => {
@@ -1059,37 +1094,78 @@ document.addEventListener('DOMContentLoaded', () => {
                     });
                 }
             });
-        }
-
-        // Create a continuous timeline with colored segments
-        const events = [{ time: TIMELINE_START_MIN, type: 'free' }];
-        busySlots.forEach(slot => {
-            events.push({ time: slot.start, type: 'busy' });
-            events.push({ time: slot.end, type: 'free' });
-        });
-        events.push({ time: TIMELINE_END_MIN, type: 'end' });
-
-        events.sort((a, b) => a.time - b.time);
-
-        let segmentsHtml = '';
-        let lastTime = TIMELINE_START_MIN;
-        let isBusy = busySlots.some(slot => slot.start <= lastTime && slot.end > lastTime);
-
-        for (const event of events) {
-            const currentTime = Math.max(TIMELINE_START_MIN, Math.min(event.time, TIMELINE_END_MIN));
-            const duration = currentTime - lastTime;
-
-            if (duration > 0) {
-                const width = (duration / TOTAL_DURATION_MIN) * 100;
-                const left = ((lastTime - TIMELINE_START_MIN) / TOTAL_DURATION_MIN) * 100;
-                const segmentClass = isBusy ? 'timeline-card-segment-busy' : 'timeline-card-segment-free';
-                segmentsHtml += `<div class="${segmentClass}" style="left: ${left}%; width: ${width}%;"></div>`;
+            
+            // Merge overlapping group slots for cleaner UI
+            busySlots.sort((a,b) => a.start - b.start);
+            if(busySlots.length > 0) {
+                let merged = [];
+                let current = {...busySlots[0]};
+                for(let i=1; i<busySlots.length; i++) {
+                    if(busySlots[i].start <= current.end) {
+                        current.end = Math.max(current.end, busySlots[i].end);
+                    } else {
+                        merged.push(current);
+                        current = {...busySlots[i]};
+                    }
+                }
+                merged.push(current);
+                busySlots = merged;
             }
-
-            if (event.type === 'busy') isBusy = true;
-            if (event.type === 'free') isBusy = false;
-            lastTime = currentTime;
         }
+        
+        return busySlots;
+    };
+
+    const generateCardTimelineSegments = (status, now) => {
+        const TIMELINE_START_MIN = 8 * 60;
+        const TIMELINE_END_MIN = 12 * 60 + 50;
+        const TOTAL_DURATION_MIN = TIMELINE_END_MIN - TIMELINE_START_MIN;
+
+        let busySlots = getBusySlotsForTimeline(status, now);
+        let segmentsHtml = '';
+
+        if (state.settings.cardTimelineStyle === 'classic') {
+            const events = [{ time: TIMELINE_START_MIN, type: 'free' }];
+            busySlots.forEach(slot => {
+                events.push({ time: slot.start, type: 'busy' });
+                events.push({ time: slot.end, type: 'free' });
+            });
+            events.push({ time: TIMELINE_END_MIN, type: 'end' });
+            events.sort((a, b) => a.time - b.time);
+
+            let lastTime = TIMELINE_START_MIN;
+            let isBusy = busySlots.some(slot => slot.start <= lastTime && slot.end > lastTime);
+
+            for (const event of events) {
+                const currentTime = Math.max(TIMELINE_START_MIN, Math.min(event.time, TIMELINE_END_MIN));
+                const duration = currentTime - lastTime;
+
+                if (duration > 0) {
+                    const width = (duration / TOTAL_DURATION_MIN) * 100;
+                    const left = ((lastTime - TIMELINE_START_MIN) / TOTAL_DURATION_MIN) * 100;
+                    const segmentClass = isBusy ? 'timeline-card-segment-busy' : 'timeline-card-segment-free';
+                    segmentsHtml += `<div class="${segmentClass}" style="left: ${left}%; width: ${width}%;"></div>`;
+                }
+
+                if (event.type === 'busy') isBusy = true;
+                if (event.type === 'free') isBusy = false;
+                lastTime = currentTime;
+            }
+        } else {
+            busySlots.forEach(slot => {
+                const startClamp = Math.max(TIMELINE_START_MIN, slot.start);
+                const endClamp = Math.min(TIMELINE_END_MIN, slot.end);
+                if (endClamp <= startClamp) return;
+
+                const left = ((startClamp - TIMELINE_START_MIN) / TOTAL_DURATION_MIN) * 100;
+                const width = ((endClamp - startClamp) / TOTAL_DURATION_MIN) * 100;
+
+                segmentsHtml += `
+                    <div class="absolute top-[1px] bottom-[1px] rounded-full bg-red-500/90 shadow-[0_1px_2px_rgba(239,68,68,0.4)] z-10"
+                         style="left: calc(${left}% + 1px); width: calc(${width}% - 2px);"></div>`;
+            });
+        }
+        
         return segmentsHtml;
     };
     // --- END: Timeline Helper ---
@@ -1141,17 +1217,36 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 const timelineSegmentsHtml = generateCardTimelineSegments(status, now);
 
-                const timelineMarkersHtml = periodTimes.map(timeStr => {
-                    const [hour, minute] = timeStr.split(':').map(Number);
-                    const minutesFromStart = (hour * 60 + minute) - TIMELINE_START_MIN;
-                    if (minutesFromStart >= 0 && minutesFromStart <= TOTAL_DURATION_MIN) {
-                        const leftPosition = (minutesFromStart / TOTAL_DURATION_MIN) * 100;
-                        return `<div class="timeline-marker" style="left: ${leftPosition}%;"></div>`;
-                    }
-                    return '';
-                }).join('');
-                
-                timelineHtml = `<div class="card-timeline-container">${timelineSegmentsHtml}${timelineMarkersHtml}<div class="timeline-current-indicator-wrapper"></div></div>`;
+                if (state.settings.cardTimelineStyle === 'classic') {
+                    const timelineMarkersHtml = periodTimes.map(timeStr => {
+                        const [hour, minute] = timeStr.split(':').map(Number);
+                        const minutesFromStart = (hour * 60 + minute) - TIMELINE_START_MIN;
+                        if (minutesFromStart >= 0 && minutesFromStart <= TOTAL_DURATION_MIN) {
+                            const leftPosition = (minutesFromStart / TOTAL_DURATION_MIN) * 100;
+                            return `<div class="timeline-marker" style="left: ${leftPosition}%;"></div>`;
+                        }
+                        return '';
+                    }).join('');
+                    
+                    timelineHtml = `<div class="card-timeline-container">${timelineSegmentsHtml}${timelineMarkersHtml}<div class="timeline-current-indicator-wrapper"></div></div>`;
+                } else {
+                    const timelineMarkersHtml = periodTimes.map(timeStr => {
+                        const [hour, minute] = timeStr.split(':').map(Number);
+                        const minutesFromStart = (hour * 60 + minute) - TIMELINE_START_MIN;
+                        if (minutesFromStart >= 0 && minutesFromStart <= TOTAL_DURATION_MIN) {
+                            const leftPosition = (minutesFromStart / TOTAL_DURATION_MIN) * 100;
+                            return `<div class="absolute top-0 bottom-0 border-l border-dashed border-gray-400/40 dark:border-gray-500/40 z-0 pointer-events-none" style="left: ${leftPosition}%;"></div>`;
+                        }
+                        return '';
+                    }).join('');
+                    
+                    timelineHtml = `
+                        <div class="absolute bottom-2.5 left-4 right-4 h-2.5 bg-white/40 dark:bg-black/30 rounded-full overflow-hidden shadow-inner backdrop-blur-sm border border-gray-300/30 dark:border-gray-600/30">
+                            ${timelineMarkersHtml}
+                            ${timelineSegmentsHtml}
+                            <div class="timeline-current-indicator-wrapper w-full h-full absolute inset-0 pointer-events-none"></div>
+                        </div>`;
+                }
             }
             
             const contentPadding = state.settings.cardTimelineEnabled ? 'p-5 pb-8' : 'p-5';
@@ -1360,11 +1455,26 @@ document.addEventListener('DOMContentLoaded', () => {
             if (indicatorWrapper) {
                 if (nowMinutes >= TIMELINE_START_MIN && nowMinutes <= TIMELINE_END_MIN) {
                     const nowPosition = ((nowMinutes - TIMELINE_START_MIN) / TOTAL_DURATION_MIN) * 100;
-                    let indicator = indicatorWrapper.querySelector('.timeline-current-indicator');
-                    if (!indicator) {
-                        indicatorWrapper.innerHTML = `<div class="timeline-current-indicator" style="left: ${nowPosition}%;"></div>`;
+                    
+                    if (state.settings.cardTimelineStyle === 'classic') {
+                        let indicator = indicatorWrapper.querySelector('.timeline-current-indicator');
+                        // Ensure we don't accidentally keep the modern playhead
+                        if (!indicator || indicator.innerHTML !== '') {
+                            indicatorWrapper.innerHTML = `<div class="timeline-current-indicator" style="left: ${nowPosition}%;"></div>`;
+                        } else {
+                            indicator.style.left = `${nowPosition}%`;
+                        }
                     } else {
-                        indicator.style.left = `${nowPosition}%`;
+                        let indicator = indicatorWrapper.querySelector('.timeline-current-indicator');
+                        // Ensure we don't accidentally keep the classic playhead
+                        if (!indicator || indicator.innerHTML === '') {
+                            indicatorWrapper.innerHTML = `
+                                <div class="timeline-current-indicator absolute top-0 bottom-0 w-[2px] bg-amber-500 z-20 shadow-[0_0_5px_rgba(245,158,11,0.8)] pointer-events-none" style="left: ${nowPosition}%;">
+                                    <div class="absolute top-1/2 w-1.5 h-1.5 rounded-full bg-amber-500 transform -translate-x-1/2 -translate-y-1/2 shadow-[0_0_3px_rgba(245,158,11,1)]"></div>
+                                </div>`;
+                        } else {
+                            indicator.style.left = `${nowPosition}%`;
+                        }
                     }
                 } else {
                     indicatorWrapper.innerHTML = '';
@@ -2337,38 +2447,63 @@ document.addEventListener('DOMContentLoaded', () => {
         timelineModal.classList.remove('hidden');
     };
 
-    // --- NEW: Daily Timeline Modal Logic ---
+    // --- NEW: Modern Daily Timeline Modal Logic ---
     const renderDailyTimeline = (date) => {
         const selectedDayIndex = date.getDay();
         dailyTimelineDaySelector.innerHTML = DAYS.map((day, index) => {
             const isActive = index === selectedDayIndex;
             const buttonClasses = isActive
-                ? 'bg-indigo-600 text-white'
-                : 'bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600';
-            return `<button data-day-index="${index}" class="px-3 py-1 text-sm font-medium rounded-md transition-colors ${buttonClasses}">${day.substring(0, 3)}</button>`;
+                ? 'bg-indigo-600 text-white shadow-md'
+                : 'bg-white text-gray-600 border border-gray-200 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700';
+            return `<button data-day-index="${index}" class="px-4 py-1.5 text-sm font-semibold rounded-full transition-all flex-shrink-0 ${buttonClasses}">${day.substring(0, 3)}</button>`;
         }).join('');
 
-        const TIMELINE_START_MIN = 8 * 60;
-        const TIMELINE_END_MIN = 12 * 60 + 50;
+        const TIMELINE_START_MIN = 8 * 60; // 8:00 AM
+        const TIMELINE_END_MIN = 12 * 60 + 50;  // 12:50 PM
         const TOTAL_DURATION_MIN = TIMELINE_END_MIN - TIMELINE_START_MIN;
-        const periodTimes = getStandardPeriodTimes();
 
-        let headerLabelsHtml = '';
-        periodTimes.forEach(timeStr => {
+        // Generate Header Grid & Time Labels
+        let timeLabelsHtml = '';
+        let gridLinesHtml = '';
+        const allLabels = getStandardPeriodTimes();
+        
+        allLabels.forEach(timeStr => {
             const [hour, minute] = timeStr.split(':').map(Number);
             const minutesFromMidnight = hour * 60 + minute;
-            const minutesFromStart = minutesFromMidnight - TIMELINE_START_MIN;
-            const leftPosition = (minutesFromStart / TOTAL_DURATION_MIN) * 100;
-            headerLabelsHtml += `<div class="absolute top-1/2 -translate-y-1/2 text-xs text-gray-500 dark:text-gray-400" style="left: ${leftPosition}%; transform: translateX(-50%);">${timeStr}</div>`;
+            const leftPos = ((minutesFromMidnight - TIMELINE_START_MIN) / TOTAL_DURATION_MIN) * 100;
+            
+            // The labels stay in the header row
+            timeLabelsHtml += `
+                <div class="absolute text-[10px] font-semibold text-gray-400 dark:text-gray-500 transform -translate-x-1/2" style="left: ${leftPos}%; bottom: 0;">
+                    ${timeStr}
+                </div>`;
+            // The grid lines go inside the tracks
+            gridLinesHtml += `
+                <div class="absolute top-0 bottom-0 border-l border-dashed border-gray-300/60 dark:border-gray-600/40 z-0 pointer-events-none" style="left: ${leftPos}%;"></div>
+            `;
         });
 
+        const now = getCurrentTime();
+        let currentTimeHtml = '';
+        if (date.toDateString() === now.toDateString()) {
+            const nowMinutes = now.getHours() * 60 + now.getMinutes();
+            if (nowMinutes >= TIMELINE_START_MIN && nowMinutes <= TIMELINE_END_MIN) {
+                const nowPosition = ((nowMinutes - TIMELINE_START_MIN) / TOTAL_DURATION_MIN) * 100;
+                currentTimeHtml = `
+                    <div class="absolute top-0 bottom-0 w-0.5 bg-amber-500 z-20 shadow-[0_0_8px_rgba(245,158,11,0.8)] pointer-events-none" style="left: ${nowPosition}%;">
+                        <div class="absolute -top-1 w-2 h-2 rounded-full bg-amber-500 transform -translate-x-1/2 shadow-[0_0_5px_rgba(245,158,11,1)]"></div>
+                    </div>`;
+            }
+        }
+
         const allItems = [
-            ...Object.entries(state.sections).map(([name, data]) => ({ name, type: 'section', ...data })),
-            ...Object.entries(state.groups).map(([name, data]) => ({ name, type: 'group', ...data }))
+            ...Object.entries(state.groups).map(([name, data]) => ({ name, type: 'group', ...data })),
+            ...Object.entries(state.sections).map(([name, data]) => ({ name, type: 'section', ...data }))
         ];
 
         const rowsHtml = allItems.map(item => {
             let busySlots = [];
+            
             if (item.type === 'section') {
                 const daySchedule = getScheduleForDay(item.timetable, date);
                 if (daySchedule) {
@@ -2384,10 +2519,16 @@ document.addEventListener('DOMContentLoaded', () => {
                             const endSlot = item.timetable.timeSlots.find(ts => ts.lecture === endLectureNum);
                             if (endSlot) endTime = parseTime(endSlot.time.split('-')[1], date);
                         }
-                        busySlots.push({ start: startTime.getHours() * 60 + startTime.getMinutes(), end: endTime.getHours() * 60 + endTime.getMinutes() });
+                        busySlots.push({ 
+                            start: startTime.getHours() * 60 + startTime.getMinutes(), 
+                            end: endTime.getHours() * 60 + endTime.getMinutes(),
+                            subject: classInfo.subject,
+                            venue: classInfo.venue || ''
+                        });
                     });
                 }
             } else { // type is 'group'
+                let allMemberSlots = [];
                 item.members.forEach(member => {
                     const { timetable } = state.sections[member.section];
                     if (!timetable) return;
@@ -2405,57 +2546,81 @@ document.addEventListener('DOMContentLoaded', () => {
                                 const endSlot = timetable.timeSlots.find(ts => ts.lecture === endLecNum);
                                 if (endSlot) endTime = parseTime(endSlot.time.split('-')[1], date);
                             }
-                            busySlots.push({ start: startTime.getHours() * 60 + startTime.getMinutes(), end: endTime.getHours() * 60 + endTime.getMinutes() });
+                            allMemberSlots.push({ start: startTime.getHours() * 60 + startTime.getMinutes(), end: endTime.getHours() * 60 + endTime.getMinutes() });
                         });
                     }
                 });
-            }
-
-            const events = [{ time: TIMELINE_START_MIN, type: 'start' }, { time: TIMELINE_END_MIN, type: 'end' }];
-            busySlots.forEach(slot => {
-                events.push({ time: slot.start, type: 'busy' });
-                events.push({ time: slot.end, type: 'free' });
-            });
-            events.sort((a, b) => a.time - b.time);
-
-            let segmentsHtml = '';
-            let lastTime = TIMELINE_START_MIN;
-            let isBusy = busySlots.some(slot => slot.start <= lastTime && slot.end > lastTime);
-
-            for (const event of events) {
-                const currentTime = Math.max(TIMELINE_START_MIN, Math.min(event.time, TIMELINE_END_MIN));
-                const duration = currentTime - lastTime;
-                if (duration > 0) {
-                    const width = (duration / TOTAL_DURATION_MIN) * 100;
-                    const segmentClass = isBusy ? 'timeline-segment-busy' : 'timeline-segment-free';
-                    segmentsHtml += `<div class="timeline-segment ${segmentClass}" style="width: ${width}%"></div>`;
+                
+                // Merge overlapping group slots
+                allMemberSlots.sort((a,b) => a.start - b.start);
+                if(allMemberSlots.length > 0) {
+                    let current = {...allMemberSlots[0]};
+                    for(let i=1; i<allMemberSlots.length; i++) {
+                        if(allMemberSlots[i].start <= current.end) {
+                            current.end = Math.max(current.end, allMemberSlots[i].end);
+                        } else {
+                            busySlots.push({...current, subject: 'Members Busy'});
+                            current = {...allMemberSlots[i]};
+                        }
+                    }
+                    busySlots.push({...current, subject: 'Members Busy'});
                 }
-                if (event.type === 'busy') isBusy = true;
-                if (event.type === 'free') isBusy = false;
-                lastTime = currentTime;
             }
 
-            const nameClasses = item.type === 'group' 
-                ? 'font-bold text-purple-600 dark:text-purple-400' 
-                : 'font-medium text-gray-800 dark:text-gray-200';
+            const blocksHtml = busySlots.map(slot => {
+                const startClamp = Math.max(TIMELINE_START_MIN, slot.start);
+                const endClamp = Math.min(TIMELINE_END_MIN, slot.end);
+                if (endClamp <= startClamp) return ''; // Out of bounds
+                
+                const left = ((startClamp - TIMELINE_START_MIN) / TOTAL_DURATION_MIN) * 100;
+                const width = ((endClamp - startClamp) / TOTAL_DURATION_MIN) * 100;
+                
+                const content = item.type === 'section' 
+                    ? `<span class="truncate font-bold text-[11px] mb-[1px] leading-none">${slot.subject}</span><span class="truncate font-medium text-[9px] opacity-90 leading-none">${slot.venue}</span>`
+                    : `<span class="truncate font-bold text-[11px] leading-none">${slot.subject}</span>`;
+
+                return `
+                    <div class="absolute top-1.5 bottom-1.5 rounded-lg bg-red-500/95 shadow-[0_2px_4px_rgba(239,68,68,0.25)] flex flex-col justify-center px-2 text-white overflow-hidden z-10 border border-red-600/30 transition-transform duration-200 hover:scale-[1.03] hover:z-30 cursor-default" 
+                         style="left: calc(${left}% + 2px); width: calc(${width}% - 4px);" title="${slot.subject} ${slot.venue ? `(${slot.venue})` : ''}">
+                        ${content}
+                    </div>`;
+            }).join('');
+
+            const iconSvg = item.type === 'group' 
+                ? `<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1.5 text-purple-500 flex-shrink-0" viewBox="0 0 20 20" fill="currentColor"><path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3zM6 8a2 2 0 11-4 0 2 2 0 014 0zM16 18v-3a5.972 5.972 0 00-.75-2.906A3.005 3.005 0 0119 15v3h-3zM4.75 12.094A5.973 5.973 0 004 15v3H1v-3a3 3 0 013.75-2.906z" /></svg>`
+                : `<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1.5 text-indigo-500 flex-shrink-0" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd" /></svg>`;
 
             return `
-                <div class="timeline-member-row">
-                    <div class="timeline-member-name text-sm ${nameClasses}">${item.name}</div>
-                    <div class="timeline-track-container">
-                        <div class="timeline-bar">${segmentsHtml}</div>
+                <div class="mb-5 relative">
+                    <div class="mb-1.5 flex items-center justify-between px-1">
+                        <div class="text-sm font-bold text-gray-800 dark:text-gray-200 flex items-center">
+                            ${iconSvg} <span class="truncate">${item.name}</span>
+                        </div>
+                        <div class="text-[9px] uppercase tracking-wider font-bold text-gray-400 dark:text-gray-500 bg-gray-200 dark:bg-gray-700 px-2 py-0.5 rounded-full ml-2 flex-shrink-0">
+                            ${item.type}
+                        </div>
+                    </div>
+                    <div class="relative w-full h-[3.25rem] bg-[#dcfce7] dark:bg-[rgba(34,197,94,0.15)] rounded-xl overflow-hidden border border-green-200/60 dark:border-green-500/20 shadow-inner px-2">
+                        <div class="relative w-full h-full">
+                            ${gridLinesHtml}
+                            ${blocksHtml}
+                            ${currentTimeHtml}
+                        </div>
                     </div>
                 </div>
             `;
         }).join('');
 
         dailyTimelineContainer.innerHTML = `
-            <div class="timeline-grid relative w-full">
-                <div class="timeline-header-names h-8"></div>
-                <div class="relative h-8">
-                    <div class="timeline-header-times h-full">${headerLabelsHtml}</div>
+            <div class="w-full max-w-full relative">
+                <div class="relative w-full h-5 mb-2 border-b border-gray-200 dark:border-gray-700 px-2">
+                    <div class="relative w-full h-full">
+                        ${timeLabelsHtml}
+                    </div>
                 </div>
-                ${rowsHtml}
+                <div class="pt-2">
+                    ${rowsHtml}
+                </div>
             </div>
         `;
     };
@@ -2525,6 +2690,15 @@ document.addEventListener('DOMContentLoaded', () => {
         applyCardTimelineSetting();
         saveState();
         renderDashboard(); 
+    });
+
+    timelineStyleBtns.forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            state.settings.cardTimelineStyle = e.target.dataset.style;
+            applyCardTimelineSetting();
+            saveState();
+            renderDashboard();
+        });
     });
     
     previousVenueToggle.addEventListener('click', () => {
