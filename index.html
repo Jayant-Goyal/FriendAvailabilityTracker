@@ -1046,8 +1046,9 @@ document.addEventListener('DOMContentLoaded', () => {
         let busySlots = [];
         
         if (status.type === 'section') {
-            const { timetable } = state.sections[status.name];
-            if (!timetable) return busySlots;
+            const sectionData = state.sections[status.name];
+            if (!sectionData || !sectionData.timetable) return busySlots;
+            const { timetable } = sectionData;
             const daySchedule = getScheduleForDay(timetable, now);
             if (daySchedule) {
                 daySchedule.classes.forEach(classInfo => {
@@ -1071,8 +1072,9 @@ document.addEventListener('DOMContentLoaded', () => {
         } else { // It's a group
             const group = state.groups[status.name];
             group.members.forEach(member => {
-                const { timetable } = state.sections[member.section];
-                if (!timetable) return;
+                const sectionData = state.sections[member.section];
+                if (!sectionData || !sectionData.timetable) return;
+                const { timetable } = sectionData;
                 const daySchedule = getScheduleForDay(timetable, now);
                 if (daySchedule) {
                     daySchedule.classes.forEach(classInfo => {
@@ -1676,7 +1678,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const baseStatus = { type: 'section', name: sectionName, isPinned: pinned, isHighlighted: highlighted };
 
             if (!timetable || !timetable.schedule) {
-                return { ...baseStatus, isFree: true, progress: 0, error: 'Invalid Timetable', ledColor: 'red' };
+                return { ...baseStatus, isFree: true, progress: 0, error: 'Invalid Timetable', ledColor: 'red', nextClassDate: null };
             }
             
             const currentClass = getClassAtTime(timetable, now);
@@ -1767,7 +1769,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     freeUntilTime: freeUntilInfo,
                     nextClassForSwipe: nextClassForSwipeData,
                     dayScheduleForView, fullScheduleForView: fullTimetableForView,
-                    previousVenueInfo // Pass new data
+                    previousVenueInfo,
+                    nextClassDate: absoluteNextClass ? absoluteNextClass.startTime : null
                 };
             } else {
                 if (absoluteNextClass) {
@@ -1792,7 +1795,8 @@ document.addEventListener('DOMContentLoaded', () => {
                         nextClassVenue: absoluteNextClass.venue || 'N/A',
                         nextClassFaculty: absoluteNextClass.faculty || 'N/A',
                         nextClassForSwipe: nextClassForSwipeData,
-                        dayScheduleForView, fullScheduleForView: fullTimetableForView
+                        dayScheduleForView, fullScheduleForView: fullTimetableForView,
+                        nextClassDate: absoluteNextClass.startTime
                     };
                 } else {
                     return {
@@ -1800,7 +1804,8 @@ document.addEventListener('DOMContentLoaded', () => {
                         nextClassTime: 'a long while', nextClassSubject: 'Nothing scheduled',
                         nextClassVenue: '-', nextClassFaculty: '-',
                         nextClassForSwipe: nextClassForSwipeData,
-                        dayScheduleForView, fullScheduleForView: fullTimetableForView
+                        dayScheduleForView, fullScheduleForView: fullTimetableForView,
+                        nextClassDate: null
                     };
                 }
             }
@@ -1830,15 +1835,12 @@ document.addEventListener('DOMContentLoaded', () => {
             } else {
                 const membersWithNextClass = memberStatuses
                     .map(m => {
-                        if (m.status && m.status.nextClassTime !== 'a long while') {
-                            const nextClassDate = getNextClass(state.sections[m.section].timetable, now)?.startTime;
-                            if (nextClassDate) {
-                                return {
-                                    time: nextClassDate,
-                                    name: m.name,
-                                    subject: m.status.nextClassSubject || 'Unknown'
-                                };
-                            }
+                        if (m.status && m.status.nextClassDate) {
+                            return {
+                                time: m.status.nextClassDate,
+                                name: m.name,
+                                subject: m.status.nextClassSubject || 'Unknown'
+                            };
                         }
                         return null;
                     })
@@ -2289,8 +2291,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
         let allBusySlots = [];
         group.members.forEach(member => {
-            const { timetable } = state.sections[member.section];
-            if (!timetable) return;
+            const sectionData = state.sections[member.section];
+            if (!sectionData || !sectionData.timetable) return;
+            const { timetable } = sectionData;
             const daySchedule = getScheduleForDay(timetable, date);
             if (daySchedule) {
                 daySchedule.classes.forEach(classInfo => {
@@ -2361,8 +2364,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
         const memberRowsHtml = group.members.map(member => {
-            const { timetable } = state.sections[member.section];
-            if (!timetable) return '';
+            const sectionData = state.sections[member.section];
+            if (!sectionData || !sectionData.timetable) return '';
+            const { timetable } = sectionData;
 
             const daySchedule = getScheduleForDay(timetable, date);
             const events = [{ time: TIMELINE_START_MIN, type: 'start' }, { time: TIMELINE_END_MIN, type: 'end' }];
@@ -2505,33 +2509,37 @@ document.addEventListener('DOMContentLoaded', () => {
             let busySlots = [];
             
             if (item.type === 'section') {
-                const daySchedule = getScheduleForDay(item.timetable, date);
-                if (daySchedule) {
-                    daySchedule.classes.forEach(classInfo => {
-                        if (!classInfo.subject) return;
-                        const slot = item.timetable.timeSlots.find(ts => ts.lecture === classInfo.lecture);
-                        if (!slot) return;
-                        const [startTimeStr, endTimeStr] = slot.time.split('-');
-                        const startTime = parseTime(startTimeStr, date);
-                        let endTime = parseTime(endTimeStr, date);
-                        if (classInfo.span && classInfo.span > 1) {
-                            const endLectureNum = classInfo.lecture + classInfo.span - 1;
-                            const endSlot = item.timetable.timeSlots.find(ts => ts.lecture === endLectureNum);
-                            if (endSlot) endTime = parseTime(endSlot.time.split('-')[1], date);
-                        }
-                        busySlots.push({ 
-                            start: startTime.getHours() * 60 + startTime.getMinutes(), 
-                            end: endTime.getHours() * 60 + endTime.getMinutes(),
-                            subject: classInfo.subject,
-                            venue: classInfo.venue || ''
+                const sectionData = state.sections[item.name];
+                if (sectionData && sectionData.timetable) {
+                    const daySchedule = getScheduleForDay(sectionData.timetable, date);
+                    if (daySchedule) {
+                        daySchedule.classes.forEach(classInfo => {
+                            if (!classInfo.subject) return;
+                            const slot = sectionData.timetable.timeSlots.find(ts => ts.lecture === classInfo.lecture);
+                            if (!slot) return;
+                            const [startTimeStr, endTimeStr] = slot.time.split('-');
+                            const startTime = parseTime(startTimeStr, date);
+                            let endTime = parseTime(endTimeStr, date);
+                            if (classInfo.span && classInfo.span > 1) {
+                                const endLectureNum = classInfo.lecture + classInfo.span - 1;
+                                const endSlot = sectionData.timetable.timeSlots.find(ts => ts.lecture === endLectureNum);
+                                if (endSlot) endTime = parseTime(endSlot.time.split('-')[1], date);
+                            }
+                            busySlots.push({ 
+                                start: startTime.getHours() * 60 + startTime.getMinutes(), 
+                                end: endTime.getHours() * 60 + endTime.getMinutes(),
+                                subject: classInfo.subject,
+                                venue: classInfo.venue || ''
+                            });
                         });
-                    });
+                    }
                 }
             } else { // type is 'group'
                 let allMemberSlots = [];
                 item.members.forEach(member => {
-                    const { timetable } = state.sections[member.section];
-                    if (!timetable) return;
+                    const sectionData = state.sections[member.section];
+                    if (!sectionData || !sectionData.timetable) return;
+                    const { timetable } = sectionData;
                     const daySchedule = getScheduleForDay(timetable, date);
                     if (daySchedule) {
                         daySchedule.classes.forEach(classInfo => {
