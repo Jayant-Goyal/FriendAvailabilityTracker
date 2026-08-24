@@ -1,5 +1,5 @@
 // A unique name for the cache. Increment this version when you update the app's core files.
-const CACHE_NAME = 'friend-tracker-v21';
+const CACHE_NAME = 'friend-tracker-v22';
 
 // List of core files to cache when the service worker is installed.
 // These are the essential files needed for the app to run offline.
@@ -7,6 +7,10 @@ const urlsToCache = [
   './', // Caches the root URL of the app
   './index.html',
   './manifest.json',
+  './timetables.json',
+  './TimeTables/DF.json',
+  './TimeTables/DG.json',
+  './TimeTables/DH.json',
   './generated-image.jpg' // App icon
 ];
 
@@ -85,21 +89,26 @@ self.addEventListener('fetch', event => {
       })
     );
   } else {
-    // For all other requests (CSS, JS, fonts, images), use a "cache-first" strategy.
+    // For all other requests (CSS, JS, fonts, images, JSON timetables), use cache with network fallback and search param tolerance.
     event.respondWith(
-      caches.match(event.request).then(response => {
+      caches.match(event.request, { ignoreSearch: true }).then(response => {
         // If the resource is in the cache, return it.
         if (response) {
           return response;
         }
         // If not in the cache, fetch it from the network.
         return fetch(event.request).then(networkResponse => {
-          // And cache the new resource for future use.
-          return caches.open(CACHE_NAME).then(cache => {
-            console.log('[Service Worker] Caching new resource:', event.request.url);
-            cache.put(event.request, networkResponse.clone());
-            return networkResponse;
-          });
+          if (networkResponse && networkResponse.status === 200) {
+            // And cache the new resource for future use.
+            return caches.open(CACHE_NAME).then(cache => {
+              console.log('[Service Worker] Caching new resource:', event.request.url);
+              cache.put(event.request, networkResponse.clone());
+              return networkResponse;
+            });
+          }
+          return networkResponse;
+        }).catch(() => {
+          return caches.match(event.request, { ignoreSearch: true });
         });
       })
     );

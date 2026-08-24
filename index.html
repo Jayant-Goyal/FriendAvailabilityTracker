@@ -2123,114 +2123,160 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
     
+    // --- HELPER TO FETCH JSON WITH MULTI-PATH FALLBACKS ---
+    const fetchJsonWithFallbacks = async (candidatePaths, timeoutMs = 8000) => {
+        for (const path of candidatePaths) {
+            try {
+                const controller = new AbortController();
+                const timer = setTimeout(() => controller.abort(), timeoutMs);
+                const res = await fetch(`${path}?t=${Date.now()}`, { signal: controller.signal });
+                clearTimeout(timer);
+                if (res.ok) {
+                    const data = await res.json();
+                    if (data) return data;
+                }
+            } catch (e) {
+                try {
+                    const controller = new AbortController();
+                    const timer = setTimeout(() => controller.abort(), timeoutMs);
+                    const res = await fetch(path, { signal: controller.signal });
+                    clearTimeout(timer);
+                    if (res.ok) {
+                        const data = await res.json();
+                        if (data) return data;
+                    }
+                } catch (e2) {}
+            }
+        }
+        return null;
+    };
+
     // --- CENTRALIZED TIMETABLE MANAGEMENT ---
     const fetchAndUpdateTimetables = async () => {
-        if (!navigator.onLine) {
-            logger("Device is offline. Skipping remote timetable update check.");
-            return;
-        }
-
-        const isFirstVisit = !localStorage.getItem('syncUpState');
+        const isFirstVisit = !localStorage.getItem('syncUpHasVisited');
+        const sectionsCount = Object.keys(state.sections || {}).length;
+        const needsInitialPopulate = sectionsCount === 0;
         let hasChanges = false;
 
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 6000);
-
         try {
-            const manifestResponse = await fetch(`${TIMETABLES_MANIFEST_URL}?t=${Date.now()}`, {
-                signal: controller.signal
-            });
-            clearTimeout(timeoutId);
+            const manifest = await fetchJsonWithFallbacks([
+                './timetables.json',
+                'timetables.json',
+                './TimeTables/timetables.json',
+                './manifest.json'
+            ], 6000) || { version: 16, files: ["DF.json", "DG.json", "DH.json"] };
 
-            if (!manifestResponse.ok) {
-                throw new Error(`HTTP error! status: ${manifestResponse.status}`);
-            }
-            const manifest = await manifestResponse.json();
-            const remoteVersion = manifest.version || 0;
+            const remoteVersion = manifest.version || 16;
             const localVersion = state.remoteTimetablesVersion || 0;
+            const targetFiles = (manifest.files && manifest.files.length > 0) ? manifest.files : ["DF.json", "DG.json", "DH.json"];
 
-            if (remoteVersion > localVersion || isFirstVisit) {
-                logger(`New timetable version found. Remote: ${remoteVersion}, Local: ${localVersion}. Updating...`);
+            // Check if remote version is newer, or if we currently have zero sections loaded
+            if (remoteVersion > localVersion || needsInitialPopulate || isFirstVisit) {
+                logger(`Fetching timetable files. Remote: ${remoteVersion}, Local: ${localVersion}, Sections: ${sectionsCount}`);
 
-                const oldRemoteSections = Object.keys(state.sections).filter(name => !state.sections[name].isLocal);
+                const timetablePromises = targetFiles.map(file => {
+                    const candidatePaths = [
+                        `./TimeTables/${file}`,
+                        `./timetables/${file}`,
+                        `TimeTables/${file}`,
+                        `timetables/${file}`,
+                        `./${file}`,
+                        file
+                    ];
+                    return fetchJsonWithFallbacks(candidatePaths, 8000);
+                });
 
-                const timetablePromises = (manifest.files || []).map(file => 
-                    fetch(`./TimeTables/${file}?t=${Date.now()}`).then(res => {
-                        if (!res.ok) {
-                           logger(`Failed to fetch ${file}`);
-                           return null;
+                const fetchedTimetables = (await Promise.all(timetablePromises)).filter(Boolean);
+
+                if (fetchedTimetables.length > 0) {
+                    if (needsInitialPopulate || isFirstVisit) {
+                        const newSections = { ...(state.sections || {}) };
+                        fetchedTimetables.forEach(timetable => {
+                            const sectionName = timetable.timetableInfo?.section;
+                            if (!sectionName) return;
+                            if (!newSections[sectionName]) {
+                                newSections[sectionName] = {
+                                    timetable,
+                                    friends: [],
+                                    pinned: false,
+                                    highlighted: false,
+                                    isLocal: false,
+                                    color: 'default'
+                                };
+                            } else {
+                                newSections[sectionName].timetable = timetable;
+                            }
+                        });
+                        state.sections = newSections;
+                        if (isFirstVisit && welcomeModal) {
+                            welcomeModal.classList.remove('hidden');
                         }
-                        return res.json();
-                    }).catch(err => {
-                        logger(`Error fetching ${file}:`, err);
-                        return null;
-                    })
-                );
-                
-                const timetablesData = (await Promise.all(timetablePromises)).filter(Boolean);
-                
-                if (isFirstVisit) {
-                    const newSections = {};
-                    timetablesData.forEach(timetable => {
-                        const sectionName = timetable.timetableInfo?.section;
-                        if (!sectionName) return;
-                        newSections[sectionName] = { timetable, friends: [], pinned: false, highlighted: false, isLocal: false, color: 'default' };
-                    });
-                    state.sections = newSections;
-                    welcomeModal.classList.remove('hidden');
-                    hasChanges = true;
+                        hasChanges = true;
+                    } else {
+                        const changelog = { added: [], updated: [], removed: [] };
+                        const oldRemoteSections = Object.keys(state.sections || {}).filter(name => !state.sections[name].isLocal);
+                        const newRemoteTimetables = new Map();
+
+                        fetchedTimetables.forEach(timetable => {
+                            const sectionName = timetable.timetableInfo?.section;
+                            if (sectionName) {
+                                newRemoteTimetables.set(sectionName, timetable);
+                            }
+                        });
+
+                        for (const [sectionName, timetable] of newRemoteTimetables.entries()) {
+                            if (state.removedSections && state.removedSections.includes(sectionName)) {
+                                continue;
+                            }
+
+                            const existingSection = state.sections[sectionName];
+                            if (existingSection) {
+                                existingSection.timetable = timetable;
+                                changelog.updated.push(sectionName);
+                                hasChanges = true;
+                            } else {
+                                state.sections[sectionName] = {
+                                    timetable,
+                                    friends: [],
+                                    pinned: false,
+                                    highlighted: false,
+                                    isLocal: false,
+                                    color: 'default'
+                                };
+                                changelog.added.push(sectionName);
+                                hasChanges = true;
+                            }
+                        }
+
+                        for (const sectionName of oldRemoteSections) {
+                            if (!newRemoteTimetables.has(sectionName)) {
+                                delete state.sections[sectionName];
+                                changelog.removed.push(sectionName);
+                                hasChanges = true;
+                            }
+                        }
+
+                        if (changelog.added.length > 0 || changelog.updated.length > 0 || changelog.removed.length > 0) {
+                            displayChangelog(changelog);
+                        }
+                    }
+
+                    state.remoteTimetablesVersion = remoteVersion;
+                    localStorage.setItem('syncUpHasVisited', 'true');
+                    saveState();
+                    if (!isFirstVisit && !needsInitialPopulate) {
+                        showToast(`Timetables updated to version ${remoteVersion}.`, 'success');
+                    }
                 } else {
-                    const changelog = { added: [], updated: [], removed: [] };
-                    const newRemoteTimetables = new Map();
-                    
-                    timetablesData.forEach(timetable => {
-                        const sectionName = timetable.timetableInfo?.section;
-                        if (sectionName) {
-                            newRemoteTimetables.set(sectionName, timetable);
-                        }
-                    });
-
-                    for (const [sectionName, timetable] of newRemoteTimetables.entries()) {
-                        if (state.removedSections.includes(sectionName)) {
-                            continue;
-                        }
-
-                        const existingSection = state.sections[sectionName];
-                        if (existingSection) {
-                            existingSection.timetable = timetable;
-                            changelog.updated.push(sectionName);
-                            hasChanges = true;
-                        } else {
-                            state.sections[sectionName] = { timetable, friends: [], pinned: false, highlighted: false, isLocal: false, color: 'default' };
-                            changelog.added.push(sectionName);
-                            hasChanges = true;
-                        }
-                    }
-
-                    for (const sectionName of oldRemoteSections) {
-                        if (!newRemoteTimetables.has(sectionName)) {
-                            delete state.sections[sectionName];
-                            changelog.removed.push(sectionName);
-                            hasChanges = true;
-                        }
-                    }
-
-                    if (changelog.added.length > 0 || changelog.updated.length > 0 || changelog.removed.length > 0) {
-                        displayChangelog(changelog);
-                    }
+                    logger("No timetable files could be fetched from server.");
                 }
-                
-                state.remoteTimetablesVersion = remoteVersion;
-                saveState();
-                showToast(`Timetables updated to version ${remoteVersion}.`, 'success');
-
             } else {
                 logger("Timetables are up to date.");
+                localStorage.setItem('syncUpHasVisited', 'true');
             }
         } catch (error) {
-            clearTimeout(timeoutId);
             logger("Could not fetch remote timetables:", error);
-            if (isFirstVisit) {
+            if (isFirstVisit && welcomeModal) {
                 welcomeModal.classList.remove('hidden');
             }
         } finally {
@@ -4800,58 +4846,6 @@ document.addEventListener('DOMContentLoaded', () => {
         showToast(state.groups[name].highlighted ? `Highlighted ${name}.` : `Removed highlight from ${name}.`);
     };
 
-    const handleDebugTimeChange = (e) => {
-        state.debugTime = e.target.value ? new Date(e.target.value) : null;
-        saveState();
-        updateClock();
-        updateDashboardStatuses();
-        updateDebugIndicator();
-    };
-
-    const handleResetTime = () => {
-        triggerHaptic('travelReset');
-        state.debugTime = null;
-        debugTimeInput.value = '';
-        saveState();
-        updateClock();
-        updateDashboardStatuses();
-        updateDebugIndicator();
-        showToast('Time reset to real-time.');
-    };
-    
-    const updateDebugIndicator = () => {
-        if (!state.debugTime) {
-            timeTravelIndicator.classList.add('hidden');
-            timeTravelIndicator.innerHTML = '';
-            clockElement.classList.remove('text-amber-500', 'text-blue-500', 'dark:text-amber-400', 'dark:text-blue-400', 'font-semibold');
-            return;
-        }
-
-        const now = new Date();
-        timeTravelIndicator.classList.remove('hidden');
-        clockElement.classList.add('font-semibold');
-
-        const isFuture = state.debugTime.getTime() > now.getTime();
-        const label = isFuture ? 'Future' : 'Past';
-        const colorClasses = isFuture 
-            ? 'bg-blue-100 text-blue-800 dark:bg-blue-900/60 dark:text-blue-200 border-blue-300 dark:border-blue-700' 
-            : 'bg-amber-100 text-amber-800 dark:bg-amber-900/60 dark:text-amber-200 border-amber-300 dark:border-amber-700';
-
-        timeTravelIndicator.className = `inline-flex items-center space-x-1 px-2 py-0.5 text-xs font-semibold rounded-full border shadow-sm ${colorClasses}`;
-        timeTravelIndicator.innerHTML = `
-            <span>${label}</span>
-            <button id="quick-reset-time-btn" class="ml-1 px-1 rounded hover:bg-black/10 dark:hover:bg-white/10 transition-colors font-bold text-[10px]" title="Reset to real-time">✕ Reset</button>
-        `;
-
-        if (isFuture) {
-            clockElement.classList.add('text-blue-500', 'dark:text-blue-400');
-            clockElement.classList.remove('text-amber-500', 'dark:text-amber-400');
-        } else {
-            clockElement.classList.add('text-amber-500', 'dark:text-amber-400');
-            clockElement.classList.remove('text-blue-500', 'dark:text-blue-400');
-        }
-    };
-
     const handleClearData = () => {
         showConfirm('Clear All Data?', 'This will reset the application to its default state.', () => {
             localStorage.removeItem('syncUpState');
@@ -7010,7 +7004,11 @@ document.addEventListener('DOMContentLoaded', () => {
         renderDashboard();
         
         // BACKGROUND FETCH: Check for remote timetable updates asynchronously without blocking the UI
-        fetchAndUpdateTimetables().catch(console.error);
+        fetchAndUpdateTimetables().then(() => {
+            renderDashboard();
+            renderSettings();
+            updateDashboardStatuses();
+        }).catch(console.error);
         
         // Start smart clock & status loops
         startAppLoops();
