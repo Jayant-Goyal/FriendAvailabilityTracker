@@ -568,11 +568,10 @@
 
         <!-- Header -->
         <header class="mb-4">
-            <div class="flex justify-between items-center">
+            <div class="flex justify-between items-center gap-2">
                 <!-- Brand & Period Controls -->
-                <div class="flex items-center space-x-2">
+                <div class="flex items-center space-x-2 flex-shrink-0">
                     <h1 id="app-title" class="text-2xl font-black text-gray-800 dark:text-white cursor-pointer select-none tracking-tight">SyncUp</h1>
-                    <div id="time-travel-indicator" class="hidden px-2 py-0.5 text-xs font-semibold rounded-full"></div>
                     <div class="flex items-center bg-gray-200/70 dark:bg-gray-800/80 rounded-lg p-0.5 border border-gray-300/50 dark:border-gray-700/60 shadow-2xs">
                         <button id="time-prev-btn" class="p-1 rounded text-gray-500 dark:text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-white dark:hover:bg-gray-700 transition-colors" title="Jump to previous period (Alt+Left)">
                             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"/></svg>
@@ -631,9 +630,12 @@
                 </div>
             </div>
 
-            <!-- Sub-Header: Live Clock Display (Full Width, Single Crisp Line) -->
-            <div class="mt-1.5 flex items-center justify-between">
-                <p id="real-time-clock" class="text-xs sm:text-sm text-gray-500 dark:text-gray-400 font-medium tracking-wide"></p>
+            <!-- Sub-Header: Live Clock & Time Travel Banner -->
+            <div class="mt-2 space-y-1.5">
+                <div class="flex items-center justify-between">
+                    <p id="real-time-clock" class="text-xs sm:text-sm text-gray-500 dark:text-gray-400 font-medium tracking-wide"></p>
+                </div>
+                <div id="time-travel-indicator" class="hidden py-1.5 px-3 rounded-xl bg-amber-500/15 border border-amber-500/30 dark:bg-amber-950/40 dark:border-amber-700/50 flex items-center justify-between text-xs font-semibold text-amber-800 dark:text-amber-300 shadow-2xs"></div>
             </div>
         </header>
 
@@ -2933,21 +2935,28 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const updateCardHeight = (cardElement) => {
         if (!cardElement) return;
-        if (cardElement.dataset.type === 'group') {
-            const normalView = cardElement.querySelector('.card-normal-view');
-            if (normalView) cardElement.style.height = `${normalView.offsetHeight || normalView.scrollHeight}px`;
+        if (state.settings.layoutMode === 'compact') {
+            cardElement.style.height = '';
             return;
         }
-        const state = parseInt(cardElement.dataset.swipeState || '0', 10);
+        if (cardElement.dataset.type === 'group') {
+            const normalView = cardElement.querySelector('.card-normal-view');
+            if (normalView) {
+                const targetHeight = Math.max(normalView.scrollHeight, normalView.offsetHeight);
+                if (targetHeight > 0) cardElement.style.height = `${targetHeight}px`;
+            }
+            return;
+        }
+        const swipeState = parseInt(cardElement.dataset.swipeState || '0', 10);
         const views = [
             cardElement.querySelector('.card-normal-view'),
             cardElement.querySelector('.card-next-class-view'),
             cardElement.querySelector('.card-timetable-view'),
             cardElement.querySelector('.card-full-timetable-view')
         ];
-        const activeView = views[state];
+        const activeView = views[swipeState] || views[0];
         if (activeView) {
-            const targetHeight = activeView.offsetHeight || activeView.scrollHeight;
+            const targetHeight = Math.max(activeView.scrollHeight, activeView.offsetHeight);
             if (targetHeight > 0) {
                 cardElement.style.height = `${targetHeight}px`;
             }
@@ -3452,14 +3461,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             }
             
-            const contentPadding = state.settings.cardTimelineEnabled ? 'p-5 pb-8' : 'p-5';
+            const contentPadding = state.settings.cardTimelineEnabled ? 'p-4 sm:p-5 pb-11 sm:pb-12' : 'p-4 sm:p-5';
 
             let cardHtml = '';
 
             if (status.type === 'section') {
                 const friendsHtml = (state.sections[status.name]?.friends || []).map(friend => `
-                    <span class="inline-flex items-center bg-gray-200 dark:bg-gray-600 rounded-full px-3 py-1 text-sm font-medium">
-                        ${escapeHTML(friend)}
+                    <span class="inline-flex items-center bg-gray-200/90 dark:bg-gray-700/90 text-gray-800 dark:text-gray-200 rounded-full px-2.5 py-0.5 text-xs font-semibold shadow-2xs">
+                        <span>${escapeHTML(friend)}</span>
                         <button data-friend="${escapeHTML(friend)}" data-section="${escapeHTML(status.name)}" class="remove-friend-btn ml-1.5 -mr-1 p-0.5 rounded-full text-gray-500 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-500">&times;</button>
                     </span>`).join(' ');
                 
@@ -3469,10 +3478,10 @@ document.addEventListener('DOMContentLoaded', () => {
                     <div class="p-5 h-full flex flex-col justify-center">
                         <p class="font-bold text-lg text-gray-800 dark:text-gray-200 text-center mb-1">Next Up</p>
                         <div class="mt-2 text-sm text-gray-700 dark:text-gray-300 space-y-1.5 max-w-sm mx-auto w-full">
-                            <p><span class="font-medium text-gray-500 dark:text-gray-400 w-16 inline-block">Time:</span> ${escapeHTML(status.nextClassForSwipe.time)}</p>
-                            <p><span class="font-medium text-gray-500 dark:text-gray-400 w-16 inline-block">Subject:</span> ${escapeHTML(status.nextClassForSwipe.subject)}</p>
-                            <p><span class="font-medium text-gray-500 dark:text-gray-400 w-16 inline-block">Venue:</span> ${escapeHTML(status.nextClassForSwipe.venue)}</p>
-                            <p><span class="font-medium text-gray-500 dark:text-gray-400 w-16 inline-block">Faculty:</span> ${escapeHTML(status.nextClassForSwipe.faculty)}</p>
+                            <p class="break-words"><span class="font-medium text-gray-500 dark:text-gray-400 w-16 inline-block">Time:</span> ${escapeHTML(status.nextClassForSwipe.time)}</p>
+                            <p class="break-words"><span class="font-medium text-gray-500 dark:text-gray-400 w-16 inline-block">Subject:</span> ${escapeHTML(status.nextClassForSwipe.subject)}</p>
+                            <p class="break-words"><span class="font-medium text-gray-500 dark:text-gray-400 w-16 inline-block">Venue:</span> ${escapeHTML(status.nextClassForSwipe.venue)}</p>
+                            <p class="break-words"><span class="font-medium text-gray-500 dark:text-gray-400 w-16 inline-block">Faculty:</span> ${escapeHTML(status.nextClassForSwipe.faculty)}</p>
                         </div>
                     </div>` : `
                     <div class="p-5 h-full flex flex-col justify-center items-center text-center">
@@ -3578,7 +3587,7 @@ document.addEventListener('DOMContentLoaded', () => {
                                         <span class="truncate">${escapeHTML(status.name)}</span>
                                     </h2>
                                     <div class="details-container mt-2"></div>
-                                    <div class="friends-container mt-3.5 flex flex-wrap gap-2">${friendsHtml}</div>
+                                    <div class="friends-container mt-3 flex flex-wrap gap-1.5 mb-1">${friendsHtml}</div>
                                 </div>
                                 <!-- Right Column: Status Text & Live Countdown Timer -->
                                 <div class="flex flex-col items-end flex-shrink-0 pt-0.5">
@@ -3598,8 +3607,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 </div>`;
             } else { // status.type === 'group'
                 const membersHtml = (state.groups[status.name]?.members || []).map(member => `
-                    <span class="inline-flex items-center bg-gray-200 dark:bg-gray-600 rounded-full px-3 py-1 text-sm font-medium">
-                        ${escapeHTML(member.name)} <span class="text-xs text-gray-500 dark:text-gray-400 ml-1.5">(${escapeHTML(member.section)})</span>
+                    <span class="inline-flex items-center bg-gray-200/90 dark:bg-gray-700/90 text-gray-800 dark:text-gray-200 rounded-full px-2.5 py-0.5 text-xs font-semibold shadow-2xs">
+                        <span>${escapeHTML(member.name)}</span> <span class="text-[10px] text-gray-500 dark:text-gray-400 ml-1">(${escapeHTML(member.section)})</span>
                     </span>`).join(' ');
 
                 cardHtml = `
@@ -3614,9 +3623,9 @@ document.addEventListener('DOMContentLoaded', () => {
                                     <span class="truncate">${escapeHTML(status.name)}</span>
                                 </h2>
                                 <div class="details-container mt-2"></div>
-                                <div class="friends-container mt-3.5 flex flex-wrap gap-2">${membersHtml}</div>
-                                <div class="mt-4">
-                                    <button data-group-name="${escapeHTML(status.name)}" class="view-timeline-btn w-full bg-purple-600 text-white py-2 rounded-md hover:bg-purple-700 transition-colors font-semibold">View Timeline</button>
+                                <div class="friends-container mt-3 flex flex-wrap gap-1.5 mb-1">${membersHtml}</div>
+                                <div class="mt-3.5">
+                                    <button data-group-name="${escapeHTML(status.name)}" class="view-timeline-btn w-full bg-purple-600 hover:bg-purple-700 text-white py-2 rounded-xl transition-colors font-semibold text-xs sm:text-sm shadow-2xs active:scale-[0.98]">View Timeline</button>
                                 </div>
                             </div>
                             <!-- Right Column: Status Text & Live Countdown Timer -->
@@ -3750,13 +3759,13 @@ document.addEventListener('DOMContentLoaded', () => {
                     ledIndicator.classList.add(`led-${status.ledColor}`);
                 }
                 if (status.isFree) {
-                    detailsHtml = `<p class="font-semibold text-base text-gray-800 dark:text-gray-200"><span class="${headerColor}">Free until ${escapeHTML(status.nextClassTime)}</span></p><div class="mt-1 text-xs sm:text-sm ${detailsTextColor} space-y-0.5"><p><span class="font-medium text-gray-500 dark:text-gray-400">Next:</span> ${escapeHTML(status.nextClassSubject)}</p><p><span class="font-medium text-gray-500 dark:text-gray-400">At:</span> ${escapeHTML(status.nextClassVenue)} <span class="font-medium text-gray-500 dark:text-gray-400">with</span> ${escapeHTML(status.nextClassFaculty)}</p></div>`;
+                    detailsHtml = `<p class="font-semibold text-base text-gray-800 dark:text-gray-200"><span class="${headerColor}">Free until ${escapeHTML(status.nextClassTime)}</span></p><div class="mt-1 text-xs sm:text-sm ${detailsTextColor} space-y-0.5"><p class="break-words leading-snug"><span class="font-medium text-gray-500 dark:text-gray-400">Next:</span> ${escapeHTML(status.nextClassSubject)}</p><p class="break-words leading-snug"><span class="font-medium text-gray-500 dark:text-gray-400">At:</span> ${escapeHTML(status.nextClassVenue)} <span class="font-medium text-gray-500 dark:text-gray-400">with</span> ${escapeHTML(status.nextClassFaculty)}</p></div>`;
                 } else {
                     const previousVenueWidgetHtml = status.previousVenueInfo
-                        ? `<span class="ml-2 px-2 py-0.5 text-[10px] font-semibold bg-gray-200 text-gray-700 rounded-full dark:bg-gray-700 dark:text-gray-300 whitespace-nowrap">${escapeHTML(status.previousVenueInfo.text)}</span>`
+                        ? `<span class="ml-2 inline-flex items-center px-2 py-0.5 text-[10px] font-semibold bg-gray-200 text-gray-700 rounded-full dark:bg-gray-700 dark:text-gray-300 whitespace-nowrap">${escapeHTML(status.previousVenueInfo.text)}</span>`
                         : '';
-                    let freeAtHtml = status.nextFreeTime ? `<p class="mt-0.5 opacity-80"><span class="font-medium text-gray-500 dark:text-gray-400">Free at:</span> ${escapeHTML(status.nextFreeTime)} <span class="font-medium text-gray-500 dark:text-gray-400">until</span> ${escapeHTML(status.freeUntilTime)}</p>` : '';
-                    detailsHtml = `<p class="font-semibold text-base text-gray-800 dark:text-gray-200"><span class="${headerColor}">In class until ${escapeHTML(status.currentClassEnd)}</span></p><div class="mt-1 text-xs sm:text-sm ${detailsTextColor} space-y-0.5"><p><span class="font-medium text-gray-500 dark:text-gray-400">Subject:</span> ${escapeHTML(status.currentClassSubject)}</p><p class="flex items-center"><span class="font-medium text-gray-500 dark:text-gray-400 mr-1">Venue:</span> ${escapeHTML(status.currentClassVenue)}${previousVenueWidgetHtml}</p><p><span class="font-medium text-gray-500 dark:text-gray-400">Faculty:</span> ${escapeHTML(status.currentClassFaculty)}</p>${freeAtHtml}</div>`;
+                    let freeAtHtml = status.nextFreeTime ? `<p class="mt-0.5 opacity-80 break-words leading-snug"><span class="font-medium text-gray-500 dark:text-gray-400">Free at:</span> ${escapeHTML(status.nextFreeTime)} <span class="font-medium text-gray-500 dark:text-gray-400">until</span> ${escapeHTML(status.freeUntilTime)}</p>` : '';
+                    detailsHtml = `<p class="font-semibold text-base text-gray-800 dark:text-gray-200"><span class="${headerColor}">In class until ${escapeHTML(status.currentClassEnd)}</span></p><div class="mt-1 text-xs sm:text-sm ${detailsTextColor} space-y-0.5"><p class="break-words leading-snug"><span class="font-medium text-gray-500 dark:text-gray-400">Subject:</span> ${escapeHTML(status.currentClassSubject)}</p><p class="break-words leading-snug flex flex-wrap items-center"><span class="font-medium text-gray-500 dark:text-gray-400 mr-1">Venue:</span> <span>${escapeHTML(status.currentClassVenue)}</span>${previousVenueWidgetHtml}</p><p class="break-words leading-snug"><span class="font-medium text-gray-500 dark:text-gray-400">Faculty:</span> ${escapeHTML(status.currentClassFaculty)}</p>${freeAtHtml}</div>`;
                 }
 
                 const timetableContainer = card.querySelector('.card-timetable-view');
@@ -4112,6 +4121,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             }
         });
+
+        // Ensure all dashboard cards dynamically adjust height to fit updated content
+        if (state.settings.layoutMode !== 'compact') {
+            dashboard.querySelectorAll('#dashboard > div[data-name]').forEach(updateCardHeight);
+        }
 
         // Update Who's Free Header Quick Pill Badge
         let freeSectionsCount = 0;
@@ -5180,11 +5194,17 @@ document.addEventListener('DOMContentLoaded', () => {
             if (indicator) {
                 indicator.classList.remove('hidden');
                 indicator.innerHTML = `
-                    <div class="flex items-center space-x-2 bg-amber-500/20 text-amber-600 dark:text-amber-400 border border-amber-500/40 px-3 py-1 rounded-full text-xs font-bold shadow-xs">
-                        <span class="inline-block w-2 h-2 rounded-full bg-amber-500 animate-ping"></span>
-                        <span>Time Travel: ${formatTimeWithDay(state.debugTime)}</span>
-                        <button id="quick-reset-time-btn" class="ml-1 text-amber-700 dark:text-amber-300 hover:text-amber-950 dark:hover:text-white font-black hover:scale-110 transition-transform" title="Reset to Live Time">✕</button>
+                    <div class="flex items-center space-x-2 min-w-0 flex-1">
+                        <span class="inline-block w-2 h-2 rounded-full bg-amber-500 animate-ping flex-shrink-0"></span>
+                        <div class="truncate">
+                            <span class="text-[10px] sm:text-xs uppercase tracking-wider font-extrabold text-amber-600 dark:text-amber-400">Time Travel:</span>
+                            <span class="font-black text-amber-950 dark:text-amber-200 ml-1">${formatTimeWithDay(state.debugTime)}</span>
+                        </div>
                     </div>
+                    <button id="quick-reset-time-btn" class="ml-2 px-2.5 py-1 rounded-lg bg-amber-500/25 hover:bg-amber-500 hover:text-white text-amber-950 dark:text-amber-200 dark:bg-amber-600/30 dark:hover:bg-amber-500 font-bold text-xs flex items-center space-x-1 flex-shrink-0 transition-all active:scale-95 border border-amber-500/40" title="Reset to Live Current Time">
+                        <span>Live Time</span>
+                        <span class="font-black">✕</span>
+                    </button>
                 `;
             }
             if (debugTimeInput) {
@@ -5193,7 +5213,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 debugTimeInput.value = `${dt.getFullYear()}-${pad(dt.getMonth() + 1)}-${pad(dt.getDate())}T${pad(dt.getHours())}:${pad(dt.getMinutes())}`;
             }
         } else {
-            if (indicator) indicator.classList.add('hidden');
+            if (indicator) {
+                indicator.classList.add('hidden');
+                indicator.innerHTML = '';
+            }
             if (debugTimeInput) debugTimeInput.value = '';
         }
     };
@@ -7392,6 +7415,14 @@ document.addEventListener('DOMContentLoaded', () => {
     addGroupForm.addEventListener('submit', handleAddGroup);
     debugTimeInput.addEventListener('change', handleDebugTimeChange);
     resetTimeBtn.addEventListener('click', handleResetTime);
+    const timeTravelIndicatorEl = document.getElementById('time-travel-indicator');
+    if (timeTravelIndicatorEl) {
+        timeTravelIndicatorEl.addEventListener('click', (e) => {
+            if (e.target.closest('#quick-reset-time-btn')) {
+                handleResetTime();
+            }
+        });
+    }
     clearDataBtn.addEventListener('click', handleClearData);
     exportDataBtn.addEventListener('click', handleExportData);
     importDataFile.addEventListener('change', handleImportData);
@@ -7887,6 +7918,24 @@ document.addEventListener('DOMContentLoaded', () => {
             e.preventDefault();
             handleTimeJumpNext();
         }
+    });
+
+    // Responsive card resize on window resize or orientation change
+    let resizeTimer = null;
+    window.addEventListener('resize', () => {
+        if (resizeTimer) clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(() => {
+            if (state.settings.layoutMode !== 'compact') {
+                dashboard.querySelectorAll('#dashboard > div[data-name]').forEach(updateCardHeight);
+            }
+        }, 100);
+    });
+    window.addEventListener('orientationchange', () => {
+        setTimeout(() => {
+            if (state.settings.layoutMode !== 'compact') {
+                dashboard.querySelectorAll('#dashboard > div[data-name]').forEach(updateCardHeight);
+            }
+        }, 200);
     });
 
     // --- APP START ---
