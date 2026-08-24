@@ -142,6 +142,41 @@
             box-shadow: 0 0 15px 3px rgba(252, 211, 77, 0.4); /* Amber-300 glow */
             border: 1px solid rgba(252, 211, 77, 0.5);
         }
+
+        /* Timetable Fast-Scroll Bounce & Rubber-Band Animations */
+        @keyframes timetable-bounce-left {
+            0% { transform: translateX(0) scale(1); }
+            28% { transform: translateX(20px) scale(1.018); }
+            55% { transform: translateX(-8px) scale(0.995); }
+            78% { transform: translateX(3px) scale(1.002); }
+            100% { transform: translateX(0) scale(1); }
+        }
+        @keyframes timetable-bounce-right {
+            0% { transform: translateX(0) scale(1); }
+            28% { transform: translateX(-20px) scale(1.018); }
+            55% { transform: translateX(8px) scale(0.995); }
+            78% { transform: translateX(-3px) scale(1.002); }
+            100% { transform: translateX(0) scale(1); }
+        }
+        @keyframes timetable-bounce-generic {
+            0% { transform: scale(1); }
+            30% { transform: scale(1.03); }
+            60% { transform: scale(0.985); }
+            80% { transform: scale(1.008); }
+            100% { transform: scale(1); }
+        }
+        .timetable-bounce-left {
+            animation: timetable-bounce-left 0.48s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            will-change: transform;
+        }
+        .timetable-bounce-right {
+            animation: timetable-bounce-right 0.48s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            will-change: transform;
+        }
+        .timetable-bounce-fast {
+            animation: timetable-bounce-generic 0.45s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            will-change: transform;
+        }
         
         /* --- START: LED INDICATOR STYLES --- */
         .led-indicator {
@@ -302,6 +337,51 @@
             background-color: #fbbf24; /* amber-400 */
             z-index: 5;
         }
+        /* --- NEON & PODS CARD TIMELINE STYLES --- */
+        .timeline-neon-track {
+            background: linear-gradient(90deg, rgba(16, 185, 129, 0.15), rgba(6, 182, 212, 0.15));
+            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.7), 0 0 8px rgba(6, 182, 212, 0.2);
+            border: 1px solid rgba(6, 182, 212, 0.35);
+        }
+        .timeline-neon-indicator {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 2.5px;
+            background-color: #22d3ee;
+            box-shadow: 0 0 10px #22d3ee, 0 0 18px rgba(34, 211, 238, 0.8);
+            z-index: 20;
+            pointer-events: none;
+        }
+        .timeline-neon-indicator::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background-color: #ffffff;
+            box-shadow: 0 0 8px #22d3ee;
+        }
+        .timeline-pod-item {
+            flex: 1;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 6px;
+            font-size: 9px;
+            font-weight: 700;
+            transition: all 0.2s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        .timeline-pod-item.is-current {
+            transform: scale(1.08);
+            z-index: 10;
+        }
         /* --- END: CARD TIMELINE STYLES --- */
 
         /* --- START: VISUAL & UI POLISH (OPTION 6) --- */
@@ -369,6 +449,98 @@
         .micro-interactions-enabled #dashboard > div:active {
             transform: scale(0.985) !important;
         }
+
+        /* 4. 3D Card Perspective Tilt */
+        .card-3d-enabled #dashboard > div {
+            transform-style: preserve-3d;
+            perspective: 1000px;
+            transition: transform 0.12s ease-out, box-shadow 0.15s ease-out;
+            will-change: transform;
+        }
+
+        /* 5. Ambient Atmosphere Theme Presets */
+        body.ambient-cyberpunk {
+            background-color: #07090e !important;
+            background-image: radial-gradient(at 50% 0%, rgba(139, 92, 246, 0.2) 0px, transparent 60%), radial-gradient(at 100% 100%, rgba(6, 182, 212, 0.15) 0px, transparent 60%) !important;
+        }
+        body.ambient-cyberpunk .bg-white\/90, 
+        body.ambient-cyberpunk .dark\:bg-gray-800\/90 {
+            background-color: rgba(13, 16, 28, 0.88) !important;
+            border-color: rgba(139, 92, 246, 0.3) !important;
+        }
+
+        body.ambient-matcha {
+            background-color: #0b120e !important;
+            background-image: radial-gradient(at 50% 0%, rgba(52, 211, 153, 0.18) 0px, transparent 65%), radial-gradient(at 0% 100%, rgba(16, 185, 129, 0.12) 0px, transparent 50%) !important;
+        }
+        body.ambient-matcha .bg-white\/90, 
+        body.ambient-matcha .dark\:bg-gray-800\/90 {
+            background-color: rgba(16, 26, 20, 0.88) !important;
+            border-color: rgba(52, 211, 153, 0.25) !important;
+        }
+
+        body.ambient-sunset {
+            background-color: #120b16 !important;
+            background-image: radial-gradient(at 50% 0%, rgba(244, 114, 182, 0.2) 0px, transparent 60%), radial-gradient(at 100% 80%, rgba(251, 146, 60, 0.15) 0px, transparent 50%) !important;
+        }
+        body.ambient-sunset .bg-white\/90, 
+        body.ambient-sunset .dark\:bg-gray-800\/90 {
+            background-color: rgba(26, 16, 32, 0.88) !important;
+            border-color: rgba(244, 114, 182, 0.25) !important;
+        }
+
+        body.ambient-crimson {
+            background-color: #100609 !important;
+            background-image: radial-gradient(at 50% 0%, rgba(225, 29, 72, 0.2) 0px, transparent 60%), radial-gradient(at 0% 100%, rgba(244, 63, 94, 0.12) 0px, transparent 50%) !important;
+        }
+        body.ambient-crimson .bg-white\/90, 
+        body.ambient-crimson .dark\:bg-gray-800\/90 {
+            background-color: rgba(26, 10, 16, 0.88) !important;
+            border-color: rgba(244, 63, 94, 0.25) !important;
+        }
+
+        body.ambient-midnight {
+            background-color: #000000 !important;
+            background-image: none !important;
+        }
+        body.ambient-midnight .bg-white\/90, 
+        body.ambient-midnight .dark\:bg-gray-800\/90 {
+            background-color: rgba(14, 14, 14, 0.95) !important;
+            border-color: rgba(255, 255, 255, 0.1) !important;
+        }
+
+        /* 6. Floating Dynamic Island Styles */
+        #floating-status-island {
+            position: fixed;
+            bottom: 1.25rem;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 35;
+            transition: all 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .dynamic-island-pill {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.45rem 0.9rem;
+            border-radius: 9999px;
+            background: rgba(17, 24, 39, 0.88);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.05);
+            color: #ffffff;
+            cursor: pointer;
+            user-select: none;
+            transition: all 0.25s ease;
+        }
+        .dynamic-island-pill:hover {
+            transform: scale(1.03);
+            border-color: rgba(255, 255, 255, 0.3);
+            box-shadow: 0 12px 30px -5px rgba(0, 0, 0, 0.5);
+        }
+        .dynamic-island-pill:active {
+            transform: scale(0.97);
+        }
         /* --- END: VISUAL & UI POLISH --- */
 
     </style>
@@ -432,6 +604,12 @@
                     <button id="meetup-finder-btn" class="p-1.5 sm:p-2 rounded-xl sm:rounded-full hover:bg-gray-200 dark:hover:bg-gray-800 transition-colors text-indigo-600 dark:text-indigo-400" title="Find Free Time Together (Meetup Planner)">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 sm:h-6 sm:w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                        </svg>
+                    </button>
+                    <!-- Social Insights & Hangout Matrix Button -->
+                    <button id="analytics-modal-btn" class="p-1.5 sm:p-2 rounded-xl sm:rounded-full hover:bg-gray-200 dark:hover:bg-gray-800 transition-colors text-purple-600 dark:text-purple-400" title="Hangout Compatibility & Campus Analytics">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 sm:h-6 sm:w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
                         </svg>
                     </button>
                     <!-- Daily Timeline Button -->
@@ -723,9 +901,11 @@
                         </div>
                         <div id="card-timeline-options" class="mt-2 hidden w-full pt-2.5 border-t border-gray-200/60 dark:border-gray-700/60">
                             <label class="font-bold text-[10px] mb-1.5 block text-gray-500 dark:text-gray-400 uppercase tracking-wider">Timeline Rendering Style</label>
-                            <div class="flex space-x-2">
-                                <button data-style="modern" class="timeline-style-btn flex-1 py-1.5 px-3 text-xs rounded-xl bg-indigo-600 text-white font-semibold transition-colors shadow-xs">Modern Pill</button>
-                                <button data-style="classic" class="timeline-style-btn flex-1 py-1.5 px-3 text-xs rounded-xl bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 font-semibold transition-colors hover:bg-gray-300 dark:hover:bg-gray-600">Classic Segment</button>
+                            <div class="grid grid-cols-2 sm:grid-cols-4 gap-1.5">
+                                <button data-style="modern" class="timeline-style-btn py-1.5 px-2 text-xs rounded-xl bg-indigo-600 text-white font-semibold transition-all shadow-xs text-center">Modern Pill</button>
+                                <button data-style="neon" class="timeline-style-btn py-1.5 px-2 text-xs rounded-xl bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 font-semibold transition-all hover:bg-gray-300 dark:hover:bg-gray-600 text-center">Cyber Neon</button>
+                                <button data-style="pods" class="timeline-style-btn py-1.5 px-2 text-xs rounded-xl bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 font-semibold transition-all hover:bg-gray-300 dark:hover:bg-gray-600 text-center">Period Pods</button>
+                                <button data-style="classic" class="timeline-style-btn py-1.5 px-2 text-xs rounded-xl bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 font-semibold transition-all hover:bg-gray-300 dark:hover:bg-gray-600 text-center">Classic Edge</button>
                             </div>
                         </div>
                     </div>
@@ -746,6 +926,79 @@
                             <label for="previous-venue-time-limit" class="font-bold text-[10px] text-gray-500 dark:text-gray-400 uppercase tracking-wider">Visibility Limit (minutes)</label>
                             <input type="number" id="previous-venue-time-limit" min="1" max="60" class="w-full bg-white dark:bg-gray-700/80 border border-gray-200 dark:border-gray-600 rounded-xl p-2 text-xs text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:outline-none">
                         </div>
+                    </div>
+
+                    <!-- Ambient Atmosphere Theme Card -->
+                    <div class="settings-searchable-item p-3.5 bg-gray-50/80 dark:bg-gray-800/60 border border-gray-200/70 dark:border-gray-700/60 rounded-2xl space-y-2.5 shadow-2xs">
+                        <div class="flex justify-between items-center">
+                            <div>
+                                <label class="font-bold text-sm text-gray-900 dark:text-white block">Ambient Atmosphere</label>
+                                <span class="text-[11px] text-gray-500 dark:text-gray-400">Atmospheric backdrop & glass theme</span>
+                            </div>
+                            <span id="current-ambient-name" class="text-xs font-bold px-2 py-0.5 rounded-md bg-purple-100 dark:bg-purple-950/80 text-purple-700 dark:text-purple-300 capitalize">Default</span>
+                        </div>
+                        <div class="grid grid-cols-3 gap-2 pt-1" id="ambient-theme-selector">
+                            <button data-ambient="default" class="ambient-theme-btn p-2 rounded-xl border text-xs font-medium transition-all text-center flex flex-col items-center gap-1 bg-white dark:bg-gray-800 border-indigo-500 ring-2 ring-indigo-500/40 shadow-2xs" title="Default Glass">
+                                <span class="w-4 h-4 rounded-full bg-gradient-to-tr from-indigo-500 to-sky-400"></span>
+                                <span>Default</span>
+                            </button>
+                            <button data-ambient="cyberpunk" class="ambient-theme-btn p-2 rounded-xl border text-xs font-medium transition-all text-center flex flex-col items-center gap-1 bg-[#07090e] text-purple-300 border-gray-200 dark:border-gray-700 hover:border-purple-500 shadow-2xs" title="Cyberpunk OLED Neon">
+                                <span class="w-4 h-4 rounded-full bg-gradient-to-tr from-violet-600 to-cyan-400"></span>
+                                <span>Cyberpunk</span>
+                            </button>
+                            <button data-ambient="matcha" class="ambient-theme-btn p-2 rounded-xl border text-xs font-medium transition-all text-center flex flex-col items-center gap-1 bg-[#0b120e] text-emerald-300 border-gray-200 dark:border-gray-700 hover:border-emerald-500 shadow-2xs" title="Forest Matcha">
+                                <span class="w-4 h-4 rounded-full bg-gradient-to-tr from-emerald-600 to-teal-400"></span>
+                                <span>Matcha</span>
+                            </button>
+                            <button data-ambient="sunset" class="ambient-theme-btn p-2 rounded-xl border text-xs font-medium transition-all text-center flex flex-col items-center gap-1 bg-[#120b16] text-pink-300 border-gray-200 dark:border-gray-700 hover:border-pink-500 shadow-2xs" title="Sunset Horizon">
+                                <span class="w-4 h-4 rounded-full bg-gradient-to-tr from-pink-500 to-amber-400"></span>
+                                <span>Sunset</span>
+                            </button>
+                            <button data-ambient="crimson" class="ambient-theme-btn p-2 rounded-xl border text-xs font-medium transition-all text-center flex flex-col items-center gap-1 bg-[#100609] text-rose-300 border-gray-200 dark:border-gray-700 hover:border-rose-500 shadow-2xs" title="Crimson Dusk">
+                                <span class="w-4 h-4 rounded-full bg-gradient-to-tr from-rose-600 to-red-400"></span>
+                                <span>Crimson</span>
+                            </button>
+                            <button data-ambient="midnight" class="ambient-theme-btn p-2 rounded-xl border text-xs font-medium transition-all text-center flex flex-col items-center gap-1 bg-black text-gray-300 border-gray-200 dark:border-gray-700 hover:border-gray-500 shadow-2xs" title="Midnight Obsidian">
+                                <span class="w-4 h-4 rounded-full bg-gradient-to-tr from-neutral-800 to-neutral-400"></span>
+                                <span>Midnight</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- 3D Card Perspective Tilt -->
+                    <div class="settings-searchable-item flex justify-between items-center p-3.5 bg-gray-50/80 dark:bg-gray-800/60 border border-gray-200/70 dark:border-gray-700/60 rounded-2xl shadow-2xs">
+                        <div>
+                            <label for="card-3d-parallax-toggle" class="font-bold text-sm text-gray-900 dark:text-white block">3D Card Tilt Parallax</label>
+                            <span class="text-[11px] text-gray-500 dark:text-gray-400">Depth perspective on mouse move & phone tilt</span>
+                        </div>
+                        <button id="card-3d-parallax-toggle" class="relative inline-flex items-center h-6 rounded-full w-11 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-gray-800 flex-shrink-0">
+                            <span class="sr-only">Enable 3D Card Tilt Parallax</span>
+                            <span class="inline-block w-4 h-4 transform bg-white rounded-full transition-transform"></span>
+                        </button>
+                    </div>
+
+                    <!-- Floating Dynamic Island Status Widget -->
+                    <div class="settings-searchable-item flex justify-between items-center p-3.5 bg-gray-50/80 dark:bg-gray-800/60 border border-gray-200/70 dark:border-gray-700/60 rounded-2xl shadow-2xs">
+                        <div>
+                            <label for="dynamic-island-toggle" class="font-bold text-sm text-gray-900 dark:text-white block">Floating Dynamic Island</label>
+                            <span class="text-[11px] text-gray-500 dark:text-gray-400">Quick-status mini pill floating at bottom</span>
+                        </div>
+                        <button id="dynamic-island-toggle" class="relative inline-flex items-center h-6 rounded-full w-11 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-gray-800 flex-shrink-0">
+                            <span class="sr-only">Enable Floating Dynamic Island</span>
+                            <span class="inline-block w-4 h-4 transform bg-white rounded-full transition-transform"></span>
+                        </button>
+                    </div>
+
+                    <!-- Social Hangout Insights -->
+                    <div class="settings-searchable-item flex justify-between items-center p-3.5 bg-gray-50/80 dark:bg-gray-800/60 border border-gray-200/70 dark:border-gray-700/60 rounded-2xl shadow-2xs">
+                        <div>
+                            <label for="social-insights-toggle" class="font-bold text-sm text-gray-900 dark:text-white block">Social Hangout Insights</label>
+                            <span class="text-[11px] text-gray-500 dark:text-gray-400">Friend schedule compatibility & campus analytics</span>
+                        </div>
+                        <button id="social-insights-toggle" class="relative inline-flex items-center h-6 rounded-full w-11 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-gray-800 flex-shrink-0">
+                            <span class="sr-only">Enable Social Hangout Insights</span>
+                            <span class="inline-block w-4 h-4 transform bg-white rounded-full transition-transform"></span>
+                        </button>
                     </div>
                 </div>
 
@@ -783,9 +1036,10 @@
                             <!-- Vibration Profiles Studio Tester -->
                             <div class="space-y-1.5">
                                 <span class="text-[11px] font-bold text-gray-600 dark:text-gray-400 block">Test Tactile Signatures:</span>
-                                <div class="grid grid-cols-3 gap-1.5">
+                                <div class="grid grid-cols-3 sm:grid-cols-4 gap-1.5">
                                     <button id="test-vibrate-tap-btn" type="button" class="px-2 py-2 text-xs font-semibold bg-white dark:bg-gray-700/80 hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-xl border border-gray-200/80 dark:border-gray-600 shadow-2xs active:scale-95 transition-all text-center">👆 Tap</button>
                                     <button id="test-vibrate-select-btn" type="button" class="px-2 py-2 text-xs font-semibold bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 hover:bg-indigo-100 dark:hover:bg-indigo-900/80 rounded-xl border border-indigo-200 dark:border-indigo-800 shadow-2xs active:scale-95 transition-all text-center">🔘 Select</button>
+                                    <button id="test-vibrate-bounce-btn" type="button" class="px-2 py-2 text-xs font-semibold bg-teal-50 dark:bg-teal-950/60 text-teal-700 dark:text-teal-300 hover:bg-teal-100 dark:hover:bg-teal-900/80 rounded-xl border border-teal-200 dark:border-teal-800 shadow-2xs active:scale-95 transition-all text-center">🏀 Bounce</button>
                                     <button id="test-vibrate-impact-btn" type="button" class="px-2 py-2 text-xs font-semibold bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 hover:bg-blue-100 dark:hover:bg-blue-900/80 rounded-xl border border-blue-200 dark:border-blue-800 shadow-2xs active:scale-95 transition-all text-center">💥 Impact</button>
                                     <button id="test-vibrate-success-btn" type="button" class="px-2 py-2 text-xs font-semibold bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 hover:bg-emerald-100 dark:hover:bg-emerald-900/80 rounded-xl border border-emerald-200 dark:border-emerald-800 shadow-2xs active:scale-95 transition-all text-center">✨ Success</button>
                                     <button id="test-vibrate-golden-btn" type="button" class="px-2 py-2 text-xs font-semibold bg-amber-50 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 hover:bg-amber-100 dark:hover:bg-amber-900/80 rounded-xl border border-amber-200 dark:border-amber-800 shadow-2xs active:scale-95 transition-all text-center">🏆 Golden</button>
@@ -1317,6 +1571,126 @@
     </div>
     <!-- END: Timetable Image Export Modal -->
 
+    <!-- START: Social Insights & Hangout Analytics Modal -->
+    <div id="analytics-modal" class="fixed inset-0 bg-black bg-opacity-70 backdrop-blur-sm z-50 hidden flex items-center justify-center p-3 sm:p-4">
+        <div class="bg-white dark:bg-gray-800 rounded-3xl shadow-2xl w-full max-w-3xl overflow-hidden border border-gray-100 dark:border-gray-700 flex flex-col max-h-[90vh]">
+            <!-- Modal Header with vibrant purple/indigo aura -->
+            <div class="relative bg-gradient-to-r from-purple-700 via-indigo-600 to-pink-600 p-5 text-white flex-shrink-0">
+                <button id="close-analytics-modal" class="absolute top-4 right-4 p-1.5 rounded-full bg-black/20 hover:bg-black/40 text-white transition-colors" title="Close">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+                <div class="flex items-center space-x-2">
+                    <span class="text-[11px] font-bold uppercase tracking-wider bg-white/20 px-2.5 py-0.5 rounded-full backdrop-blur-sm">Social Analytics & Hangouts</span>
+                </div>
+                <h3 class="text-2xl font-extrabold text-white mt-1">Friend Hangout Matrix</h3>
+                <p class="text-xs text-purple-100 mt-0.5">Schedule compatibility, shared free hours & campus activity distribution</p>
+            </div>
+
+            <!-- Modal Sub-Nav / Filter Tabs -->
+            <div class="px-5 pt-3 pb-2 border-b border-gray-200/70 dark:border-gray-700 flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-3 bg-gray-50/70 dark:bg-gray-900/60 flex-shrink-0">
+                <!-- Reference Section Picker -->
+                <div class="flex items-center space-x-2">
+                    <label for="analytics-base-select" class="text-xs font-bold text-gray-600 dark:text-gray-300 whitespace-nowrap">Compare from:</label>
+                    <select id="analytics-base-select" class="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-xl px-3 py-1.5 text-xs font-semibold text-gray-800 dark:text-gray-200 focus:ring-2 focus:ring-purple-500 focus:outline-none shadow-2xs"></select>
+                </div>
+                <!-- Analytics View Tabs -->
+                <div class="inline-flex rounded-xl p-0.5 bg-gray-200/80 dark:bg-gray-800 self-start sm:self-auto text-xs font-semibold">
+                    <button id="analytics-tab-compatibility" type="button" class="px-3 py-1.5 rounded-lg bg-white dark:bg-gray-700 text-purple-600 dark:text-purple-400 shadow-2xs transition-all">Hangout Matches</button>
+                    <button id="analytics-tab-distribution" type="button" class="px-3 py-1.5 rounded-lg text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-all">Campus Distribution</button>
+                </div>
+            </div>
+
+            <!-- Modal Body (Scrollable) -->
+            <div class="p-4 sm:p-6 overflow-y-auto flex-grow space-y-4">
+                <!-- View 1: Hangout Compatibility Matrix -->
+                <div id="analytics-compatibility-view" class="space-y-4">
+                    <div id="analytics-top-match-hero" class="p-4 rounded-2xl bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-950/40 dark:to-pink-950/40 border border-purple-200 dark:border-purple-900/60 shadow-2xs flex items-center gap-4">
+                        <!-- Top match Hero Card injected here -->
+                    </div>
+                    <div class="space-y-2.5">
+                        <span class="text-xs font-bold uppercase tracking-wider text-gray-400 block">Compatibility Leaderboard</span>
+                        <div id="analytics-match-list" class="space-y-2.5">
+                            <!-- Match rows injected here -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- View 2: Campus Hour Distribution Chart -->
+                <div id="analytics-distribution-view" class="space-y-4 hidden">
+                    <div class="p-4 bg-gray-50/80 dark:bg-gray-900/60 rounded-2xl border border-gray-200/70 dark:border-gray-700/60 shadow-2xs space-y-3">
+                        <div>
+                            <h4 class="text-sm font-bold text-gray-900 dark:text-white">Campus Free-Time Distribution</h4>
+                            <p class="text-xs text-gray-500">Average percentage of students and friends free throughout the day</p>
+                        </div>
+                        <div id="analytics-chart-container" class="space-y-2 pt-2">
+                            <!-- Visual hour bars injected here -->
+                        </div>
+                    </div>
+                    <div id="analytics-peak-hours-card" class="p-4 rounded-2xl bg-indigo-50 dark:bg-indigo-950/40 border border-indigo-200 dark:border-indigo-900/60 text-xs text-indigo-900 dark:text-indigo-200 space-y-1 shadow-2xs">
+                        <!-- Peak break analysis injected here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Modal Footer -->
+            <div class="p-4 bg-gray-50 dark:bg-gray-900 border-t border-gray-100 dark:border-gray-700 flex justify-between items-center flex-shrink-0">
+                <button id="share-analytics-score-btn" class="inline-flex items-center space-x-1.5 px-4 py-2 rounded-xl bg-purple-600 hover:bg-purple-700 text-white font-semibold text-xs transition-all shadow-xs active:scale-95">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
+                    </svg>
+                    <span>Copy Hangout Stats</span>
+                </button>
+                <button id="dismiss-analytics-modal" class="px-5 py-2 rounded-xl bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-800 dark:text-gray-200 font-semibold text-xs transition-colors">
+                    Close
+                </button>
+            </div>
+        </div>
+    </div>
+    <!-- END: Social Insights & Hangout Analytics Modal -->
+
+    <!-- START: Floating Dynamic Island Status Widget -->
+    <div id="floating-status-island" class="hidden">
+        <div id="dynamic-island-pill-btn" class="dynamic-island-pill flex items-center space-x-2.5">
+            <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse flex-shrink-0 shadow-[0_0_8px_rgba(52,211,153,0.8)]"></span>
+            <div class="flex items-center space-x-2 text-xs font-semibold">
+                <span id="island-free-text">0 Friends Free</span>
+                <span class="text-white/40">|</span>
+                <span id="island-next-text" class="text-white/90 font-normal">Next in —</span>
+            </div>
+            <svg id="island-chevron" class="w-3.5 h-3.5 text-white/60 transition-transform duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M5 15l7-7 7 7"/>
+            </svg>
+        </div>
+
+        <!-- Expanded Dynamic Island Quick Sheet -->
+        <div id="dynamic-island-sheet" class="hidden mt-2 w-72 sm:w-80 bg-gray-900/95 backdrop-blur-2xl border border-white/15 rounded-3xl p-3.5 shadow-2xl text-white space-y-3 transition-all transform origin-bottom">
+            <div class="flex justify-between items-center border-b border-white/10 pb-2">
+                <div class="flex items-center space-x-1.5">
+                    <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                    <h4 class="text-xs font-bold tracking-wide">Live Campus Radar</h4>
+                </div>
+                <span id="island-sheet-time" class="text-[10px] text-white/60 font-mono"></span>
+            </div>
+            
+            <!-- Micro Free List -->
+            <div id="island-free-list" class="max-h-36 overflow-y-auto space-y-1.5 text-xs">
+                <!-- Free friends mini cards injected here -->
+            </div>
+
+            <!-- Quick Action Row -->
+            <div class="grid grid-cols-2 gap-2 pt-1 border-t border-white/10">
+                <button id="island-meetup-btn" type="button" class="py-1.5 px-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-[11px] font-semibold flex items-center justify-center space-x-1 transition-all active:scale-95">
+                    <span>👥 Meetup</span>
+                </button>
+                <button id="island-analytics-btn" type="button" class="py-1.5 px-2.5 rounded-xl bg-purple-600 hover:bg-purple-500 text-[11px] font-semibold flex items-center justify-center space-x-1 transition-all active:scale-95">
+                    <span>📊 Hangouts</span>
+                </button>
+            </div>
+        </div>
+    </div>
+    <!-- END: Floating Dynamic Island Status Widget -->
 
 <script>
 document.addEventListener('DOMContentLoaded', () => {
@@ -1333,6 +1707,7 @@ document.addEventListener('DOMContentLoaded', () => {
             previousVenueWidgetEnabled: true,
             previousVenueTimeLimit: 5,
             themeColor: 'indigo',
+            ambientTheme: 'default',
             showCountdownTimer: true,
             transitionAlertsEnabled: false,
             audioChimeEnabled: true,
@@ -1341,6 +1716,9 @@ document.addEventListener('DOMContentLoaded', () => {
             bottomSheetsEnabled: true,
             glassmorphicGlowEnabled: true,
             cardAnimationsEnabled: true,
+            card3dParallaxEnabled: true,
+            dynamicIslandEnabled: true,
+            socialInsightsEnabled: true,
             hapticFeedbackEnabled: true
         },
         debugTime: null,
@@ -1373,16 +1751,50 @@ document.addEventListener('DOMContentLoaded', () => {
     const bottomSheetsToggle = document.getElementById('bottom-sheets-toggle');
     const glassmorphicGlowToggle = document.getElementById('glassmorphic-glow-toggle');
     const cardAnimationsToggle = document.getElementById('card-animations-toggle');
+    const card3dParallaxToggle = document.getElementById('card-3d-parallax-toggle');
+    const dynamicIslandToggle = document.getElementById('dynamic-island-toggle');
+    const socialInsightsToggle = document.getElementById('social-insights-toggle');
+    const ambientThemeSelector = document.getElementById('ambient-theme-selector');
+    const currentAmbientNameEl = document.getElementById('current-ambient-name');
     const hapticFeedbackToggle = document.getElementById('haptic-feedback-toggle');
     const hapticOptionsPanel = document.getElementById('haptic-options-panel');
     const hapticIntensityBtns = document.querySelectorAll('.haptic-intensity-btn');
     const testVibrateTapBtn = document.getElementById('test-vibrate-tap-btn');
     const testVibrateSelectBtn = document.getElementById('test-vibrate-select-btn');
+    const testVibrateBounceBtn = document.getElementById('test-vibrate-bounce-btn');
     const testVibrateImpactBtn = document.getElementById('test-vibrate-impact-btn');
     const testVibrateSuccessBtn = document.getElementById('test-vibrate-success-btn');
     const testVibrateGoldenBtn = document.getElementById('test-vibrate-golden-btn');
     const testVibrateAlertBtn = document.getElementById('test-vibrate-alert-btn');
     const hapticBrowserWarning = document.getElementById('haptic-browser-warning');
+
+    // Floating Dynamic Island elements
+    const floatingStatusIsland = document.getElementById('floating-status-island');
+    const dynamicIslandPillBtn = document.getElementById('dynamic-island-pill-btn');
+    const dynamicIslandSheet = document.getElementById('dynamic-island-sheet');
+    const islandChevron = document.getElementById('island-chevron');
+    const islandFreeText = document.getElementById('island-free-text');
+    const islandNextText = document.getElementById('island-next-text');
+    const islandSheetTime = document.getElementById('island-sheet-time');
+    const islandFreeList = document.getElementById('island-free-list');
+    const islandMeetupBtn = document.getElementById('island-meetup-btn');
+    const islandAnalyticsBtn = document.getElementById('island-analytics-btn');
+
+    // Social Insights & Hangout Analytics Modal elements
+    const analyticsModalBtn = document.getElementById('analytics-modal-btn');
+    const analyticsModal = document.getElementById('analytics-modal');
+    const closeAnalyticsModalBtn = document.getElementById('close-analytics-modal');
+    const dismissAnalyticsModalBtn = document.getElementById('dismiss-analytics-modal');
+    const shareAnalyticsScoreBtn = document.getElementById('share-analytics-score-btn');
+    const analyticsBaseSelect = document.getElementById('analytics-base-select');
+    const analyticsTabCompatibility = document.getElementById('analytics-tab-compatibility');
+    const analyticsTabDistribution = document.getElementById('analytics-tab-distribution');
+    const analyticsCompatibilityView = document.getElementById('analytics-compatibility-view');
+    const analyticsDistributionView = document.getElementById('analytics-distribution-view');
+    const analyticsTopMatchHero = document.getElementById('analytics-top-match-hero');
+    const analyticsMatchList = document.getElementById('analytics-match-list');
+    const analyticsChartContainer = document.getElementById('analytics-chart-container');
+    const analyticsPeakHoursCard = document.getElementById('analytics-peak-hours-card');
 
     // Layout Mode Toggle elements
     const layoutToggleBtn = document.getElementById('layout-toggle-btn');
@@ -1901,13 +2313,12 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         // Update style buttons
-        timelineStyleBtns.forEach(btn => {
+        const styleBtns = document.querySelectorAll('.timeline-style-btn');
+        styleBtns.forEach(btn => {
             if (btn.dataset.style === state.settings.cardTimelineStyle) {
-                btn.classList.add('bg-indigo-600', 'text-white', 'shadow-sm');
-                btn.classList.remove('bg-gray-200', 'dark:bg-gray-600', 'text-gray-700', 'dark:text-gray-300');
+                btn.className = 'timeline-style-btn py-1.5 px-2 text-xs rounded-xl bg-indigo-600 text-white font-semibold transition-all shadow-xs text-center';
             } else {
-                btn.classList.remove('bg-indigo-600', 'text-white', 'shadow-sm');
-                btn.classList.add('bg-gray-200', 'dark:bg-gray-600', 'text-gray-700', 'dark:text-gray-300');
+                btn.className = 'timeline-style-btn py-1.5 px-2 text-xs rounded-xl bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 font-semibold transition-all hover:bg-gray-300 dark:hover:bg-gray-600 text-center';
             }
         });
     };
@@ -1980,8 +2391,87 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const ALL_MODAL_ELEMENT_IDS = [
         'welcome-modal', 'changelog-modal', 'timeline-modal', 'daily-timeline-modal',
-        'meetup-modal', 'whos-free-modal', 'heatmap-modal', 'lecture-details-modal', 'image-export-modal'
+        'meetup-modal', 'whos-free-modal', 'heatmap-modal', 'lecture-details-modal', 'image-export-modal', 'analytics-modal'
     ];
+
+    const applyAmbientTheme = () => {
+        const ambient = state.settings.ambientTheme || 'default';
+        document.body.classList.remove('ambient-cyberpunk', 'ambient-matcha', 'ambient-sunset', 'ambient-crimson', 'ambient-midnight');
+        if (ambient !== 'default') {
+            document.body.classList.add(`ambient-${ambient}`);
+        }
+        if (currentAmbientNameEl) {
+            currentAmbientNameEl.textContent = ambient;
+        }
+        if (ambientThemeSelector) {
+            ambientThemeSelector.querySelectorAll('.ambient-theme-btn').forEach(btn => {
+                if (btn.dataset.ambient === ambient) {
+                    btn.classList.add('border-indigo-500', 'ring-2', 'ring-indigo-500/40');
+                } else {
+                    btn.classList.remove('border-indigo-500', 'ring-2', 'ring-indigo-500/40');
+                }
+            });
+        }
+    };
+
+    const applyCard3dParallaxSetting = () => {
+        const enabled = state.settings.card3dParallaxEnabled;
+        if (card3dParallaxToggle) {
+            if (enabled) {
+                card3dParallaxToggle.classList.add('bg-indigo-600');
+                card3dParallaxToggle.lastElementChild.classList.add('translate-x-5');
+            } else {
+                card3dParallaxToggle.classList.remove('bg-indigo-600');
+                card3dParallaxToggle.lastElementChild.classList.remove('translate-x-5');
+            }
+        }
+        if (enabled) {
+            document.body.classList.add('card-3d-enabled');
+        } else {
+            document.body.classList.remove('card-3d-enabled');
+            document.querySelectorAll('#dashboard > div').forEach(c => {
+                c.style.transform = '';
+            });
+        }
+    };
+
+    const applyDynamicIslandSetting = () => {
+        const enabled = state.settings.dynamicIslandEnabled;
+        if (dynamicIslandToggle) {
+            if (enabled) {
+                dynamicIslandToggle.classList.add('bg-indigo-600');
+                dynamicIslandToggle.lastElementChild.classList.add('translate-x-5');
+            } else {
+                dynamicIslandToggle.classList.remove('bg-indigo-600');
+                dynamicIslandToggle.lastElementChild.classList.remove('translate-x-5');
+            }
+        }
+        if (floatingStatusIsland) {
+            if (enabled) {
+                floatingStatusIsland.classList.remove('hidden');
+                updateDynamicIsland();
+            } else {
+                floatingStatusIsland.classList.add('hidden');
+            }
+        }
+    };
+
+    const applySocialInsightsSetting = () => {
+        const enabled = state.settings.socialInsightsEnabled;
+        if (socialInsightsToggle) {
+            if (enabled) {
+                socialInsightsToggle.classList.add('bg-indigo-600');
+                socialInsightsToggle.lastElementChild.classList.add('translate-x-5');
+            } else {
+                socialInsightsToggle.classList.remove('bg-indigo-600');
+                socialInsightsToggle.lastElementChild.classList.remove('translate-x-5');
+            }
+        }
+        if (analyticsModalBtn) {
+            if (enabled) analyticsModalBtn.classList.remove('hidden');
+            else analyticsModalBtn.classList.add('hidden');
+        }
+    };
 
     const applyBottomSheetsSetting = () => {
         const enabled = state.settings.bottomSheetsEnabled;
@@ -2106,6 +2596,11 @@ document.addEventListener('DOMContentLoaded', () => {
                     break;
                 case 'swipe':
                     pattern = scaleVal(40);
+                    break;
+                case 'bounce':
+                case 'overscroll':
+                case 'rubberband':
+                    pattern = scalePattern([45, 25, 60]);
                     break;
                 case 'click':
                 case 'medium':
@@ -2545,6 +3040,81 @@ document.addEventListener('DOMContentLoaded', () => {
         return busySlots;
     };
 
+    const generateCardTimelinePods = (status, now) => {
+        let targetTimetable = null;
+        if (status.type === 'section' && state.sections[status.name]) {
+            targetTimetable = state.sections[status.name].timetable;
+        }
+        
+        const timeSlots = targetTimetable?.timeSlots || [
+            { lecture: 1, time: '09:00-10:00' },
+            { lecture: 2, time: '10:00-11:00' },
+            { lecture: 3, time: '11:00-12:00' },
+            { lecture: 4, time: '12:00-13:00' },
+            { lecture: 5, time: '13:00-14:00' },
+            { lecture: 6, time: '14:00-15:00' },
+            { lecture: 7, time: '15:00-16:00' },
+            { lecture: 8, time: '16:00-17:00' }
+        ];
+
+        let daySchedule = null;
+        if (status.type === 'section' && targetTimetable) {
+            daySchedule = getScheduleForDay(targetTimetable, now);
+        }
+
+        const nowMinutes = now.getHours() * 60 + now.getMinutes();
+
+        return timeSlots.map((slot, idx) => {
+            const [startTimeStr, endTimeStr] = slot.time.split('-');
+            const [startH, startM] = startTimeStr.split(/[.:]/).map(Number);
+            const [endH, endM] = endTimeStr.split(/[.:]/).map(Number);
+            const slotStartMin = startH * 60 + startM;
+            const slotEndMin = endH * 60 + endM;
+
+            const isCurrent = nowMinutes >= slotStartMin && nowMinutes < slotEndMin;
+
+            let isBusy = false;
+            let title = `P${slot.lecture || idx + 1} (${slot.time}): Free`;
+
+            if (status.type === 'section') {
+                if (daySchedule && daySchedule.classes) {
+                    const classInfo = daySchedule.classes.find(c =>
+                        c.subject &&
+                        slot.lecture >= c.lecture &&
+                        slot.lecture < c.lecture + (c.span || 1)
+                    );
+                    if (classInfo) {
+                        isBusy = true;
+                        title = `P${slot.lecture || idx + 1} (${slot.time}): ${classInfo.subject}${classInfo.venue ? ` at ${classInfo.venue}` : ''}`;
+                    }
+                }
+            } else { // group
+                const busySlots = getBusySlotsForTimeline(status, now);
+                isBusy = busySlots.some(b => b.start < slotEndMin && b.end > slotStartMin);
+                title = `P${slot.lecture || idx + 1} (${slot.time}): ${isBusy ? 'Members Busy' : 'All Free'}`;
+            }
+
+            let podClass = '';
+            if (isBusy) {
+                podClass = 'bg-rose-500 text-white shadow-2xs border border-rose-600/30';
+            } else {
+                podClass = 'bg-emerald-500/25 text-emerald-700 dark:text-emerald-300 border border-emerald-500/30';
+            }
+
+            if (isCurrent) {
+                podClass += ' ring-2 ring-amber-400 ring-offset-1 ring-offset-black/30 shadow-[0_0_10px_rgba(251,191,36,0.9)] animate-pulse is-current font-black';
+            }
+
+            const label = slot.lecture ? `P${slot.lecture}` : `${idx + 1}`;
+
+            return `
+                <div class="timeline-pod-item ${podClass}" title="${escapeHTML(title)}">
+                    <span>${escapeHTML(label)}</span>
+                </div>
+            `;
+        }).join('');
+    };
+
     const generateCardTimelineSegments = (status, now) => {
         let targetTimetable = null;
         if (status.type === 'section' && state.sections[status.name]) {
@@ -2582,7 +3152,20 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (event.type === 'free') isBusy = false;
                 lastTime = currentTime;
             }
-        } else {
+        } else if (state.settings.cardTimelineStyle === 'neon') {
+            busySlots.forEach(slot => {
+                const startClamp = Math.max(TIMELINE_START_MIN, slot.start);
+                const endClamp = Math.min(TIMELINE_END_MIN, slot.end);
+                if (endClamp <= startClamp) return;
+
+                const left = ((startClamp - TIMELINE_START_MIN) / TOTAL_DURATION_MIN) * 100;
+                const width = ((endClamp - startClamp) / TOTAL_DURATION_MIN) * 100;
+
+                segmentsHtml += `
+                    <div class="absolute top-[1.5px] bottom-[1.5px] rounded-full bg-gradient-to-r from-rose-500 to-pink-500 shadow-[0_0_10px_rgba(244,63,94,0.85)] z-10 border border-rose-300/60"
+                         style="left: calc(${left}% + 1px); width: calc(${width}% - 2px);"></div>`;
+            });
+        } else { // 'modern'
             busySlots.forEach(slot => {
                 const startClamp = Math.max(TIMELINE_START_MIN, slot.start);
                 const endClamp = Math.min(TIMELINE_END_MIN, slot.end);
@@ -2722,7 +3305,7 @@ document.addEventListener('DOMContentLoaded', () => {
                                     ${status.isPinned ? '<span class="text-xs text-amber-500 flex-shrink-0">★</span>' : ''}
                                     ${status.type === 'group' ? '<span class="text-[10px] font-bold px-1.5 py-0.2 rounded bg-purple-100 dark:bg-purple-900/60 text-purple-700 dark:text-purple-300 flex-shrink-0">Group</span>' : ''}
                                 </div>
-                                <p class="text-xs text-gray-500 dark:text-gray-400 truncate mt-0.5">
+                                <p class="compact-card-subtitle text-xs text-gray-500 dark:text-gray-400 truncate mt-0.5">
                                     ${status.type === 'section'
                                         ? (status.isFree 
                                             ? (status.nextClassSubject && status.nextClassSubject !== 'Nothing scheduled' 
@@ -2735,7 +3318,7 @@ document.addEventListener('DOMContentLoaded', () => {
                             </div>
                         </div>
                         <div class="flex flex-col items-end flex-shrink-0">
-                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold ${status.isFree ? 'bg-green-100 dark:bg-green-950/80 text-green-800 dark:text-green-200 border border-green-200 dark:border-green-800' : 'bg-red-100 dark:bg-red-950/80 text-red-800 dark:text-red-200 border border-red-200 dark:border-red-800'}">
+                            <span class="compact-status-badge inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold ${status.isFree ? 'bg-green-100 dark:bg-green-950/80 text-green-800 dark:text-green-200 border border-green-200 dark:border-green-800' : 'bg-red-100 dark:bg-red-950/80 text-red-800 dark:text-red-200 border border-red-200 dark:border-red-800'}">
                                 <span class="w-1.5 h-1.5 rounded-full ${status.isFree ? 'bg-green-500' : 'bg-red-500'} mr-1.5"></span>
                                 ${status.isFree ? (status.type === 'group' ? 'ALL FREE' : 'FREE') : (status.type === 'group' ? 'BUSY' : 'IN CLASS')}
                             </span>
@@ -2777,7 +3360,30 @@ document.addEventListener('DOMContentLoaded', () => {
                     }).join('');
                     
                     timelineHtml = `<div class="card-timeline-container">${timelineSegmentsHtml}${timelineMarkersHtml}<div class="timeline-current-indicator-wrapper"></div></div>`;
-                } else {
+                } else if (state.settings.cardTimelineStyle === 'neon') {
+                    const timelineMarkersHtml = periodTimes.map(timeStr => {
+                        const [hour, minute] = timeStr.split(':').map(Number);
+                        const minutesFromStart = (hour * 60 + minute) - TIMELINE_START_MIN;
+                        if (minutesFromStart >= 0 && minutesFromStart <= TOTAL_DURATION_MIN) {
+                            const leftPosition = (minutesFromStart / TOTAL_DURATION_MIN) * 100;
+                            return `<div class="absolute top-0 bottom-0 border-l border-cyan-400/40 z-0 pointer-events-none" style="left: ${leftPosition}%;"></div>`;
+                        }
+                        return '';
+                    }).join('');
+                    
+                    timelineHtml = `
+                        <div class="timeline-neon-track absolute bottom-2.5 left-4 right-4 h-3 rounded-full overflow-hidden backdrop-blur-md">
+                            ${timelineMarkersHtml}
+                            ${timelineSegmentsHtml}
+                            <div class="timeline-current-indicator-wrapper w-full h-full absolute inset-0 pointer-events-none"></div>
+                        </div>`;
+                } else if (state.settings.cardTimelineStyle === 'pods') {
+                    const podsHtml = generateCardTimelinePods(status, now);
+                    timelineHtml = `
+                        <div class="timeline-pods-container absolute bottom-2.5 left-4 right-4 h-4 flex items-center justify-between gap-1 z-10 select-none">
+                            ${podsHtml}
+                        </div>`;
+                } else { // 'modern'
                     const timelineMarkersHtml = periodTimes.map(timeStr => {
                         const [hour, minute] = timeStr.split(':').map(Number);
                         const minutesFromStart = (hour * 60 + minute) - TIMELINE_START_MIN;
@@ -2789,7 +3395,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     }).join('');
                     
                     timelineHtml = `
-                        <div class="absolute bottom-2.5 left-4 right-4 h-2.5 bg-white/40 dark:bg-black/30 rounded-full overflow-hidden shadow-inner backdrop-blur-sm border border-gray-300/30 dark:border-gray-600/30">
+                        <div class="timeline-modern-track absolute bottom-2.5 left-4 right-4 h-2.5 bg-white/40 dark:bg-black/30 rounded-full overflow-hidden shadow-inner backdrop-blur-sm border border-gray-300/30 dark:border-gray-600/30">
                             ${timelineMarkersHtml}
                             ${timelineSegmentsHtml}
                             <div class="timeline-current-indicator-wrapper w-full h-full absolute inset-0 pointer-events-none"></div>
@@ -2861,7 +3467,7 @@ document.addEventListener('DOMContentLoaded', () => {
                                 </span>
                             </div>
                         </div>
-                        <div class="w-full overflow-x-auto rounded-xl border border-gray-200/80 dark:border-gray-700/80 shadow-xs" style="-webkit-overflow-scrolling: touch; touch-action: pan-x pan-y;">
+                        <div class="timetable-scroll-container w-full overflow-x-auto rounded-xl border border-gray-200/80 dark:border-gray-700/80 shadow-xs" style="-webkit-overflow-scrolling: touch; touch-action: pan-x pan-y;">
                             <table class="timetable-table w-full text-xs text-center min-w-[520px]">
                                 <thead>
                                     <tr class="bg-gray-100/90 dark:bg-gray-700/90 text-gray-700 dark:text-gray-200 border-b border-gray-200 dark:border-gray-700">
@@ -3050,6 +3656,38 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             }
 
+            // --- COMPACT VIEW UPDATES ---
+            if (state.settings.layoutMode === 'compact') {
+                const subtitleEl = card.querySelector('.compact-card-subtitle');
+                const badgeEl = card.querySelector('.compact-status-badge');
+                
+                let subtitleText = '';
+                if (status.type === 'section') {
+                    subtitleText = status.isFree
+                        ? (status.nextClassSubject && status.nextClassSubject !== 'Nothing scheduled'
+                            ? `Free until <strong>${escapeHTML(status.nextClassTime)}</strong> • Next: ${escapeHTML(status.nextClassSubject)} (${escapeHTML(status.nextClassVenue)})`
+                            : 'Free for the day')
+                        : `In class until <strong>${escapeHTML(status.currentClassEnd)}</strong> • ${escapeHTML(status.currentClassSubject)} (${escapeHTML(status.currentClassVenue)})`;
+                } else {
+                    subtitleText = status.isFree
+                        ? `All free until ${escapeHTML(status.nextUp ? formatTimeOrDay(status.nextUp.date) : 'later')}`
+                        : `${status.busyMembers ? status.busyMembers.length : 0} busy`;
+                }
+
+                if (subtitleEl && subtitleEl.innerHTML !== subtitleText) {
+                    subtitleEl.innerHTML = subtitleText;
+                }
+
+                if (badgeEl) {
+                    const badgeClass = status.isFree 
+                        ? 'compact-status-badge inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-green-100 dark:bg-green-950/80 text-green-800 dark:text-green-200 border border-green-200 dark:border-green-800' 
+                        : 'compact-status-badge inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-red-100 dark:bg-red-950/80 text-red-800 dark:text-red-200 border border-red-200 dark:border-red-800';
+                    const badgeText = status.isFree ? (status.type === 'group' ? 'ALL FREE' : 'FREE') : (status.type === 'group' ? 'BUSY' : 'IN CLASS');
+                    badgeEl.className = badgeClass;
+                    badgeEl.innerHTML = `<span class="w-1.5 h-1.5 rounded-full ${status.isFree ? 'bg-green-500' : 'bg-red-500'} mr-1.5"></span>${badgeText}`;
+                }
+            }
+
             let detailsHtml = '';
             const headerColor = status.isFree ? 'text-green-600 dark:text-green-400' : 'text-red-500 dark:text-red-400';
             const detailsTextColor = 'text-gray-700 dark:text-gray-300';
@@ -3143,42 +3781,119 @@ document.addEventListener('DOMContentLoaded', () => {
                  updateCardHeight(card);
             }
 
-            const indicatorWrapper = card.querySelector('.timeline-current-indicator-wrapper');
-            if (indicatorWrapper) {
+            // --- UPDATE CARD TIMELINES (ALL STYLES) ---
+            if (state.settings.cardTimelineEnabled) {
                 let targetTimetable = null;
                 if (status.type === 'section' && state.sections[status.name]) {
                     targetTimetable = state.sections[status.name].timetable;
                 }
-                const { startMin: TIMELINE_START_MIN, endMin: TIMELINE_END_MIN, totalDurationMin: TOTAL_DURATION_MIN } = getTimelineBounds(targetTimetable);
+                const { startMin: TIMELINE_START_MIN, endMin: TIMELINE_END_MIN, totalDurationMin: TOTAL_DURATION_MIN, periodTimes } = getTimelineBounds(targetTimetable);
 
-                if (nowMinutes >= TIMELINE_START_MIN && nowMinutes <= TIMELINE_END_MIN) {
-                    const nowPosition = ((nowMinutes - TIMELINE_START_MIN) / TOTAL_DURATION_MIN) * 100;
-                    
-                    if (state.settings.cardTimelineStyle === 'classic') {
-                        let indicator = indicatorWrapper.querySelector('.timeline-current-indicator');
-                        // Ensure we don't accidentally keep the modern playhead
-                        if (!indicator || indicator.innerHTML !== '') {
-                            indicatorWrapper.innerHTML = `<div class="timeline-current-indicator" style="left: ${nowPosition}%;"></div>`;
+                const cardNormalView = card.querySelector('.card-normal-view');
+                if (cardNormalView) {
+                    if (state.settings.cardTimelineStyle === 'pods') {
+                        let podsContainer = cardNormalView.querySelector('.timeline-pods-container');
+                        const newPodsHtml = generateCardTimelinePods(status, now);
+                        if (podsContainer) {
+                            if (podsContainer.innerHTML !== newPodsHtml) {
+                                podsContainer.innerHTML = newPodsHtml;
+                            }
                         } else {
-                            indicator.style.left = `${nowPosition}%`;
+                            const newPodsWrapper = document.createElement('div');
+                            newPodsWrapper.className = 'timeline-pods-container absolute bottom-2.5 left-4 right-4 h-4 flex items-center justify-between gap-1 z-10 select-none';
+                            newPodsWrapper.innerHTML = newPodsHtml;
+                            cardNormalView.appendChild(newPodsWrapper);
                         }
                     } else {
-                        let indicator = indicatorWrapper.querySelector('.timeline-current-indicator');
-                        // Ensure we don't accidentally keep the classic playhead
-                        if (!indicator || indicator.innerHTML === '') {
-                            indicatorWrapper.innerHTML = `
-                                <div class="timeline-current-indicator absolute top-0 bottom-0 w-[2px] bg-amber-500 z-20 shadow-[0_0_5px_rgba(245,158,11,0.8)] pointer-events-none" style="left: ${nowPosition}%;">
-                                    <div class="absolute top-1/2 w-1.5 h-1.5 rounded-full bg-amber-500 transform -translate-x-1/2 -translate-y-1/2 shadow-[0_0_3px_rgba(245,158,11,1)]"></div>
-                                </div>`;
-                        } else {
-                            indicator.style.left = `${nowPosition}%`;
+                        const newSegmentsHtml = generateCardTimelineSegments(status, now);
+
+                        if (state.settings.cardTimelineStyle === 'classic') {
+                            const timelineContainer = cardNormalView.querySelector('.card-timeline-container');
+                            if (timelineContainer) {
+                                const timelineMarkersHtml = periodTimes.map(timeStr => {
+                                    const [hour, minute] = timeStr.split(':').map(Number);
+                                    const minutesFromStart = (hour * 60 + minute) - TIMELINE_START_MIN;
+                                    if (minutesFromStart >= 0 && minutesFromStart <= TOTAL_DURATION_MIN) {
+                                        const leftPosition = (minutesFromStart / TOTAL_DURATION_MIN) * 100;
+                                        return `<div class="timeline-marker" style="left: ${leftPosition}%;"></div>`;
+                                    }
+                                    return '';
+                                }).join('');
+
+                                let indicatorHtml = '';
+                                if (nowMinutes >= TIMELINE_START_MIN && nowMinutes <= TIMELINE_END_MIN) {
+                                    const nowPosition = ((nowMinutes - TIMELINE_START_MIN) / TOTAL_DURATION_MIN) * 100;
+                                    indicatorHtml = `<div class="timeline-current-indicator" style="left: ${nowPosition}%;"></div>`;
+                                }
+                                timelineContainer.innerHTML = `${newSegmentsHtml}${timelineMarkersHtml}<div class="timeline-current-indicator-wrapper">${indicatorHtml}</div>`;
+                            }
+                        } else if (state.settings.cardTimelineStyle === 'neon') {
+                            const timelineContainer = cardNormalView.querySelector('.timeline-neon-track');
+                            if (timelineContainer) {
+                                const timelineMarkersHtml = periodTimes.map(timeStr => {
+                                    const [hour, minute] = timeStr.split(':').map(Number);
+                                    const minutesFromStart = (hour * 60 + minute) - TIMELINE_START_MIN;
+                                    if (minutesFromStart >= 0 && minutesFromStart <= TOTAL_DURATION_MIN) {
+                                        const leftPosition = (minutesFromStart / TOTAL_DURATION_MIN) * 100;
+                                        return `<div class="absolute top-0 bottom-0 border-l border-cyan-400/40 z-0 pointer-events-none" style="left: ${leftPosition}%;"></div>`;
+                                    }
+                                    return '';
+                                }).join('');
+
+                                let indicatorHtml = '';
+                                if (nowMinutes >= TIMELINE_START_MIN && nowMinutes <= TIMELINE_END_MIN) {
+                                    const nowPosition = ((nowMinutes - TIMELINE_START_MIN) / TOTAL_DURATION_MIN) * 100;
+                                    indicatorHtml = `<div class="timeline-neon-indicator" style="left: ${nowPosition}%;"></div>`;
+                                }
+                                timelineContainer.innerHTML = `${timelineMarkersHtml}${newSegmentsHtml}<div class="timeline-current-indicator-wrapper w-full h-full absolute inset-0 pointer-events-none">${indicatorHtml}</div>`;
+                            }
+                        } else { // 'modern'
+                            const timelineContainer = cardNormalView.querySelector('.timeline-modern-track') || cardNormalView.querySelector('.h-2\\.5.rounded-full');
+                            if (timelineContainer) {
+                                const timelineMarkersHtml = periodTimes.map(timeStr => {
+                                    const [hour, minute] = timeStr.split(':').map(Number);
+                                    const minutesFromStart = (hour * 60 + minute) - TIMELINE_START_MIN;
+                                    if (minutesFromStart >= 0 && minutesFromStart <= TOTAL_DURATION_MIN) {
+                                        const leftPosition = (minutesFromStart / TOTAL_DURATION_MIN) * 100;
+                                        return `<div class="absolute top-0 bottom-0 border-l border-dashed border-gray-400/40 dark:border-gray-500/40 z-0 pointer-events-none" style="left: ${leftPosition}%;"></div>`;
+                                    }
+                                    return '';
+                                }).join('');
+
+                                let indicatorHtml = '';
+                                if (nowMinutes >= TIMELINE_START_MIN && nowMinutes <= TIMELINE_END_MIN) {
+                                    const nowPosition = ((nowMinutes - TIMELINE_START_MIN) / TOTAL_DURATION_MIN) * 100;
+                                    indicatorHtml = `
+                                        <div class="timeline-current-indicator absolute top-0 bottom-0 w-[2px] bg-amber-500 z-20 shadow-[0_0_5px_rgba(245,158,11,0.8)] pointer-events-none" style="left: ${nowPosition}%;">
+                                            <div class="absolute top-1/2 w-1.5 h-1.5 rounded-full bg-amber-500 transform -translate-x-1/2 -translate-y-1/2 shadow-[0_0_3px_rgba(245,158,11,1)]"></div>
+                                        </div>`;
+                                }
+                                timelineContainer.innerHTML = `${timelineMarkersHtml}${newSegmentsHtml}<div class="timeline-current-indicator-wrapper w-full h-full absolute inset-0 pointer-events-none">${indicatorHtml}</div>`;
+                            }
                         }
                     }
-                } else {
-                    indicatorWrapper.innerHTML = '';
                 }
             }
         });
+
+        // --- UPDATE DYNAMIC ISLAND & OPEN MODALS WITH CURRENT TIME ---
+        updateDynamicIsland();
+
+        if (whosFreeModal && !whosFreeModal.classList.contains('hidden')) {
+            renderWhosFreeList();
+        }
+
+        if (dailyTimelineModal && !dailyTimelineModal.classList.contains('hidden')) {
+            renderDailyTimeline(now);
+        }
+
+        if (timelineModal && !timelineModal.classList.contains('hidden') && timelineModal.dataset.currentGroup) {
+            renderGroupTimeline(timelineModal.dataset.currentGroup, now);
+        }
+
+        if (analyticsModal && !analyticsModal.classList.contains('hidden')) {
+            renderAnalyticsModal();
+        }
     };
 
 
@@ -4359,18 +5074,152 @@ document.addEventListener('DOMContentLoaded', () => {
         isMouseDragging = false;
         mouseCard = null;
     };
+
+    // --- FAST SCROLL & BOUNCE DETECTOR FOR 4th PAGE TIMETABLE ---
+    const timetableScrollMap = new WeakMap();
+
+    const handleTimetableScroll = (e) => {
+        const container = e.target.closest ? e.target.closest('.timetable-scroll-container, .card-full-timetable-view .overflow-x-auto, .card-full-timetable-view .overflow-auto') : null;
+        if (!container) return;
+
+        const now = performance.now();
+        const currentLeft = container.scrollLeft;
+        const maxScrollLeft = container.scrollWidth - container.clientWidth;
+
+        let tracker = timetableScrollMap.get(container);
+        if (!tracker) {
+            tracker = { lastLeft: currentLeft, lastTime: now, lastBounceTime: 0 };
+            timetableScrollMap.set(container, tracker);
+            return;
+        }
+
+        const timeDelta = Math.max(1, now - tracker.lastTime);
+        const scrollDelta = currentLeft - tracker.lastLeft;
+        const velocity = Math.abs(scrollDelta / timeDelta); // px/ms
+
+        tracker.lastLeft = currentLeft;
+        tracker.lastTime = now;
+
+        // Fast scroll velocity threshold (>= 0.85 px/ms indicates fast swipe/fling)
+        const FAST_SCROLL_VELOCITY = 0.85;
+        const BOUNCE_COOLDOWN = 380; // ms
+
+        if (now - tracker.lastBounceTime > BOUNCE_COOLDOWN) {
+            // Hit left boundary rapidly or hit right boundary rapidly
+            const hitLeft = currentLeft <= 0 && scrollDelta < 0 && velocity >= FAST_SCROLL_VELOCITY;
+            const hitRight = maxScrollLeft > 10 && currentLeft >= maxScrollLeft - 2 && scrollDelta > 0 && velocity >= FAST_SCROLL_VELOCITY;
+            // Or scrolling at very high fling velocity (>= 2.2 px/ms)
+            const isFuriousScroll = velocity >= 2.2;
+
+            if (hitLeft || hitRight || isFuriousScroll) {
+                tracker.lastBounceTime = now;
+                
+                // Trigger Rubber-Band Bounce Haptic
+                triggerHaptic('bounce');
+
+                // Apply Bounce Animation
+                const table = container.querySelector('.timetable-table') || container;
+                table.classList.remove('timetable-bounce-left', 'timetable-bounce-right', 'timetable-bounce-fast');
+                void table.offsetWidth; // Force CSS reflow
+
+                if (hitLeft) {
+                    table.classList.add('timetable-bounce-left');
+                } else if (hitRight) {
+                    table.classList.add('timetable-bounce-right');
+                } else {
+                    table.classList.add('timetable-bounce-fast');
+                }
+
+                setTimeout(() => {
+                    table.classList.remove('timetable-bounce-left', 'timetable-bounce-right', 'timetable-bounce-fast');
+                }, 500);
+            }
+        }
+    };
+
+    const handleTimetableWheel = (e) => {
+        const container = e.target.closest ? e.target.closest('.timetable-scroll-container, .card-full-timetable-view .overflow-x-auto, .card-full-timetable-view .overflow-auto') : null;
+        if (!container) return;
+
+        const maxScrollLeft = container.scrollWidth - container.clientWidth;
+        if (maxScrollLeft <= 0) return;
+
+        const deltaX = Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.deltaY;
+        const speed = Math.abs(deltaX);
+
+        if (speed > 60) { // Rapid wheel flick
+            const now = performance.now();
+            let tracker = timetableScrollMap.get(container) || { lastLeft: container.scrollLeft, lastTime: now, lastBounceTime: 0 };
+            if (now - tracker.lastBounceTime > 380) {
+                if ((container.scrollLeft <= 0 && deltaX < 0) || (container.scrollLeft >= maxScrollLeft - 2 && deltaX > 0)) {
+                    tracker.lastBounceTime = now;
+                    timetableScrollMap.set(container, tracker);
+                    triggerHaptic('bounce');
+                    const table = container.querySelector('.timetable-table') || container;
+                    table.classList.remove('timetable-bounce-left', 'timetable-bounce-right', 'timetable-bounce-fast');
+                    void table.offsetWidth;
+                    if (deltaX < 0) table.classList.add('timetable-bounce-left');
+                    else table.classList.add('timetable-bounce-right');
+                    setTimeout(() => {
+                        table.classList.remove('timetable-bounce-left', 'timetable-bounce-right', 'timetable-bounce-fast');
+                    }, 500);
+                }
+            }
+        }
+    };
     
-    // --- TIME TRAVEL CONTROLS ---
+    // --- TIME TRAVEL CONTROLS & DEBUG ENGINE ---
+    const updateDebugIndicator = () => {
+        const indicator = document.getElementById('time-travel-indicator');
+        if (state.debugTime) {
+            if (indicator) {
+                indicator.classList.remove('hidden');
+                indicator.innerHTML = `
+                    <div class="flex items-center space-x-2 bg-amber-500/20 text-amber-600 dark:text-amber-400 border border-amber-500/40 px-3 py-1 rounded-full text-xs font-bold shadow-xs">
+                        <span class="inline-block w-2 h-2 rounded-full bg-amber-500 animate-ping"></span>
+                        <span>Time Travel: ${formatTimeWithDay(state.debugTime)}</span>
+                        <button id="quick-reset-time-btn" class="ml-1 text-amber-700 dark:text-amber-300 hover:text-amber-950 dark:hover:text-white font-black hover:scale-110 transition-transform" title="Reset to Live Time">✕</button>
+                    </div>
+                `;
+            }
+            if (debugTimeInput) {
+                const pad = (n) => String(n).padStart(2, '0');
+                const dt = state.debugTime;
+                debugTimeInput.value = `${dt.getFullYear()}-${pad(dt.getMonth() + 1)}-${pad(dt.getDate())}T${pad(dt.getHours())}:${pad(dt.getMinutes())}`;
+            }
+        } else {
+            if (indicator) indicator.classList.add('hidden');
+            if (debugTimeInput) debugTimeInput.value = '';
+        }
+    };
+
+    const handleResetTime = () => {
+        triggerHaptic('selection');
+        state.debugTime = null;
+        saveState();
+        updateClock();
+        updateDashboardStatuses();
+        updateDebugIndicator();
+        showToast('Reset back to live time.');
+    };
+
+    const handleDebugTimeChange = (e) => {
+        if (e.target.value) {
+            state.debugTime = new Date(e.target.value);
+            triggerHaptic('selection');
+            saveState();
+            updateClock();
+            updateDashboardStatuses();
+            updateDebugIndicator();
+            showToast(`Time set to: ${formatTimeWithDay(state.debugTime)}`);
+        }
+    };
+
     const handleTimeJumpNext = () => {
         triggerHaptic('medium');
-        const now = new Date();
         const currentTime = getCurrentTime();
-        if (state.debugTime && state.debugTime < now) {
-            handleResetTime();
-        } else {
-            state.debugTime = findNextPeriodStart(currentTime);
-            showToast(`Jumped to next period: ${formatTime(state.debugTime)}`);
-        }
+        state.debugTime = findNextPeriodStart(currentTime);
+        showToast(`Jumped to: ${formatTimeWithDay(state.debugTime)}`);
         saveState();
         updateClock();
         updateDashboardStatuses();
@@ -4379,14 +5228,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const handleTimeJumpPrev = () => {
         triggerHaptic('medium');
-        const now = new Date();
         const currentTime = getCurrentTime();
-        if (state.debugTime && state.debugTime > now) {
-            handleResetTime();
-        } else {
-            state.debugTime = findPreviousPeriodStart(currentTime);
-            showToast(`Jumped to previous period: ${formatTime(state.debugTime)}`);
-        }
+        state.debugTime = findPreviousPeriodStart(currentTime);
+        showToast(`Jumped to: ${formatTimeWithDay(state.debugTime)}`);
         saveState();
         updateClock();
         updateDashboardStatuses();
@@ -5074,7 +5918,7 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     // --- WHO'S FREE RIGHT NOW CONTROLLER ---
-    const openWhosFreeModal = () => {
+    const renderWhosFreeList = () => {
         const statuses = calculateAllStatusesAndGroups();
         const now = getCurrentTime();
 
@@ -5155,8 +5999,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 `;
             }).join('');
         }
+    };
 
+    const openWhosFreeModal = () => {
         triggerHaptic('medium');
+        renderWhosFreeList();
         whosFreeModal.classList.remove('hidden');
     };
 
@@ -5744,6 +6591,363 @@ document.addEventListener('DOMContentLoaded', () => {
         }, 'image/png');
     };
 
+    // --- FLOATING DYNAMIC ISLAND LOGIC ---
+    let isDynamicIslandExpanded = false;
+
+    const updateDynamicIsland = () => {
+        if (!state.settings.dynamicIslandEnabled || !floatingStatusIsland) return;
+
+        const now = getCurrentTime();
+        let totalFreeFriends = 0;
+        let totalFreeSections = 0;
+        const freeFriendsList = [];
+        let soonestTransitionMs = Infinity;
+        let soonestTransitionLabel = '';
+
+        Object.entries(state.sections).forEach(([sectionName, sectionData]) => {
+            if (!sectionData || !sectionData.timetable) return;
+            const currentClass = getClassAtTime(sectionData.timetable, now);
+            const isFree = !currentClass;
+            const friends = sectionData.friends || [];
+
+            if (isFree) {
+                totalFreeSections++;
+                totalFreeFriends += friends.length;
+                friends.forEach(f => freeFriendsList.push({ name: f, section: sectionName }));
+                const nextClass = getNextClass(sectionData.timetable, now);
+                if (nextClass) {
+                    const diff = nextClass.startTime.getTime() - now.getTime();
+                    if (diff > 0 && diff < soonestTransitionMs) {
+                        soonestTransitionMs = diff;
+                        const min = Math.ceil(diff / 60000);
+                        soonestTransitionLabel = `${min}m`;
+                    }
+                }
+            } else {
+                const freeTime = getNextFreeTime(sectionData.timetable, now);
+                if (freeTime) {
+                    const diff = freeTime.getTime() - now.getTime();
+                    if (diff > 0 && diff < soonestTransitionMs) {
+                        soonestTransitionMs = diff;
+                        const min = Math.ceil(diff / 60000);
+                        soonestTransitionLabel = `${min}m`;
+                    }
+                }
+            }
+        });
+
+        if (islandFreeText) {
+            islandFreeText.textContent = `${totalFreeFriends} Friend${totalFreeFriends === 1 ? '' : 's'} Free`;
+        }
+        if (islandNextText) {
+            islandNextText.textContent = soonestTransitionLabel ? `Next in ${soonestTransitionLabel}` : 'All Clear';
+        }
+        if (islandSheetTime) {
+            islandSheetTime.textContent = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        }
+
+        if (islandFreeList) {
+            if (freeFriendsList.length === 0) {
+                islandFreeList.innerHTML = `
+                    <div class="py-2 text-center text-white/50 text-xs">
+                        <span>No friends free right now</span>
+                    </div>
+                `;
+            } else {
+                islandFreeList.innerHTML = freeFriendsList.map(item => `
+                    <div class="flex items-center justify-between p-1.5 rounded-xl bg-white/5 hover:bg-white/10 transition-colors">
+                        <div class="flex items-center space-x-2">
+                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+                            <span class="font-medium text-white text-xs">${escapeHTML(item.name)}</span>
+                            <span class="text-[10px] text-white/50">(${escapeHTML(item.section)})</span>
+                        </div>
+                        <a href="https://wa.me/?text=Hey%20${encodeURIComponent(item.name)}!%20Are%20you%20free%20to%20catch%20up?" target="_blank" rel="noopener noreferrer" class="p-1 rounded-lg bg-emerald-500/20 text-emerald-300 hover:bg-emerald-500/30 text-[10px] font-semibold px-2 transition-all active:scale-95" title="Ping on WhatsApp">
+                            Ping
+                        </a>
+                    </div>
+                `).join('');
+            }
+        }
+    };
+
+    const toggleDynamicIsland = (forceState) => {
+        if (!dynamicIslandSheet || !islandChevron) return;
+        isDynamicIslandExpanded = forceState !== undefined ? forceState : !isDynamicIslandExpanded;
+        if (isDynamicIslandExpanded) {
+            triggerHaptic('selection');
+            dynamicIslandSheet.classList.remove('hidden');
+            islandChevron.style.transform = 'rotate(180deg)';
+        } else {
+            dynamicIslandSheet.classList.add('hidden');
+            islandChevron.style.transform = 'rotate(0deg)';
+        }
+    };
+
+    // --- 3D PERSPECTIVE PARALLAX ON CARDS ---
+    const initCard3dParallax = () => {
+        if (!dashboard) return;
+
+        dashboard.addEventListener('mousemove', (e) => {
+            if (!state.settings.card3dParallaxEnabled) return;
+            const card = e.target.closest('#dashboard > div');
+            if (!card) return;
+
+            const rect = card.getBoundingClientRect();
+            const x = (e.clientX - rect.left) / rect.width - 0.5;
+            const y = (e.clientY - rect.top) / rect.height - 0.5;
+
+            const rotateX = (-y * 8).toFixed(2);
+            const rotateY = (x * 8).toFixed(2);
+
+            card.style.transform = `perspective(900px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.012, 1.012, 1.012)`;
+        }, { passive: true });
+
+        dashboard.addEventListener('mouseleave', (e) => {
+            const card = e.target.closest('#dashboard > div');
+            if (card) {
+                card.style.transform = '';
+            }
+        }, { capture: true, passive: true });
+    };
+
+    // --- SOCIAL INSIGHTS & HANGOUT MATRIX ---
+    const calculateFriendCompatibility = (baseSectionName) => {
+        const baseSection = state.sections[baseSectionName];
+        if (!baseSection || !baseSection.timetable) return [];
+
+        const baseTimetable = baseSection.timetable;
+        const timeSlots = baseTimetable.timeSlots || [];
+        const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+        const totalSlots = days.length * timeSlots.length;
+        if (totalSlots === 0) return [];
+
+        const results = [];
+
+        Object.entries(state.sections).forEach(([secName, secData]) => {
+            if (secName === baseSectionName || !secData.timetable) return;
+
+            let sharedFreeCount = 0;
+            let totalFreeForBase = 0;
+            const dayMatchCounts = { Monday: 0, Tuesday: 0, Wednesday: 0, Thursday: 0, Friday: 0, Saturday: 0 };
+
+            days.forEach(day => {
+                const baseDaySchedule = baseTimetable.schedule?.[day] || {};
+                const targetDaySchedule = secData.timetable.schedule?.[day] || {};
+
+                timeSlots.forEach(slot => {
+                    const baseClass = baseDaySchedule[slot];
+                    const targetClass = targetDaySchedule[slot];
+
+                    const baseIsFree = !baseClass || !baseClass.subject;
+                    const targetIsFree = !targetClass || !targetClass.subject;
+
+                    if (baseIsFree) totalFreeForBase++;
+
+                    if (baseIsFree && targetIsFree) {
+                        sharedFreeCount++;
+                        dayMatchCounts[day]++;
+                    }
+                });
+            });
+
+            const maxPossible = Math.max(1, totalFreeForBase);
+            const matchScore = Math.min(100, Math.round((sharedFreeCount / maxPossible) * 100));
+
+            let bestDay = 'Friday';
+            let bestDayCount = -1;
+            Object.entries(dayMatchCounts).forEach(([d, count]) => {
+                if (count > bestDayCount) {
+                    bestDayCount = count;
+                    bestDay = d;
+                }
+            });
+
+            let tier = 'Study Buddy';
+            let tierColor = 'bg-blue-100 text-blue-800 dark:bg-blue-900/60 dark:text-blue-200';
+            if (matchScore >= 80) {
+                tier = '🔥 Hangout Soulmate';
+                tierColor = 'bg-purple-100 text-purple-800 dark:bg-purple-900/60 dark:text-purple-200';
+            } else if (matchScore >= 55) {
+                tier = '☕ Lunch Bestie';
+                tierColor = 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300';
+            } else if (matchScore >= 35) {
+                tier = '⚡ Break Buddy';
+                tierColor = 'bg-amber-100 text-amber-800 dark:bg-amber-900/60 dark:text-amber-200';
+            }
+
+            results.push({
+                sectionName: secName,
+                friends: secData.friends || [],
+                matchScore,
+                sharedHours: sharedFreeCount,
+                bestDay,
+                bestDayHours: bestDayCount,
+                tier,
+                tierColor
+            });
+        });
+
+        results.sort((a, b) => b.matchScore - a.matchScore);
+        return results;
+    };
+
+    const calculateCampusHourDistribution = () => {
+        const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
+        const secList = Object.values(state.sections).filter(s => s && s.timetable);
+        if (secList.length === 0) return [];
+
+        const hourStats = {};
+
+        const standardHours = [
+            { label: '09:00 - 10:00', key: '9' },
+            { label: '10:00 - 11:00', key: '10' },
+            { label: '11:00 - 12:00', key: '11' },
+            { label: '12:00 - 01:00', key: '12' },
+            { label: '01:00 - 02:00', key: '13' },
+            { label: '02:00 - 03:00', key: '14' },
+            { label: '03:00 - 04:00', key: '15' },
+            { label: '04:00 - 05:00', key: '16' }
+        ];
+
+        standardHours.forEach(h => {
+            let totalChecked = 0;
+            let totalFree = 0;
+
+            secList.forEach(s => {
+                const slots = s.timetable.timeSlots || [];
+                days.forEach(d => {
+                    const sched = s.timetable.schedule?.[d] || {};
+                    slots.forEach(slotStr => {
+                        const startHour = parseInt(slotStr.split(':')[0], 10);
+                        if (startHour === parseInt(h.key, 10)) {
+                            totalChecked++;
+                            const cl = sched[slotStr];
+                            if (!cl || !cl.subject) totalFree++;
+                        }
+                    });
+                });
+            });
+
+            const percent = totalChecked > 0 ? Math.round((totalFree / totalChecked) * 100) : 0;
+            hourStats[h.label] = percent;
+        });
+
+        return Object.entries(hourStats).map(([hour, percent]) => ({ hour, percent }));
+    };
+
+    const openAnalyticsModal = () => {
+        triggerHaptic('medium');
+        const sectionNames = Object.keys(state.sections);
+        if (sectionNames.length === 0) {
+            showToast('Add section timetables first to view Hangout Analytics.', 'error');
+            return;
+        }
+
+        analyticsBaseSelect.innerHTML = sectionNames.map(name => `
+            <option value="${escapeHTML(name)}">${escapeHTML(name)}</option>
+        `).join('');
+
+        renderAnalyticsModal();
+        analyticsModal.classList.remove('hidden');
+    };
+
+    const renderAnalyticsModal = () => {
+        const baseSection = analyticsBaseSelect.value || Object.keys(state.sections)[0];
+        if (!baseSection) return;
+
+        const matches = calculateFriendCompatibility(baseSection);
+        const distribution = calculateCampusHourDistribution();
+
+        if (matches.length === 0) {
+            analyticsTopMatchHero.innerHTML = `
+                <div class="py-4 text-center w-full text-gray-500">
+                    <p class="text-sm font-semibold">Add at least 2 section timetables to calculate compatibility.</p>
+                </div>
+            `;
+            analyticsMatchList.innerHTML = '';
+        } else {
+            const topMatch = matches[0];
+            const friendNames = topMatch.friends.length > 0 ? topMatch.friends.join(', ') : 'Friends in ' + topMatch.sectionName;
+
+            analyticsTopMatchHero.innerHTML = `
+                <div class="w-16 h-16 rounded-2xl bg-purple-600 text-white flex flex-col items-center justify-center flex-shrink-0 shadow-md">
+                    <span class="text-xl font-black">${topMatch.matchScore}%</span>
+                    <span class="text-[9px] uppercase tracking-wider font-bold">Match</span>
+                </div>
+                <div class="flex-1 min-w-0">
+                    <div class="flex items-center space-x-2">
+                        <span class="px-2 py-0.5 rounded-full text-[10px] font-bold ${topMatch.tierColor}">${topMatch.tier}</span>
+                        <span class="text-xs font-bold text-gray-800 dark:text-white truncate">${escapeHTML(topMatch.sectionName)}</span>
+                    </div>
+                    <h4 class="text-base font-extrabold text-gray-900 dark:text-white mt-0.5 truncate">${escapeHTML(friendNames)}</h4>
+                    <p class="text-xs text-gray-600 dark:text-gray-300 mt-1">
+                        🎯 <strong>${topMatch.sharedHours} shared free hours</strong> this week • Best day: <strong>${topMatch.bestDay}</strong> (${topMatch.bestDayHours} common periods)
+                    </p>
+                </div>
+            `;
+
+            analyticsMatchList.innerHTML = matches.map(m => {
+                const friendsStr = m.friends.length > 0 ? m.friends.join(', ') : 'Section ' + m.sectionName;
+                return `
+                    <div class="p-3 bg-gray-50/80 dark:bg-gray-700/60 border border-gray-200/70 dark:border-gray-600/60 rounded-2xl flex items-center justify-between gap-3 shadow-2xs hover:border-purple-300 transition-all">
+                        <div class="flex items-center space-x-3 min-w-0 flex-1">
+                            <div class="w-11 h-11 rounded-xl bg-purple-100 dark:bg-purple-950/80 text-purple-700 dark:text-purple-300 flex items-center justify-center font-black text-sm flex-shrink-0">
+                                ${m.matchScore}%
+                            </div>
+                            <div class="min-w-0 flex-1">
+                                <div class="flex items-center space-x-1.5">
+                                    <span class="font-bold text-xs sm:text-sm text-gray-900 dark:text-white truncate">${escapeHTML(friendsStr)}</span>
+                                    <span class="text-[10px] px-1.5 py-0.2 rounded font-bold ${m.tierColor}">${m.tier}</span>
+                                </div>
+                                <div class="text-[11px] text-gray-500 dark:text-gray-400 mt-0.5">
+                                    ${m.sharedHours} shared free periods • Top day: ${m.bestDay} (${m.bestDayHours} periods)
+                                </div>
+                            </div>
+                        </div>
+                        <a href="https://wa.me/?text=Hey!%20SyncUp%20says%20we%20have%20a%20${m.matchScore}%25%20Hangout%20Match%20with%20${m.sharedHours}%20shared%20free%20hours%20this%20week!%20Let's%20catch%20up%20on%20${m.bestDay}!" target="_blank" rel="noopener noreferrer" class="px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold shadow-xs flex-shrink-0 transition-all active:scale-95 flex items-center space-x-1">
+                            <span>Ping</span>
+                        </a>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        if (analyticsChartContainer) {
+            let maxPercent = 0;
+            let peakHour = '';
+            distribution.forEach(d => {
+                if (d.percent > maxPercent) {
+                    maxPercent = d.percent;
+                    peakHour = d.hour;
+                }
+            });
+
+            analyticsChartContainer.innerHTML = distribution.map(d => `
+                <div class="space-y-1">
+                    <div class="flex justify-between text-xs font-semibold text-gray-700 dark:text-gray-300">
+                        <span>${escapeHTML(d.hour)}</span>
+                        <span class="font-mono text-purple-600 dark:text-purple-400">${d.percent}% Free</span>
+                    </div>
+                    <div class="w-full h-3 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+                        <div class="h-full rounded-full bg-gradient-to-r from-purple-500 to-indigo-500 transition-all duration-500" style="width: ${d.percent}%;"></div>
+                    </div>
+                </div>
+            `).join('');
+
+            if (analyticsPeakHoursCard) {
+                analyticsPeakHoursCard.innerHTML = `
+                    <div class="flex items-center space-x-2">
+                        <span class="text-base">☕</span>
+                        <span class="font-bold text-sm">Peak Campus Hangout Window: ${escapeHTML(peakHour || '12:00 - 01:00')} (${maxPercent}% students free)</span>
+                    </div>
+                    <p class="text-[11px] text-indigo-700 dark:text-indigo-300">
+                        This is statistically the easiest time to organize lunch meetups and group hangouts across campus circles.
+                    </p>
+                `;
+            }
+        }
+    };
+
     // --- TIMER & LIFECYCLE MANAGEMENT ---
     let clockIntervalId = null;
     let statusIntervalId = null;
@@ -5784,6 +6988,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const initializeApp = () => {
         loadState();
         applyTheme();
+        applyAmbientTheme();
         applyLedIndicatorSetting();
         applyCardTimelineSetting();
         applyPreviousVenueSetting();
@@ -5793,8 +6998,12 @@ document.addEventListener('DOMContentLoaded', () => {
         applyBottomSheetsSetting();
         applyGlassmorphicGlowSetting();
         applyCardAnimationsSetting();
+        applyCard3dParallaxSetting();
+        applyDynamicIslandSetting();
+        applySocialInsightsSetting();
         applyHapticFeedbackSetting();
         updateDebugIndicator();
+        initCard3dParallax();
         
         // INSTANT LOAD: Render immediately using locally cached data in localStorage
         renderSettings();
@@ -5996,6 +7205,13 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    if (testVibrateBounceBtn) {
+        testVibrateBounceBtn.addEventListener('click', () => {
+            triggerHaptic('bounce');
+            showToast('🏀 Rubber-band bounce pulse [45, 25, 60ms]');
+        });
+    }
+
     if (testVibrateImpactBtn) {
         testVibrateImpactBtn.addEventListener('click', () => {
             triggerHaptic('impact');
@@ -6089,15 +7305,19 @@ document.addEventListener('DOMContentLoaded', () => {
         renderDashboard(); 
     });
 
-    timelineStyleBtns.forEach(btn => {
-        btn.addEventListener('click', (e) => {
-            triggerHaptic('selection');
-            state.settings.cardTimelineStyle = e.target.dataset.style;
-            applyCardTimelineSetting();
-            saveState();
-            renderDashboard();
+    if (cardTimelineOptions) {
+        cardTimelineOptions.addEventListener('click', (e) => {
+            const btn = e.target.closest('.timeline-style-btn');
+            if (btn && btn.dataset.style) {
+                triggerHaptic('selection');
+                state.settings.cardTimelineStyle = btn.dataset.style;
+                applyCardTimelineSetting();
+                saveState();
+                renderDashboard();
+                showToast(`Timeline style set to ${btn.textContent.trim()}`);
+            }
         });
-    });
+    }
     
     previousVenueToggle.addEventListener('click', () => {
         triggerHaptic('selection');
@@ -6229,6 +7449,137 @@ document.addEventListener('DOMContentLoaded', () => {
                 renderSettings();
                 renderDashboard();
                 showToast(`App theme set to ${selectedTheme}.`);
+            }
+        });
+    }
+
+    // --- NEXT-GEN UI & SOCIAL ANALYTICS EVENT LISTENERS ---
+    if (card3dParallaxToggle) {
+        card3dParallaxToggle.addEventListener('click', () => {
+            triggerHaptic('selection');
+            state.settings.card3dParallaxEnabled = !state.settings.card3dParallaxEnabled;
+            applyCard3dParallaxSetting();
+            saveState();
+            showToast(state.settings.card3dParallaxEnabled ? '3D Card Tilt Parallax enabled' : '3D Card Tilt Parallax disabled');
+        });
+    }
+
+    if (dynamicIslandToggle) {
+        dynamicIslandToggle.addEventListener('click', () => {
+            triggerHaptic('selection');
+            state.settings.dynamicIslandEnabled = !state.settings.dynamicIslandEnabled;
+            applyDynamicIslandSetting();
+            saveState();
+            showToast(state.settings.dynamicIslandEnabled ? 'Floating Dynamic Island enabled' : 'Floating Dynamic Island disabled');
+        });
+    }
+
+    if (socialInsightsToggle) {
+        socialInsightsToggle.addEventListener('click', () => {
+            triggerHaptic('selection');
+            state.settings.socialInsightsEnabled = !state.settings.socialInsightsEnabled;
+            applySocialInsightsSetting();
+            saveState();
+            showToast(state.settings.socialInsightsEnabled ? 'Social Hangout Insights enabled' : 'Social Hangout Insights disabled');
+        });
+    }
+
+    if (ambientThemeSelector) {
+        ambientThemeSelector.addEventListener('click', (e) => {
+            const btn = e.target.closest('.ambient-theme-btn');
+            if (btn) {
+                triggerHaptic('selection');
+                const selectedAmbient = btn.dataset.ambient;
+                state.settings.ambientTheme = selectedAmbient;
+                saveState();
+                applyAmbientTheme();
+                showToast(`Ambient theme set to ${selectedAmbient.toUpperCase()}.`);
+            }
+        });
+    }
+
+    if (dynamicIslandPillBtn) {
+        dynamicIslandPillBtn.addEventListener('click', () => toggleDynamicIsland());
+    }
+    if (islandMeetupBtn) {
+        islandMeetupBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            toggleDynamicIsland(false);
+            openMeetupModal();
+        });
+    }
+    if (islandAnalyticsBtn) {
+        islandAnalyticsBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            toggleDynamicIsland(false);
+            openAnalyticsModal();
+        });
+    }
+
+    if (analyticsModalBtn) {
+        analyticsModalBtn.addEventListener('click', openAnalyticsModal);
+    }
+    if (closeAnalyticsModalBtn) {
+        closeAnalyticsModalBtn.addEventListener('click', () => {
+            triggerHaptic('tap');
+            analyticsModal.classList.add('hidden');
+        });
+    }
+    if (dismissAnalyticsModalBtn) {
+        dismissAnalyticsModalBtn.addEventListener('click', () => {
+            triggerHaptic('tap');
+            analyticsModal.classList.add('hidden');
+        });
+    }
+    if (analyticsModal) {
+        analyticsModal.addEventListener('click', (e) => {
+            if (e.target === analyticsModal) {
+                triggerHaptic('tap');
+                analyticsModal.classList.add('hidden');
+            }
+        });
+    }
+    if (analyticsBaseSelect) {
+        analyticsBaseSelect.addEventListener('change', () => {
+            triggerHaptic('selection');
+            renderAnalyticsModal();
+        });
+    }
+    if (analyticsTabCompatibility && analyticsTabDistribution) {
+        analyticsTabCompatibility.addEventListener('click', () => {
+            triggerHaptic('selection');
+            analyticsTabCompatibility.className = 'px-3 py-1.5 rounded-lg bg-white dark:bg-gray-700 text-purple-600 dark:text-purple-400 shadow-2xs transition-all';
+            analyticsTabDistribution.className = 'px-3 py-1.5 rounded-lg text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-all';
+            analyticsCompatibilityView.classList.remove('hidden');
+            analyticsDistributionView.classList.add('hidden');
+        });
+
+        analyticsTabDistribution.addEventListener('click', () => {
+            triggerHaptic('selection');
+            analyticsTabDistribution.className = 'px-3 py-1.5 rounded-lg bg-white dark:bg-gray-700 text-purple-600 dark:text-purple-400 shadow-2xs transition-all';
+            analyticsTabCompatibility.className = 'px-3 py-1.5 rounded-lg text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-all';
+            analyticsDistributionView.classList.remove('hidden');
+            analyticsCompatibilityView.classList.add('hidden');
+        });
+    }
+    if (shareAnalyticsScoreBtn) {
+        shareAnalyticsScoreBtn.addEventListener('click', () => {
+            triggerHaptic('success');
+            const baseSection = analyticsBaseSelect.value || Object.keys(state.sections)[0];
+            const matches = calculateFriendCompatibility(baseSection);
+            if (matches.length === 0) return;
+            const top = matches[0];
+            const friendNames = top.friends.length > 0 ? top.friends.join(', ') : 'Friends in ' + top.sectionName;
+            const shareText = `🔥 SyncUp Hangout Match!\n🎯 Top Match: ${friendNames} (${top.matchScore}% Match)\n⏰ ${top.sharedHours} shared free hours this week\n📅 Best Day to Meet: ${top.bestDay}\n\nTrack friends live on SyncUp!`;
+
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(shareText).then(() => {
+                    showToast('📋 Hangout stats copied to clipboard!');
+                }).catch(() => {
+                    showToast('Hangout stats calculated!');
+                });
+            } else {
+                showToast('Hangout stats calculated!');
             }
         });
     }
@@ -6398,6 +7749,10 @@ document.addEventListener('DOMContentLoaded', () => {
     dashboard.addEventListener('touchend', handleTouchEnd);
     dashboard.addEventListener('touchcancel', handleTouchEnd);
 
+    // Timetable Fast Scroll & Wheel Bounce Listeners (4th View)
+    dashboard.addEventListener('scroll', handleTimetableScroll, { capture: true, passive: true });
+    dashboard.addEventListener('wheel', handleTimetableWheel, { capture: true, passive: true });
+
     // Desktop Mouse Drag Listeners
     dashboard.addEventListener('mousedown', handleMouseDown);
     window.addEventListener('mousemove', handleMouseMove);
@@ -6408,6 +7763,8 @@ document.addEventListener('DOMContentLoaded', () => {
     appTitle.addEventListener('touchend', handleHeaderTouchEnd);
     if (timePrevBtn) timePrevBtn.addEventListener('click', handleTimeJumpPrev);
     if (timeNextBtn) timeNextBtn.addEventListener('click', handleTimeJumpNext);
+    if (debugTimeInput) debugTimeInput.addEventListener('change', handleDebugTimeChange);
+    if (resetTimeBtn) resetTimeBtn.addEventListener('click', handleResetTime);
 
     // Quick Reset Button Listener on time-travel indicator
     if (timeTravelIndicator) {
