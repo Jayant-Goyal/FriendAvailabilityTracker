@@ -39,11 +39,11 @@
         }
         /* Animation for cards */
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
+            from { opacity: 0; }
+            to { opacity: 1; }
         }
         .card-fade-in {
-            animation: fadeIn 0.45s ease-out forwards;
+            animation: fadeIn 0.35s ease-out forwards;
             /* Smooth fluid height and perspective transitions */
             transition: height 0.42s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s ease-in-out, border 0.3s ease-in-out, order 0.5s ease;
             transform-style: preserve-3d;
@@ -405,11 +405,11 @@
         }
 
         /* 3. Card Micro-Interactions */
-        .micro-interactions-enabled #dashboard > div {
-            transition: transform 0.22s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.22s cubic-bezier(0.2, 0.8, 0.2, 1), border-color 0.2s ease !important;
+        body:not(.card-3d-enabled).micro-interactions-enabled #dashboard > div {
+            transition: transform 0.22s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.22s cubic-bezier(0.2, 0.8, 0.2, 1), border-color 0.2s ease;
         }
         @media (hover: hover) {
-            .micro-interactions-enabled #dashboard > div:hover {
+            body:not(.card-3d-enabled).micro-interactions-enabled #dashboard > div:hover {
                 transform: translateY(-3px) scale(1.004);
             }
         }
@@ -418,11 +418,18 @@
         }
 
         /* 4. 3D Card Perspective Tilt */
+        .card-3d-enabled #dashboard {
+            perspective: 1400px;
+        }
         .card-3d-enabled #dashboard > div {
             transform-style: preserve-3d;
-            perspective: 1000px;
-            transition: transform 0.12s ease-out, box-shadow 0.15s ease-out;
+            transition: transform 0.18s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.2s ease-out;
             will-change: transform;
+            transform-origin: center center;
+        }
+        .card-3d-enabled #dashboard > div:hover {
+            box-shadow: 0 14px 30px -8px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(255, 255, 255, 0.12) !important;
+            z-index: 10;
         }
 
         /* 5. Ambient Atmosphere Theme Presets */
@@ -2066,8 +2073,17 @@ document.addEventListener('DOMContentLoaded', () => {
                     if (typeof parsedState.settings.glassmorphicGlowEnabled === 'undefined') {
                         parsedState.settings.glassmorphicGlowEnabled = true;
                     }
-                    if (typeof parsedState.settings.cardAnimationsEnabled === 'undefined') {
-                        parsedState.settings.cardAnimationsEnabled = true;
+                    if (typeof parsedState.settings.card3dParallaxEnabled === 'undefined') {
+                        parsedState.settings.card3dParallaxEnabled = true;
+                    }
+                    if (typeof parsedState.settings.dynamicIslandEnabled === 'undefined') {
+                        parsedState.settings.dynamicIslandEnabled = true;
+                    }
+                    if (typeof parsedState.settings.socialInsightsEnabled === 'undefined') {
+                        parsedState.settings.socialInsightsEnabled = true;
+                    }
+                    if (typeof parsedState.settings.ambientTheme === 'undefined') {
+                        parsedState.settings.ambientTheme = 'default';
                     }
                     if (typeof parsedState.settings.hapticFeedbackEnabled === 'undefined') {
                         parsedState.settings.hapticFeedbackEnabled = true;
@@ -2442,6 +2458,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         if (enabled) {
             document.body.classList.add('card-3d-enabled');
+            initGyroscope();
         } else {
             document.body.classList.remove('card-3d-enabled');
             document.querySelectorAll('#dashboard > div').forEach(c => {
@@ -3317,11 +3334,11 @@ document.addEventListener('DOMContentLoaded', () => {
             // --- COMPACT LIST VIEW MODE ---
             if (state.settings.layoutMode === 'compact') {
                 const compactHtml = `
-                    <div class="flex items-center justify-between gap-3 p-3.5 sm:p-4">
-                        <div class="flex items-center space-x-3 min-w-0 flex-1">
+                    <div class="flex items-center justify-between gap-2.5 sm:gap-3.5 p-2.5 sm:p-3.5">
+                        <div class="flex items-center space-x-2.5 min-w-0 flex-1">
                             ${colorDotHtml || `<span class="w-2.5 h-2.5 rounded-full ${status.isFree ? 'bg-green-500' : 'bg-red-500'} flex-shrink-0"></span>`}
                             <div class="min-w-0 flex-1">
-                                <div class="flex items-center space-x-2">
+                                <div class="flex items-center space-x-1.5">
                                     <h3 class="font-bold text-sm sm:text-base text-gray-900 dark:text-white truncate">${escapeHTML(status.name)}</h3>
                                     ${status.isPinned ? '<span class="text-xs text-amber-500 flex-shrink-0">★</span>' : ''}
                                     ${status.type === 'group' ? '<span class="text-[10px] font-bold px-1.5 py-0.2 rounded bg-purple-100 dark:bg-purple-900/60 text-purple-700 dark:text-purple-300 flex-shrink-0">Group</span>' : ''}
@@ -3339,11 +3356,11 @@ document.addEventListener('DOMContentLoaded', () => {
                             </div>
                         </div>
                         <div class="flex flex-col items-end flex-shrink-0">
-                            <span class="compact-status-badge inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold ${status.isFree ? 'bg-green-100 dark:bg-green-950/80 text-green-800 dark:text-green-200 border border-green-200 dark:border-green-800' : 'bg-red-100 dark:bg-red-950/80 text-red-800 dark:text-red-200 border border-red-200 dark:border-red-800'}">
-                                <span class="w-1.5 h-1.5 rounded-full ${status.isFree ? 'bg-green-500' : 'bg-red-500'} mr-1.5"></span>
+                            <span class="compact-status-badge inline-flex items-center px-2 py-0.5 rounded-full text-xs font-bold ${status.isFree ? 'bg-green-100 dark:bg-green-950/80 text-green-800 dark:text-green-200 border border-green-200 dark:border-green-800' : 'bg-red-100 dark:bg-red-950/80 text-red-800 dark:text-red-200 border border-red-200 dark:border-red-800'}">
+                                <span class="w-1.5 h-1.5 rounded-full ${status.isFree ? 'bg-green-500' : 'bg-red-500'} mr-1"></span>
                                 ${status.isFree ? (status.type === 'group' ? 'ALL FREE' : 'FREE') : (status.type === 'group' ? 'BUSY' : 'IN CLASS')}
                             </span>
-                            <div class="card-countdown-badge mt-1 ${state.settings.showCountdownTimer ? '' : 'hidden'} text-right"></div>
+                            <div class="card-countdown-badge mt-0.5 ${state.settings.showCountdownTimer ? '' : 'hidden'} text-right"></div>
                         </div>
                     </div>
                 `;
@@ -3424,41 +3441,43 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             }
             
-            const contentPadding = 'p-4 sm:p-5';
+            const contentPadding = 'p-3.5 sm:p-4.5';
 
             let cardHtml = '';
 
             if (status.type === 'section') {
-                const friendsHtml = (state.sections[status.name]?.friends || []).map(friend => `
+                const friendsList = state.sections[status.name]?.friends || [];
+                const hasFriends = friendsList.length > 0;
+                const friendsHtml = hasFriends ? friendsList.map(friend => `
                     <span class="inline-flex items-center bg-gray-200/90 dark:bg-gray-700/90 text-gray-800 dark:text-gray-200 rounded-full px-2.5 py-0.5 text-xs font-semibold shadow-2xs">
                         <span>${escapeHTML(friend)}</span>
                         <button data-friend="${escapeHTML(friend)}" data-section="${escapeHTML(status.name)}" class="remove-friend-btn ml-1.5 -mr-1 p-0.5 rounded-full text-gray-500 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-500">&times;</button>
-                    </span>`).join(' ');
+                    </span>`).join(' ') : '';
                 
                 const ledIndicatorHtml = state.settings.ledIndicatorEnabled ? `<div class="led-indicator led-${status.ledColor}"></div>` : '';
                 
                 const nextClassDetailsHtml = status.nextClassForSwipe ? `
-                    <div class="p-5 h-full flex flex-col justify-center">
-                        <p class="font-bold text-lg text-gray-800 dark:text-gray-200 text-center mb-1">Next Up</p>
-                        <div class="mt-2 text-sm text-gray-700 dark:text-gray-300 space-y-1.5 max-w-sm mx-auto w-full">
-                            <p class="break-words"><span class="font-medium text-gray-500 dark:text-gray-400 w-16 inline-block">Time:</span> ${escapeHTML(status.nextClassForSwipe.time)}</p>
-                            <p class="break-words"><span class="font-medium text-gray-500 dark:text-gray-400 w-16 inline-block">Subject:</span> ${escapeHTML(status.nextClassForSwipe.subject)}</p>
-                            <p class="break-words"><span class="font-medium text-gray-500 dark:text-gray-400 w-16 inline-block">Venue:</span> ${escapeHTML(status.nextClassForSwipe.venue)}</p>
-                            <p class="break-words"><span class="font-medium text-gray-500 dark:text-gray-400 w-16 inline-block">Faculty:</span> ${escapeHTML(status.nextClassForSwipe.faculty)}</p>
+                    <div class="p-3.5 sm:p-4.5 h-full flex flex-col justify-center">
+                        <p class="font-bold text-base sm:text-lg text-gray-800 dark:text-gray-200 text-center mb-1">Next Up</p>
+                        <div class="mt-1.5 text-xs sm:text-sm text-gray-700 dark:text-gray-300 space-y-1 max-w-sm mx-auto w-full">
+                            <p class="break-words leading-tight"><span class="font-medium text-gray-500 dark:text-gray-400 w-14 inline-block">Time:</span> ${escapeHTML(status.nextClassForSwipe.time)}</p>
+                            <p class="break-words leading-tight"><span class="font-medium text-gray-500 dark:text-gray-400 w-14 inline-block">Subject:</span> ${escapeHTML(status.nextClassForSwipe.subject)}</p>
+                            <p class="break-words leading-tight"><span class="font-medium text-gray-500 dark:text-gray-400 w-14 inline-block">Venue:</span> ${escapeHTML(status.nextClassForSwipe.venue)}</p>
+                            <p class="break-words leading-tight"><span class="font-medium text-gray-500 dark:text-gray-400 w-14 inline-block">Faculty:</span> ${escapeHTML(status.nextClassForSwipe.faculty)}</p>
                         </div>
                     </div>` : `
-                    <div class="p-5 h-full flex flex-col justify-center items-center text-center">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-gray-400 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.293 2.293a1 1 0 010 1.414L11 12l4.293 4.293a1 1 0 01-1.414 1.414L10 13.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 12 4.293 7.707a1 1 0 011.414-1.414L10 10.586 14.293 6.293a1 1 0 011.414 0L18 8.586m-5 5l2.293-2.293a1 1 0 011.414 0L21 15m-4-4l-2.293 2.293a1 1 0 01-1.414 0L9 11" /></svg>
-                        <h3 class="text-lg font-bold text-gray-700 dark:text-gray-300">All Done!</h3>
-                        <p class="text-sm text-gray-500">No further classes are scheduled.</p>
+                    <div class="p-3.5 sm:p-4.5 h-full flex flex-col justify-center items-center text-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-9 w-9 text-gray-400 mb-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.293 2.293a1 1 0 010 1.414L11 12l4.293 4.293a1 1 0 01-1.414 1.414L10 13.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 12 4.293 7.707a1 1 0 011.414-1.414L10 10.586 14.293 6.293a1 1 0 011.414 0L18 8.586m-5 5l2.293-2.293a1 1 0 011.414 0L21 15m-4-4l-2.293 2.293a1 1 0 01-1.414 0L9 11" /></svg>
+                        <h3 class="text-base font-bold text-gray-700 dark:text-gray-300">All Done!</h3>
+                        <p class="text-xs text-gray-500">No further classes are scheduled.</p>
                     </div>`;
 
                 const timetableHtml = status.dayScheduleForView && status.dayScheduleForView.length > 0 ? `
-                    <div class="p-5 flex flex-col w-full">
-                        <p class="font-bold text-lg text-gray-800 dark:text-gray-200 text-center mb-3">Today's Schedule</p>
-                        <div class="space-y-1.5 w-full">
+                    <div class="p-3.5 sm:p-4.5 flex flex-col w-full">
+                        <p class="font-bold text-base sm:text-lg text-gray-800 dark:text-gray-200 text-center mb-2">Today's Schedule</p>
+                        <div class="space-y-1 w-full">
                             ${status.dayScheduleForView.map(slot => `
-                                <div class="${slot.subject ? 'lecture-tile-btn cursor-pointer hover:border-indigo-400 dark:hover:border-indigo-500 transition-all active:scale-[0.98]' : ''} grid grid-cols-3 gap-2 text-xs py-2 px-3 rounded-lg border border-gray-200/50 dark:border-gray-700/50 ${slot.isCurrent ? 'bg-indigo-50 dark:bg-indigo-950/60 border-indigo-200 dark:border-indigo-800' : 'bg-white/40 dark:bg-gray-800/40'}"
+                                <div class="${slot.subject ? 'lecture-tile-btn cursor-pointer hover:border-indigo-400 dark:hover:border-indigo-500 transition-all active:scale-[0.98]' : ''} grid grid-cols-3 gap-1.5 text-xs py-1.5 px-2.5 sm:py-2 sm:px-3 rounded-lg border border-gray-200/50 dark:border-gray-700/50 ${slot.isCurrent ? 'bg-indigo-50 dark:bg-indigo-950/60 border-indigo-200 dark:border-indigo-800' : 'bg-white/40 dark:bg-gray-800/40'}"
                                      ${slot.subject ? `data-subject="${escapeHTML(slot.subject)}" data-venue="${escapeHTML(slot.venue || 'N/A')}" data-faculty="${escapeHTML(slot.faculty || 'N/A')}" data-day="${escapeHTML(slot.day)}" data-time="${escapeHTML(slot.time)}" data-span="${slot.span || 1}" data-section="${escapeHTML(status.name)}" title="Click for details"` : ''}>
                                     <span class="text-left col-span-1 font-medium text-gray-600 dark:text-gray-400 pointer-events-none">${escapeHTML(slot.time)}</span>
                                     <span class="text-left col-span-2 ${slot.subject ? 'font-semibold text-gray-800 dark:text-gray-100' : 'text-gray-400 dark:text-gray-500'} pointer-events-none">
@@ -3468,14 +3487,14 @@ document.addEventListener('DOMContentLoaded', () => {
                             ).join('')}
                         </div>
                     </div>` : `
-                    <div class="p-5 flex flex-col justify-center items-center text-center">
-                        <h3 class="text-lg font-bold text-gray-700 dark:text-gray-300">No Classes Today</h3>
+                    <div class="p-3.5 sm:p-4.5 flex flex-col justify-center items-center text-center">
+                        <h3 class="text-base font-bold text-gray-700 dark:text-gray-300">No Classes Today</h3>
                     </div>`;
 
                 const fullTimetableHtml = status.fullScheduleForView ? `
-                    <div class="p-3 sm:p-5 flex flex-col w-full">
-                        <div class="flex justify-between items-center mb-2.5 px-1 gap-2">
-                            <p class="font-bold text-lg text-gray-800 dark:text-gray-200">Full Schedule</p>
+                    <div class="p-2.5 sm:p-4 flex flex-col w-full">
+                        <div class="flex justify-between items-center mb-2 px-0.5 gap-2">
+                            <p class="font-bold text-base sm:text-lg text-gray-800 dark:text-gray-200">Full Schedule</p>
                             <div class="flex items-center space-x-2">
                                 <button type="button" class="export-timetable-img-btn inline-flex items-center space-x-1 px-2.5 py-1 rounded-lg bg-indigo-50 dark:bg-indigo-950/70 hover:bg-indigo-100 dark:hover:bg-indigo-900/80 border border-indigo-200 dark:border-indigo-800 text-indigo-700 dark:text-indigo-300 font-semibold text-xs transition-all shadow-2xs cursor-pointer active:scale-95" data-section="${escapeHTML(status.name)}" title="Export Schedule as High-Res PNG Image">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -3493,7 +3512,7 @@ document.addEventListener('DOMContentLoaded', () => {
                                 <thead>
                                     <tr class="bg-gray-100/90 dark:bg-gray-700/90 text-gray-700 dark:text-gray-200 border-b border-gray-200 dark:border-gray-700">
                                         ${status.fullScheduleForView.headers.map((h, i) => `
-                                            <th class="py-2.5 px-2 font-bold ${i === 0 ? 'w-16 sticky left-0 bg-gray-100 dark:bg-gray-700 z-20 border-r border-gray-200 dark:border-gray-700' : 'min-w-[90px]'}">
+                                            <th class="py-2 px-1.5 font-bold ${i === 0 ? 'w-16 sticky left-0 bg-gray-100 dark:bg-gray-700 z-20 border-r border-gray-200 dark:border-gray-700' : 'min-w-[90px]'}">
                                                 ${escapeHTML(h)}
                                             </th>
                                         `).join('')}
@@ -3502,13 +3521,13 @@ document.addEventListener('DOMContentLoaded', () => {
                                 <tbody class="divide-y divide-gray-200/60 dark:divide-gray-700/60">
                                     ${status.fullScheduleForView.rows.map(row => `
                                         <tr class="hover:bg-gray-50/50 dark:hover:bg-gray-800/50 transition-colors">
-                                            <td class="py-2 px-1 font-semibold text-[11px] text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-800 sticky left-0 z-10 border-r border-gray-200/60 dark:border-gray-700/60 whitespace-nowrap">
+                                            <td class="py-1.5 px-1 font-semibold text-[11px] text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-800 sticky left-0 z-10 border-r border-gray-200/60 dark:border-gray-700/60 whitespace-nowrap">
                                                 ${escapeHTML(row.time)}
                                             </td>
                                             ${row.classes.map(c => c.rowSpan === 0 ? '' : `
                                                 <td class="p-1 align-stretch ${c.subject ? 'bg-white/60 dark:bg-gray-800/60' : 'bg-transparent text-gray-300 dark:text-gray-600'}" ${c.rowSpan > 1 ? `rowspan="${c.rowSpan}"` : ''} style="height: 100%;">
                                                     ${c.subject ? `
-                                                        <div class="lecture-tile-btn p-1.5 w-full h-full min-h-[46px] rounded-lg border border-indigo-200/90 dark:border-indigo-800/70 bg-indigo-50/90 dark:bg-indigo-950/70 flex flex-col justify-center items-center text-center shadow-xs cursor-pointer hover:scale-[1.03] hover:shadow-md hover:border-indigo-400 dark:hover:border-indigo-500 transition-all active:scale-95 select-none"
+                                                        <div class="lecture-tile-btn p-1.5 w-full h-full min-h-[44px] rounded-lg border border-indigo-200/90 dark:border-indigo-800/70 bg-indigo-50/90 dark:bg-indigo-950/70 flex flex-col justify-center items-center text-center shadow-xs cursor-pointer hover:scale-[1.03] hover:shadow-md hover:border-indigo-400 dark:hover:border-indigo-500 transition-all active:scale-95 select-none"
                                                              data-subject="${escapeHTML(c.subject)}"
                                                              data-venue="${escapeHTML(c.venue || 'N/A')}"
                                                              data-faculty="${escapeHTML(c.faculty || 'N/A')}"
@@ -3519,9 +3538,9 @@ document.addEventListener('DOMContentLoaded', () => {
                                                              title="Click for full class details">
                                                             <span class="font-bold text-indigo-950 dark:text-indigo-100 text-[11px] leading-tight break-words pointer-events-none">${escapeHTML(c.subject)}</span>
                                                             <span class="text-[10px] text-indigo-700 dark:text-indigo-300 font-medium mt-0.5 pointer-events-none">${escapeHTML(c.venue || '')}</span>
-                                                            ${c.rowSpan > 1 ? `<span class="text-[9px] font-bold text-indigo-600 dark:text-indigo-400 mt-1 uppercase tracking-wider bg-indigo-100/70 dark:bg-indigo-900/60 px-1.5 py-0.2 rounded pointer-events-none">${c.rowSpan} periods</span>` : ''}
+                                                            ${c.rowSpan > 1 ? `<span class="text-[9px] font-bold text-indigo-600 dark:text-indigo-400 mt-0.5 uppercase tracking-wider bg-indigo-100/70 dark:bg-indigo-900/60 px-1.5 py-0.2 rounded pointer-events-none">${c.rowSpan} periods</span>` : ''}
                                                         </div>
-                                                    ` : `<div class="w-full h-full min-h-[46px] flex items-center justify-center text-xs opacity-30 font-light">—</div>`}
+                                                    ` : `<div class="w-full h-full min-h-[44px] flex items-center justify-center text-xs opacity-30 font-light">—</div>`}
                                                 </td>
                                             `).join('')}
                                         </tr>
@@ -3529,7 +3548,7 @@ document.addEventListener('DOMContentLoaded', () => {
                                 </tbody>
                             </table>
                         </div>
-                    </div>` : `<div class="p-5 text-center text-gray-500">No schedule data.</div>`;
+                    </div>` : `<div class="p-3.5 sm:p-4.5 text-center text-gray-500 text-sm">No schedule data.</div>`;
 
                 cardHtml = `
                 <button data-action="prev-view" class="card-nav-btn card-nav-prev absolute left-2 top-1/2 -translate-y-1/2 z-30 p-1.5 rounded-full bg-black/30 hover:bg-black/60 text-white dark:bg-black/40 dark:hover:bg-black/70 shadow-md backdrop-blur-sm focus:outline-none" title="Previous view" aria-label="Previous view">
@@ -3542,23 +3561,23 @@ document.addEventListener('DOMContentLoaded', () => {
                     <div class="card-normal-view">
                         <div class="progress-bar-bg ${progressColor}" style="width: ${status.progress}%;"></div>
                         <div class="relative z-10 ${contentPadding}">
-                            <div class="flex justify-between items-start gap-3">
+                            <div class="flex justify-between items-start gap-2.5 sm:gap-4">
                                 <!-- Left Column: Title, Status Details, Friends -->
-                                <div class="flex-1 min-w-0">
-                                    <h2 class="text-2xl font-bold text-gray-800 dark:text-white flex items-center truncate">
+                                <div class="flex-1 min-w-0 pr-1">
+                                    <h2 class="text-xl sm:text-2xl font-bold text-gray-800 dark:text-white flex items-center min-w-0">
                                         ${colorDotHtml}
                                         <span class="truncate">${escapeHTML(status.name)}</span>
                                     </h2>
-                                    <div class="details-container mt-2"></div>
-                                    <div class="friends-container mt-2.5 flex flex-wrap gap-1.5">${friendsHtml}</div>
+                                    <div class="details-container mt-1.5 space-y-0.5"></div>
+                                    <div class="friends-container ${hasFriends ? 'mt-2 flex flex-wrap gap-1.5' : 'hidden'}">${friendsHtml}</div>
                                 </div>
                                 <!-- Right Column: Status Text & Live Countdown Timer -->
-                                <div class="flex flex-col items-end flex-shrink-0 pt-0.5">
+                                <div class="flex flex-col items-end flex-shrink-0 pt-0.5 text-right">
                                     <div class="flex items-center">
-                                        <div class="main-status-text text-right ${textColor} font-bold text-lg">${status.isFree ? 'FREE' : 'IN CLASS'}</div>
+                                        <div class="main-status-text text-right ${textColor} font-bold text-base sm:text-lg whitespace-nowrap">${status.isFree ? 'FREE' : 'IN CLASS'}</div>
                                         ${ledIndicatorHtml}
                                     </div>
-                                    <div class="card-countdown-badge mt-1.5 ${state.settings.showCountdownTimer ? '' : 'hidden'}"></div>
+                                    <div class="card-countdown-badge mt-1 ${state.settings.showCountdownTimer ? '' : 'hidden'}"></div>
                                 </div>
                             </div>
                             ${timelineHtml}
@@ -3569,32 +3588,34 @@ document.addEventListener('DOMContentLoaded', () => {
                     <div class="card-full-timetable-view bg-gray-50 dark:bg-gray-800/50">${fullTimetableHtml}</div>
                 </div>`;
             } else { // status.type === 'group'
-                const membersHtml = (state.groups[status.name]?.members || []).map(member => `
+                const membersList = state.groups[status.name]?.members || [];
+                const hasMembers = membersList.length > 0;
+                const membersHtml = hasMembers ? membersList.map(member => `
                     <span class="inline-flex items-center bg-gray-200/90 dark:bg-gray-700/90 text-gray-800 dark:text-gray-200 rounded-full px-2.5 py-0.5 text-xs font-semibold shadow-2xs">
                         <span>${escapeHTML(member.name)}</span> <span class="text-[10px] text-gray-500 dark:text-gray-400 ml-1">(${escapeHTML(member.section)})</span>
-                    </span>`).join(' ');
+                    </span>`).join(' ') : '';
 
                 cardHtml = `
                 <div class="card-normal-view">
                     <div class="relative z-10 ${contentPadding}">
-                        <div class="flex justify-between items-start gap-3">
+                        <div class="flex justify-between items-start gap-2.5 sm:gap-4">
                             <!-- Left Column: Title, Details, Members, Timeline Button -->
-                            <div class="flex-1 min-w-0">
-                                <h2 class="text-2xl font-bold text-gray-800 dark:text-white flex items-center truncate">
+                            <div class="flex-1 min-w-0 pr-1">
+                                <h2 class="text-xl sm:text-2xl font-bold text-gray-800 dark:text-white flex items-center min-w-0">
                                     ${colorDotHtml}
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 opacity-70 flex-shrink-0" viewBox="0 0 20 20" fill="currentColor"><path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3zM6 8a2 2 0 11-4 0 2 2 0 014 0zM16 18v-3a5.972 5.972 0 00-.75-2.906A3.005 3.005 0 0119 15v3h-3zM4.75 12.094A5.973 5.973 0 004 15v3H1v-3a3 3 0 013.75-2.906z" /></svg>
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1.5 opacity-70 flex-shrink-0" viewBox="0 0 20 20" fill="currentColor"><path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3zM6 8a2 2 0 11-4 0 2 2 0 014 0zM16 18v-3a5.972 5.972 0 00-.75-2.906A3.005 3.005 0 0119 15v3h-3zM4.75 12.094A5.973 5.973 0 004 15v3H1v-3a3 3 0 013.75-2.906z" /></svg>
                                     <span class="truncate">${escapeHTML(status.name)}</span>
                                 </h2>
-                                <div class="details-container mt-2"></div>
-                                <div class="friends-container mt-2.5 flex flex-wrap gap-1.5">${membersHtml}</div>
-                                <div class="mt-3">
-                                    <button data-group-name="${escapeHTML(status.name)}" class="view-timeline-btn w-full bg-purple-600 hover:bg-purple-700 text-white py-2 rounded-xl transition-colors font-semibold text-xs sm:text-sm shadow-2xs active:scale-[0.98]">View Timeline</button>
+                                <div class="details-container mt-1.5 space-y-0.5"></div>
+                                <div class="friends-container ${hasMembers ? 'mt-2 flex flex-wrap gap-1.5' : 'hidden'}">${membersHtml}</div>
+                                <div class="mt-2.5">
+                                    <button data-group-name="${escapeHTML(status.name)}" class="view-timeline-btn w-full bg-purple-600 hover:bg-purple-700 text-white py-1.5 sm:py-2 rounded-xl transition-colors font-semibold text-xs sm:text-sm shadow-2xs active:scale-[0.98]">View Timeline</button>
                                 </div>
                             </div>
                             <!-- Right Column: Status Text & Live Countdown Timer -->
-                            <div class="flex flex-col items-end flex-shrink-0 pt-0.5">
-                                <div class="main-status-text text-right ${textColor} font-bold text-lg">${status.isFree ? 'ALL FREE' : 'BUSY'}</div>
-                                <div class="card-countdown-badge mt-1.5 ${state.settings.showCountdownTimer ? '' : 'hidden'}"></div>
+                            <div class="flex flex-col items-end flex-shrink-0 pt-0.5 text-right">
+                                <div class="main-status-text text-right ${textColor} font-bold text-base sm:text-lg whitespace-nowrap">${status.isFree ? 'ALL FREE' : 'BUSY'}</div>
+                                <div class="card-countdown-badge mt-1 ${state.settings.showCountdownTimer ? '' : 'hidden'}"></div>
                             </div>
                         </div>
                         ${timelineHtml}
@@ -3613,6 +3634,8 @@ document.addEventListener('DOMContentLoaded', () => {
             card.innerHTML = cardHtml;
             
             dashboard.appendChild(card);
+            card.addEventListener('mousemove', (e) => handleCard3dTilt(e, card), { passive: true });
+            card.addEventListener('mouseleave', () => handleCard3dReset(card), { passive: true });
             setTimeout(() => updateCardHeight(card), 50);
         });
         updateDashboardStatuses();
@@ -3722,23 +3745,23 @@ document.addEventListener('DOMContentLoaded', () => {
                     ledIndicator.classList.add(`led-${status.ledColor}`);
                 }
                 if (status.isFree) {
-                    detailsHtml = `<p class="font-semibold text-base text-gray-800 dark:text-gray-200"><span class="${headerColor}">Free until ${escapeHTML(status.nextClassTime)}</span></p><div class="mt-1 text-xs sm:text-sm ${detailsTextColor} space-y-0.5"><p class="break-words leading-snug"><span class="font-medium text-gray-500 dark:text-gray-400">Next:</span> ${escapeHTML(status.nextClassSubject)}</p><p class="break-words leading-snug"><span class="font-medium text-gray-500 dark:text-gray-400">At:</span> ${escapeHTML(status.nextClassVenue)} <span class="font-medium text-gray-500 dark:text-gray-400">with</span> ${escapeHTML(status.nextClassFaculty)}</p></div>`;
+                    detailsHtml = `<p class="font-semibold text-base text-gray-800 dark:text-gray-200"><span class="${headerColor}">Free until ${escapeHTML(status.nextClassTime)}</span></p><div class="mt-1 text-xs sm:text-sm ${detailsTextColor} space-y-0.5"><p class="break-words leading-tight"><span class="font-medium text-gray-500 dark:text-gray-400">Next:</span> ${escapeHTML(status.nextClassSubject)}</p><p class="break-words leading-tight"><span class="font-medium text-gray-500 dark:text-gray-400">At:</span> ${escapeHTML(status.nextClassVenue)} <span class="font-medium text-gray-500 dark:text-gray-400">with</span> ${escapeHTML(status.nextClassFaculty)}</p></div>`;
                 } else {
                     const previousVenueWidgetHtml = status.previousVenueInfo
-                        ? `<span class="ml-2 inline-flex items-center px-2 py-0.5 text-[10px] font-semibold bg-gray-200 text-gray-700 rounded-full dark:bg-gray-700 dark:text-gray-300 whitespace-nowrap">${escapeHTML(status.previousVenueInfo.text)}</span>`
+                        ? `<span class="ml-1.5 inline-flex items-center px-2 py-0.5 text-[10px] font-semibold bg-gray-200 text-gray-700 rounded-full dark:bg-gray-700 dark:text-gray-300 whitespace-nowrap">${escapeHTML(status.previousVenueInfo.text)}</span>`
                         : '';
-                    let freeAtHtml = status.nextFreeTime ? `<p class="mt-0.5 opacity-80 break-words leading-snug"><span class="font-medium text-gray-500 dark:text-gray-400">Free at:</span> ${escapeHTML(status.nextFreeTime)} <span class="font-medium text-gray-500 dark:text-gray-400">until</span> ${escapeHTML(status.freeUntilTime)}</p>` : '';
-                    detailsHtml = `<p class="font-semibold text-base text-gray-800 dark:text-gray-200"><span class="${headerColor}">In class until ${escapeHTML(status.currentClassEnd)}</span></p><div class="mt-1 text-xs sm:text-sm ${detailsTextColor} space-y-0.5"><p class="break-words leading-snug"><span class="font-medium text-gray-500 dark:text-gray-400">Subject:</span> ${escapeHTML(status.currentClassSubject)}</p><p class="break-words leading-snug flex flex-wrap items-center"><span class="font-medium text-gray-500 dark:text-gray-400 mr-1">Venue:</span> <span>${escapeHTML(status.currentClassVenue)}</span>${previousVenueWidgetHtml}</p><p class="break-words leading-snug"><span class="font-medium text-gray-500 dark:text-gray-400">Faculty:</span> ${escapeHTML(status.currentClassFaculty)}</p>${freeAtHtml}</div>`;
+                    let freeAtHtml = status.nextFreeTime ? `<p class="mt-0.5 opacity-80 break-words leading-tight"><span class="font-medium text-gray-500 dark:text-gray-400">Free at:</span> ${escapeHTML(status.nextFreeTime)} <span class="font-medium text-gray-500 dark:text-gray-400">until</span> ${escapeHTML(status.freeUntilTime)}</p>` : '';
+                    detailsHtml = `<p class="font-semibold text-base text-gray-800 dark:text-gray-200"><span class="${headerColor}">In class until ${escapeHTML(status.currentClassEnd)}</span></p><div class="mt-1 text-xs sm:text-sm ${detailsTextColor} space-y-0.5"><p class="break-words leading-tight"><span class="font-medium text-gray-500 dark:text-gray-400">Subject:</span> ${escapeHTML(status.currentClassSubject)}</p><p class="break-words leading-tight flex flex-wrap items-center"><span class="font-medium text-gray-500 dark:text-gray-400 mr-1">Venue:</span> <span>${escapeHTML(status.currentClassVenue)}</span>${previousVenueWidgetHtml}</p><p class="break-words leading-tight"><span class="font-medium text-gray-500 dark:text-gray-400">Faculty:</span> ${escapeHTML(status.currentClassFaculty)}</p>${freeAtHtml}</div>`;
                 }
 
                 const timetableContainer = card.querySelector('.card-timetable-view');
                 if (timetableContainer) {
                     let newTimetableHtml = status.dayScheduleForView && status.dayScheduleForView.length > 0 ? `
-                        <div class="p-5 flex flex-col w-full">
-                            <p class="font-bold text-lg text-gray-800 dark:text-gray-200 text-center mb-3">Today's Schedule</p>
-                            <div class="space-y-1.5 w-full">
+                        <div class="p-3.5 sm:p-4.5 flex flex-col w-full">
+                            <p class="font-bold text-base sm:text-lg text-gray-800 dark:text-gray-200 text-center mb-2">Today's Schedule</p>
+                            <div class="space-y-1 w-full">
                                 ${status.dayScheduleForView.map(slot => `
-                                    <div class="${slot.subject ? 'lecture-tile-btn cursor-pointer hover:border-indigo-400 dark:hover:border-indigo-500 transition-all active:scale-[0.98]' : ''} grid grid-cols-3 gap-2 text-xs py-2 px-3 rounded-lg border border-gray-200/50 dark:border-gray-700/50 ${slot.isCurrent ? 'bg-indigo-50 dark:bg-indigo-950/60 border-indigo-200 dark:border-indigo-800' : 'bg-white/40 dark:bg-gray-800/40'}"
+                                    <div class="${slot.subject ? 'lecture-tile-btn cursor-pointer hover:border-indigo-400 dark:hover:border-indigo-500 transition-all active:scale-[0.98]' : ''} grid grid-cols-3 gap-1.5 text-xs py-1.5 px-2.5 sm:py-2 sm:px-3 rounded-lg border border-gray-200/50 dark:border-gray-700/50 ${slot.isCurrent ? 'bg-indigo-50 dark:bg-indigo-950/60 border-indigo-200 dark:border-indigo-800' : 'bg-white/40 dark:bg-gray-800/40'}"
                                          ${slot.subject ? `data-subject="${escapeHTML(slot.subject)}" data-venue="${escapeHTML(slot.venue || 'N/A')}" data-faculty="${escapeHTML(slot.faculty || 'N/A')}" data-day="${escapeHTML(slot.day)}" data-time="${escapeHTML(slot.time)}" data-span="${slot.span || 1}" data-section="${escapeHTML(status.name)}" title="Click for details"` : ''}>
                                         <span class="text-left col-span-1 font-medium text-gray-600 dark:text-gray-400 pointer-events-none">${escapeHTML(slot.time)}</span>
                                         <span class="text-left col-span-2 ${slot.subject ? 'font-semibold text-gray-800 dark:text-gray-100' : 'text-gray-400 dark:text-gray-500'} pointer-events-none">
@@ -3748,8 +3771,8 @@ document.addEventListener('DOMContentLoaded', () => {
                                 ).join('')}
                             </div>
                         </div>` : `
-                        <div class="p-5 flex flex-col justify-center items-center text-center">
-                            <h3 class="text-lg font-bold text-gray-700 dark:text-gray-300">No Classes Today</h3>
+                        <div class="p-3.5 sm:p-4.5 flex flex-col justify-center items-center text-center">
+                            <h3 class="text-base font-bold text-gray-700 dark:text-gray-300">No Classes Today</h3>
                         </div>`;
                     if (timetableContainer.innerHTML !== newTimetableHtml) timetableContainer.innerHTML = newTimetableHtml;
                 }
@@ -3757,19 +3780,19 @@ document.addEventListener('DOMContentLoaded', () => {
                 const nextClassContainer = card.querySelector('.card-next-class-view');
                 if (nextClassContainer) {
                     let newNextClassHtml = status.nextClassForSwipe ? `
-                        <div class="p-5 h-full flex flex-col justify-center">
-                            <p class="font-bold text-lg text-gray-800 dark:text-gray-200 mb-2">Next Class Details</p>
-                            <div class="space-y-1 text-sm text-gray-700 dark:text-gray-300">
-                                <p><span class="font-medium text-gray-500 dark:text-gray-400 w-16 inline-block">Time:</span> ${escapeHTML(status.nextClassForSwipe.time)}</p>
-                                <p><span class="font-medium text-gray-500 dark:text-gray-400 w-16 inline-block">Subject:</span> ${escapeHTML(status.nextClassForSwipe.subject)}</p>
-                                <p><span class="font-medium text-gray-500 dark:text-gray-400 w-16 inline-block">Venue:</span> ${escapeHTML(status.nextClassForSwipe.venue)}</p>
-                                <p><span class="font-medium text-gray-500 dark:text-gray-400 w-16 inline-block">Faculty:</span> ${escapeHTML(status.nextClassForSwipe.faculty)}</p>
+                        <div class="p-3.5 sm:p-4.5 h-full flex flex-col justify-center">
+                            <p class="font-bold text-base sm:text-lg text-gray-800 dark:text-gray-200 text-center mb-1">Next Up</p>
+                            <div class="mt-1.5 text-xs sm:text-sm text-gray-700 dark:text-gray-300 space-y-1 max-w-sm mx-auto w-full">
+                                <p class="break-words leading-tight"><span class="font-medium text-gray-500 dark:text-gray-400 w-14 inline-block">Time:</span> ${escapeHTML(status.nextClassForSwipe.time)}</p>
+                                <p class="break-words leading-tight"><span class="font-medium text-gray-500 dark:text-gray-400 w-14 inline-block">Subject:</span> ${escapeHTML(status.nextClassForSwipe.subject)}</p>
+                                <p class="break-words leading-tight"><span class="font-medium text-gray-500 dark:text-gray-400 w-14 inline-block">Venue:</span> ${escapeHTML(status.nextClassForSwipe.venue)}</p>
+                                <p class="break-words leading-tight"><span class="font-medium text-gray-500 dark:text-gray-400 w-14 inline-block">Faculty:</span> ${escapeHTML(status.nextClassForSwipe.faculty)}</p>
                             </div>
                         </div>` : `
-                        <div class="p-5 h-full flex flex-col justify-center items-center text-center">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-gray-400 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.293 2.293a1 1 0 010 1.414L11 12l4.293 4.293a1 1 0 01-1.414 1.414L10 13.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 12 4.293 7.707a1 1 0 011.414-1.414L10 10.586 14.293 6.293a1 1 0 011.414 0L18 8.586m-5 5l2.293-2.293a1 1 0 011.414 0L21 15m-4-4l-2.293 2.293a1 1 0 01-1.414 0L9 11" /></svg>
-                            <h3 class="text-lg font-bold text-gray-700 dark:text-gray-300">All Done!</h3>
-                            <p class="text-sm text-gray-500">No further classes are scheduled.</p>
+                        <div class="p-3.5 sm:p-4.5 h-full flex flex-col justify-center items-center text-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-9 w-9 text-gray-400 mb-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.293 2.293a1 1 0 010 1.414L11 12l4.293 4.293a1 1 0 01-1.414 1.414L10 13.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 12 4.293 7.707a1 1 0 011.414-1.414L10 10.586 14.293 6.293a1 1 0 011.414 0L18 8.586m-5 5l2.293-2.293a1 1 0 011.414 0L21 15m-4-4l-2.293 2.293a1 1 0 01-1.414 0L9 11" /></svg>
+                            <h3 class="text-base font-bold text-gray-700 dark:text-gray-300">All Done!</h3>
+                            <p class="text-xs text-gray-500">No further classes are scheduled.</p>
                         </div>`;
                     if (nextClassContainer.innerHTML !== newNextClassHtml) nextClassContainer.innerHTML = newNextClassHtml;
                 }
@@ -3799,8 +3822,17 @@ document.addEventListener('DOMContentLoaded', () => {
             const detailsContainer = card.querySelector('.details-container');
             if (detailsContainer && detailsContainer.innerHTML !== detailsHtml) {
                  detailsContainer.innerHTML = detailsHtml;
-                 updateCardHeight(card);
             }
+            
+            const friendsContainer = card.querySelector('.friends-container');
+            if (friendsContainer) {
+                const hasChips = friendsContainer.children.length > 0 || friendsContainer.innerText.trim().length > 0;
+                friendsContainer.classList.toggle('hidden', !hasChips);
+                if (hasChips) friendsContainer.classList.add('mt-2');
+                else friendsContainer.classList.remove('mt-2');
+            }
+
+            updateCardHeight(card);
 
             // --- UPDATE CARD TIMELINES (ALL STYLES) ---
             if (state.settings.cardTimelineEnabled) {
@@ -5056,6 +5088,133 @@ document.addEventListener('DOMContentLoaded', () => {
         isMouseDragging = false;
         mouseCard = null;
     };
+
+    // --- 3D PERSPECTIVE CARD TILT PARALLAX ---
+    let lastTiltCard = null;
+    const cardRestingRects = new WeakMap();
+
+    const handleCard3dTilt = (e, explicitCard = null) => {
+        if (!state.settings.card3dParallaxEnabled) return;
+        if (state.settings.layoutMode === 'compact') return;
+        if (isMouseDown || isMouseDragging) return;
+
+        const card = explicitCard || (e.target && e.target.closest ? e.target.closest('#dashboard > div[data-name]') : null);
+        if (!card) {
+            handleCard3dReset();
+            return;
+        }
+
+        if (lastTiltCard && lastTiltCard !== card) {
+            cardRestingRects.delete(lastTiltCard);
+            lastTiltCard.style.transform = '';
+        }
+        lastTiltCard = card;
+
+        // Cache stable resting rectangle so 3D perspective rotation does not alter mouse hit-test bounds
+        let rect = cardRestingRects.get(card);
+        if (!rect) {
+            rect = card.getBoundingClientRect();
+            cardRestingRects.set(card, rect);
+        }
+
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+
+        // Check if cursor is within card + 14px outer safety buffer to eliminate edge flickering
+        const buffer = 14;
+        if (x < -buffer || x > rect.width + buffer || y < -buffer || y > rect.height + buffer) {
+            handleCard3dReset(card);
+            return;
+        }
+
+        const centerX = rect.width / 2;
+        const centerY = rect.height / 2;
+
+        // Normalize delta to [-1, 1]
+        const rawDeltaX = Math.max(-1, Math.min(1, (x - centerX) / centerX));
+        const rawDeltaY = Math.max(-1, Math.min(1, (y - centerY) / centerY));
+
+        // Sinusoidal easing near edges for smooth, non-abrupt perimeter tilt
+        const deltaX = Math.sin(rawDeltaX * (Math.PI / 2));
+        const deltaY = Math.sin(rawDeltaY * (Math.PI / 2));
+
+        // Subtle, elegant tilt: max 4.5 degrees
+        const maxTilt = 4.5;
+        const rotateX = (-deltaY * maxTilt).toFixed(2);
+        const rotateY = (deltaX * maxTilt).toFixed(2);
+
+        card.style.transform = `perspective(1400px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+    };
+
+    const handleCard3dReset = (explicitCard = null) => {
+        const target = explicitCard || lastTiltCard;
+        if (target) {
+            cardRestingRects.delete(target);
+            target.style.transform = '';
+        }
+        if (!explicitCard) {
+            lastTiltCard = null;
+            const cards = dashboard.querySelectorAll('#dashboard > div[data-name]');
+            cards.forEach(c => {
+                cardRestingRects.delete(c);
+                c.style.transform = '';
+            });
+        }
+    };
+
+    // Gyroscope Parallax Logic for Mobile (Subtle, damped physical tilt)
+    let isGyroListening = false;
+    let lastGyroUpdate = 0;
+
+    const requestGyroPermission = async () => {
+        if (typeof DeviceOrientationEvent !== 'undefined' && typeof DeviceOrientationEvent.requestPermission === 'function') {
+            try {
+                const permissionState = await DeviceOrientationEvent.requestPermission();
+                return permissionState === 'granted';
+            } catch (e) {
+                logger("Gyro permission error:", e);
+                return false;
+            }
+        }
+        return true;
+    };
+
+    const initGyroscope = () => {
+        if (isGyroListening) return;
+        if (typeof window === 'undefined' || !window.DeviceOrientationEvent) return;
+
+        isGyroListening = true;
+        window.addEventListener('deviceorientation', (e) => {
+            if (!state.settings.card3dParallaxEnabled) return;
+            if (state.settings.layoutMode === 'compact') return;
+            if (e.gamma === null || e.beta === null) return;
+
+            const now = performance.now();
+            if (now - lastGyroUpdate < 35) return;
+            lastGyroUpdate = now;
+
+            // Beta baseline ~45deg in portrait holding
+            // Gamma roll -90 to +90deg
+            // Subtle tilt: max +-3.5 degrees
+            const tiltX = Math.max(-3.5, Math.min(3.5, ((e.gamma || 0) / 7).toFixed(1)));
+            const tiltY = Math.max(-3.5, Math.min(3.5, (((e.beta || 45) - 45) / 8).toFixed(1)));
+
+            const visibleCards = dashboard.querySelectorAll('#dashboard > div[data-name]');
+            visibleCards.forEach(c => {
+                c.style.transform = `perspective(1400px) rotateX(${-tiltY}deg) rotateY(${tiltX}deg)`;
+            });
+        }, { passive: true });
+    };
+
+    // Auto-unlock gyro sensors upon first tap/touch on mobile
+    const handleFirstGestureForGyro = async () => {
+        if (state.settings.card3dParallaxEnabled) {
+            await requestGyroPermission();
+            initGyroscope();
+        }
+    };
+    window.addEventListener('touchstart', handleFirstGestureForGyro, { passive: true, once: true });
+    window.addEventListener('click', handleFirstGestureForGyro, { passive: true, once: true });
 
     // --- SIMPLE SCROLLING HAPTIC FEEDBACK FOR TIMETABLE (4th View) ---
     const timetableScrollMap = new WeakMap();
@@ -6978,7 +7137,7 @@ document.addEventListener('DOMContentLoaded', () => {
         applySocialInsightsSetting();
         applyHapticFeedbackSetting();
         updateDebugIndicator();
-        initCard3dParallax();
+        initGyroscope();
         
         // INSTANT LOAD: Render immediately using locally cached data in localStorage
         renderSettings();
@@ -7442,9 +7601,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- NEXT-GEN UI & SOCIAL ANALYTICS EVENT LISTENERS ---
     if (card3dParallaxToggle) {
-        card3dParallaxToggle.addEventListener('click', () => {
+        card3dParallaxToggle.addEventListener('click', async () => {
             triggerHaptic('selection');
             state.settings.card3dParallaxEnabled = !state.settings.card3dParallaxEnabled;
+            if (state.settings.card3dParallaxEnabled) {
+                await requestGyroPermission();
+                initGyroscope();
+            }
             applyCard3dParallaxSetting();
             saveState();
             showToast(state.settings.card3dParallaxEnabled ? '3D Card Tilt Parallax enabled' : '3D Card Tilt Parallax disabled');
@@ -7739,6 +7902,10 @@ document.addEventListener('DOMContentLoaded', () => {
     // Timetable Fast Scroll & Wheel Bounce Listeners (4th View)
     dashboard.addEventListener('scroll', handleTimetableScroll, { capture: true, passive: true });
     dashboard.addEventListener('wheel', handleTimetableWheel, { capture: true, passive: true });
+
+    // 3D Card Tilt Parallax Listeners
+    dashboard.addEventListener('mousemove', handleCard3dTilt, { passive: true });
+    dashboard.addEventListener('mouseleave', () => handleCard3dReset(), { passive: true });
 
     // Desktop Mouse Drag Listeners
     dashboard.addEventListener('mousedown', handleMouseDown);
