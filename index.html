@@ -304,7 +304,33 @@
             background-color: #fbbf24; /* amber-400 */
             z-index: 5;
         }
-        /* --- NEON & PODS CARD TIMELINE STYLES --- */
+        /* --- DYNAMIC LASER NEEDLE & SCRUBBER PIN --- */
+        .timeline-needle-pin {
+            position: absolute;
+            top: -3px;
+            bottom: -3px;
+            width: 2px;
+            background-color: #fbbf24;
+            box-shadow: 0 0 8px #fbbf24, 0 0 16px rgba(251, 191, 36, 0.9);
+            z-index: 25;
+            pointer-events: none;
+            transition: left 0.4s ease;
+        }
+        .timeline-needle-pin::after {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background-color: #ffffff;
+            box-shadow: 0 0 6px #fbbf24;
+            animation: pulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+
+        /* --- 1. NEON TRACK --- */
         .timeline-neon-track {
             background: linear-gradient(90deg, rgba(16, 185, 129, 0.15), rgba(6, 182, 212, 0.15));
             box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.7), 0 0 8px rgba(6, 182, 212, 0.2);
@@ -332,22 +358,80 @@
             background-color: #ffffff;
             box-shadow: 0 0 8px #22d3ee;
         }
-        .timeline-pod-item {
+
+        /* --- 2. PERIOD CAPSULES TIMELINE --- */
+        .timeline-capsules-container {
+            display: flex;
+            align-items: center;
+            gap: 3px;
+            width: 100%;
+            height: 14px;
+        }
+        .timeline-capsule-item {
             flex: 1;
             height: 100%;
+            border-radius: 9999px;
             display: flex;
             align-items: center;
             justify-content: center;
-            border-radius: 6px;
-            font-size: 9px;
-            font-weight: 700;
+            font-size: 8.5px;
+            font-weight: 800;
+            letter-spacing: -0.02em;
             transition: all 0.2s ease;
             position: relative;
+            user-select: none;
             overflow: hidden;
         }
-        .timeline-pod-item.is-current {
-            transform: scale(1.08);
+        .timeline-capsule-item.is-busy {
+            background-color: #ef4444;
+            color: #ffffff;
+            box-shadow: 0 1px 3px rgba(239, 68, 68, 0.3);
+        }
+        .timeline-capsule-item.is-free {
+            background-color: rgba(16, 185, 129, 0.22);
+            color: #059669;
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+        .dark .timeline-capsule-item.is-free {
+            background-color: rgba(16, 185, 129, 0.25);
+            color: #6ee7b7;
+            border-color: rgba(16, 185, 129, 0.35);
+        }
+        .timeline-capsule-item.is-current {
+            box-shadow: 0 0 10px rgba(251, 191, 36, 0.95);
+            transform: scale(1.06);
             z-index: 10;
+        }
+
+        /* --- 3. MICRO-LED PIPS TIMELINE --- */
+        .timeline-pips-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 4px;
+            width: 100%;
+        }
+        .timeline-pip-item {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            transition: all 0.25s ease;
+            position: relative;
+        }
+        .timeline-pip-item.is-busy {
+            background-color: #ef4444;
+            box-shadow: 0 0 5px rgba(239, 68, 68, 0.7);
+        }
+        .timeline-pip-item.is-free {
+            background-color: #10b981;
+            opacity: 0.6;
+        }
+        .timeline-pip-item.is-current {
+            transform: scale(1.45);
+            box-shadow: 0 0 8px #fbbf24, 0 0 14px rgba(251, 191, 36, 0.9);
+            background-color: #fbbf24 !important;
+            opacity: 1 !important;
+            animation: pulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
         }
         /* --- END: CARD TIMELINE STYLES --- */
 
@@ -483,7 +567,13 @@
             border-color: rgba(255, 255, 255, 0.1) !important;
         }
 
-        /* 6. Floating Dynamic Island Styles */
+        /* 6. Floating Dynamic Island Styles & Bottom Clear Scrolling */
+        body.has-dynamic-island .container {
+            padding-bottom: 8rem !important;
+        }
+        body.has-dynamic-island #dashboard {
+            padding-bottom: 1.5rem;
+        }
         #floating-status-island {
             position: fixed;
             bottom: 1.25rem;
@@ -875,13 +965,26 @@
                                 <span class="inline-block w-4 h-4 transform bg-white rounded-full transition-transform"></span>
                             </button>
                         </div>
-                        <div id="card-timeline-options" class="mt-2 hidden w-full pt-2.5 border-t border-gray-200/60 dark:border-gray-700/60">
-                            <label class="font-bold text-[10px] mb-1.5 block text-gray-500 dark:text-gray-400 uppercase tracking-wider">Timeline Rendering Style</label>
-                            <div class="grid grid-cols-2 sm:grid-cols-4 gap-1.5">
-                                <button data-style="modern" class="timeline-style-btn py-1.5 px-2 text-xs rounded-xl bg-indigo-600 text-white font-semibold transition-all shadow-xs text-center">Modern Pill</button>
-                                <button data-style="neon" class="timeline-style-btn py-1.5 px-2 text-xs rounded-xl bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 font-semibold transition-all hover:bg-gray-300 dark:hover:bg-gray-600 text-center">Cyber Neon</button>
-                                <button data-style="pods" class="timeline-style-btn py-1.5 px-2 text-xs rounded-xl bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 font-semibold transition-all hover:bg-gray-300 dark:hover:bg-gray-600 text-center">Period Pods</button>
-                                <button data-style="classic" class="timeline-style-btn py-1.5 px-2 text-xs rounded-xl bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 font-semibold transition-all hover:bg-gray-300 dark:hover:bg-gray-600 text-center">Classic Edge</button>
+                        <div id="card-timeline-options" class="mt-2 hidden w-full pt-2.5 border-t border-gray-200/60 dark:border-gray-700/60 space-y-2.5">
+                            <div>
+                                <label class="font-bold text-[10px] mb-1.5 block text-gray-500 dark:text-gray-400 uppercase tracking-wider">Timeline Rendering Style</label>
+                                <div class="grid grid-cols-2 sm:grid-cols-4 gap-1.5" id="timeline-style-selector">
+                                    <button data-style="modern" class="timeline-style-btn py-1.5 px-2 text-xs rounded-xl bg-indigo-600 text-white font-semibold transition-all shadow-xs text-center">Modern Bar</button>
+                                    <button data-style="capsules" class="timeline-style-btn py-1.5 px-2 text-xs rounded-xl bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 font-semibold transition-all hover:bg-gray-300 dark:hover:bg-gray-600 text-center">Period Capsules</button>
+                                    <button data-style="pips" class="timeline-style-btn py-1.5 px-2 text-xs rounded-xl bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 font-semibold transition-all hover:bg-gray-300 dark:hover:bg-gray-600 text-center">Micro Pips</button>
+                                    <button data-style="neon" class="timeline-style-btn py-1.5 px-2 text-xs rounded-xl bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 font-semibold transition-all hover:bg-gray-300 dark:hover:bg-gray-600 text-center">Cyber Neon</button>
+                                </div>
+                            </div>
+                            <!-- Timestamp Rulers Toggle -->
+                            <div class="flex justify-between items-center pt-2 border-t border-gray-200/50 dark:border-gray-700/50">
+                                <div>
+                                    <label for="timeline-rulers-toggle" class="font-bold text-xs text-gray-800 dark:text-gray-200 block">Timestamp Rulers</label>
+                                    <span class="text-[10px] text-gray-500 dark:text-gray-400">Display start & end hour markings below timeline</span>
+                                </div>
+                                <button id="timeline-rulers-toggle" class="relative inline-flex items-center h-5 rounded-full w-9 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-indigo-500 flex-shrink-0">
+                                    <span class="sr-only">Toggle Timestamp Rulers</span>
+                                    <span class="inline-block w-3.5 h-3.5 transform bg-white rounded-full transition-transform"></span>
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -1811,6 +1914,7 @@ document.addEventListener('DOMContentLoaded', () => {
             ledIndicatorEnabled: false,
             cardTimelineEnabled: false,
             cardTimelineStyle: 'modern',
+            showTimelineRulers: false,
             previousVenueWidgetEnabled: true,
             previousVenueTimeLimit: 5,
             themeColor: 'indigo',
@@ -1847,6 +1951,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const ledIndicatorToggle = document.getElementById('led-indicator-toggle');
     const cardTimelineToggle = document.getElementById('card-timeline-toggle');
     const cardTimelineOptions = document.getElementById('card-timeline-options');
+    const timelineRulersToggle = document.getElementById('timeline-rulers-toggle');
     const timelineStyleBtns = document.querySelectorAll('.timeline-style-btn');
     const previousVenueToggle = document.getElementById('previous-venue-toggle');
     const previousVenueOptions = document.getElementById('previous-venue-options');
@@ -2315,6 +2420,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     if (typeof parsedState.settings.cardTimelineStyle === 'undefined') {
                         parsedState.settings.cardTimelineStyle = 'modern'; 
                     }
+                    if (typeof parsedState.settings.showTimelineRulers === 'undefined') {
+                        parsedState.settings.showTimelineRulers = false;
+                    }
                     if (typeof parsedState.settings.previousVenueWidgetEnabled === 'undefined') {
                         parsedState.settings.previousVenueWidgetEnabled = true;
                     }
@@ -2365,6 +2473,16 @@ document.addEventListener('DOMContentLoaded', () => {
                     }
                     if (!parsedState.friendAvatars) {
                         parsedState.friendAvatars = {};
+                    }
+
+                    // Migrate timeline style to supported options if needed
+                    const validTimelineStyles = ['modern', 'capsules', 'pips', 'neon'];
+                    if (parsedState.settings && !validTimelineStyles.includes(parsedState.settings.cardTimelineStyle)) {
+                        if (parsedState.settings.cardTimelineStyle === 'pods') {
+                            parsedState.settings.cardTimelineStyle = 'capsules';
+                        } else {
+                            parsedState.settings.cardTimelineStyle = 'modern';
+                        }
                     }
 
                     Object.assign(state, parsedState);
@@ -2617,14 +2735,16 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     const applyCardTimelineSetting = () => {
-        if (state.settings.cardTimelineEnabled) {
-            cardTimelineToggle.classList.add('bg-indigo-600');
-            cardTimelineToggle.lastElementChild.classList.add('translate-x-5');
-            cardTimelineOptions.classList.remove('hidden');
-        } else {
-            cardTimelineToggle.classList.remove('bg-indigo-600');
-            cardTimelineToggle.lastElementChild.classList.remove('translate-x-5');
-            cardTimelineOptions.classList.add('hidden');
+        if (cardTimelineToggle) {
+            if (state.settings.cardTimelineEnabled) {
+                cardTimelineToggle.classList.add('bg-indigo-600');
+                cardTimelineToggle.lastElementChild.classList.add('translate-x-5');
+                if (cardTimelineOptions) cardTimelineOptions.classList.remove('hidden');
+            } else {
+                cardTimelineToggle.classList.remove('bg-indigo-600');
+                cardTimelineToggle.lastElementChild.classList.remove('translate-x-5');
+                if (cardTimelineOptions) cardTimelineOptions.classList.add('hidden');
+            }
         }
 
         // Update style buttons
@@ -2636,6 +2756,18 @@ document.addEventListener('DOMContentLoaded', () => {
                 btn.className = 'timeline-style-btn py-1.5 px-2 text-xs rounded-xl bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 font-semibold transition-all hover:bg-gray-300 dark:hover:bg-gray-600 text-center';
             }
         });
+
+        // Update rulers toggle
+        const rulersToggle = document.getElementById('timeline-rulers-toggle');
+        if (rulersToggle) {
+            if (state.settings.showTimelineRulers) {
+                rulersToggle.classList.add('bg-indigo-600');
+                rulersToggle.lastElementChild.classList.add('translate-x-4');
+            } else {
+                rulersToggle.classList.remove('bg-indigo-600');
+                rulersToggle.lastElementChild.classList.remove('translate-x-4');
+            }
+        }
     };
 
     const applyPreviousVenueSetting = () => {
@@ -2761,6 +2893,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 dynamicIslandToggle.classList.remove('bg-indigo-600');
                 dynamicIslandToggle.lastElementChild.classList.remove('translate-x-5');
             }
+        }
+        if (enabled) {
+            document.body.classList.add('has-dynamic-island');
+        } else {
+            document.body.classList.remove('has-dynamic-island');
         }
         if (floatingStatusIsland) {
             if (enabled) {
@@ -3516,7 +3653,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!sectionData || !sectionData.timetable) return busySlots;
             const { timetable } = sectionData;
             const daySchedule = getScheduleForDay(timetable, now);
-            if (daySchedule) {
+            if (daySchedule && daySchedule.classes) {
                 daySchedule.classes.forEach(classInfo => {
                     if (!classInfo.subject) return;
                     const slot = timetable.timeSlots.find(ts => ts.lecture === classInfo.lecture);
@@ -3524,6 +3661,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     const [startTimeStr, endTimeStr] = slot.time.split('-');
                     const startTime = parseTime(startTimeStr, now);
                     let endTime = parseTime(endTimeStr, now);
+                    const isLab = (classInfo.span && classInfo.span > 1) || (classInfo.subject && classInfo.subject.toLowerCase().includes('lab'));
                     if (classInfo.span && classInfo.span > 1) {
                         const endLectureNum = classInfo.lecture + classInfo.span - 1;
                         const endSlot = timetable.timeSlots.find(ts => ts.lecture === endLectureNum);
@@ -3531,7 +3669,12 @@ document.addEventListener('DOMContentLoaded', () => {
                     }
                     busySlots.push({
                         start: startTime.getHours() * 60 + startTime.getMinutes(),
-                        end: endTime.getHours() * 60 + endTime.getMinutes()
+                        end: endTime.getHours() * 60 + endTime.getMinutes(),
+                        isLab,
+                        subject: classInfo.subject,
+                        venue: classInfo.venue || '',
+                        span: classInfo.span || 1,
+                        lecture: classInfo.lecture
                     });
                 });
             }
@@ -3543,7 +3686,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     if (!sectionData || !sectionData.timetable) return;
                     const { timetable } = sectionData;
                     const daySchedule = getScheduleForDay(timetable, now);
-                    if (daySchedule) {
+                    if (daySchedule && daySchedule.classes) {
                         daySchedule.classes.forEach(classInfo => {
                             if (!classInfo.subject) return;
                             const slot = timetable.timeSlots.find(ts => ts.lecture === classInfo.lecture);
@@ -3551,6 +3694,7 @@ document.addEventListener('DOMContentLoaded', () => {
                             const [startTimeStr, endTimeStr] = slot.time.split('-');
                             const startTime = parseTime(startTimeStr, now);
                             let endTime = parseTime(endTimeStr, now);
+                            const isLab = (classInfo.span && classInfo.span > 1) || (classInfo.subject && classInfo.subject.toLowerCase().includes('lab'));
                             if (classInfo.span && classInfo.span > 1) {
                                 const endLectureNum = classInfo.lecture + classInfo.span - 1;
                                 const endSlot = timetable.timeSlots.find(ts => ts.lecture === endLectureNum);
@@ -3558,7 +3702,13 @@ document.addEventListener('DOMContentLoaded', () => {
                             }
                             busySlots.push({
                                 start: startTime.getHours() * 60 + startTime.getMinutes(),
-                                end: endTime.getHours() * 60 + endTime.getMinutes()
+                                end: endTime.getHours() * 60 + endTime.getMinutes(),
+                                isLab,
+                                subject: classInfo.subject,
+                                venue: classInfo.venue || '',
+                                span: classInfo.span || 1,
+                                lecture: classInfo.lecture,
+                                memberName: member.name
                             });
                         });
                     }
@@ -3567,15 +3717,16 @@ document.addEventListener('DOMContentLoaded', () => {
             
             // Merge overlapping group slots for cleaner UI
             busySlots.sort((a,b) => a.start - b.start);
-            if(busySlots.length > 0) {
+            if (busySlots.length > 0) {
                 let merged = [];
-                let current = {...busySlots[0]};
-                for(let i=1; i<busySlots.length; i++) {
-                    if(busySlots[i].start <= current.end) {
+                let current = { ...busySlots[0] };
+                for (let i = 1; i < busySlots.length; i++) {
+                    if (busySlots[i].start <= current.end) {
                         current.end = Math.max(current.end, busySlots[i].end);
+                        if (busySlots[i].isLab) current.isLab = true;
                     } else {
                         merged.push(current);
-                        current = {...busySlots[i]};
+                        current = { ...busySlots[i] };
                     }
                 }
                 merged.push(current);
@@ -3586,21 +3737,146 @@ document.addEventListener('DOMContentLoaded', () => {
         return busySlots;
     };
 
-    const generateCardTimelinePods = (status, now) => {
+    // --- TIMELINE SUB-RENDERERS ---
+    const generateTimelineRulerHtml = (TIMELINE_START_MIN, TIMELINE_END_MIN) => {
+        if (!state.settings.showTimelineRulers) return '';
+        const startH = Math.floor(TIMELINE_START_MIN / 60);
+        const startM = TIMELINE_START_MIN % 60;
+        const endH = Math.floor(TIMELINE_END_MIN / 60);
+        const endM = TIMELINE_END_MIN % 60;
+
+        const startStr = `${startH}:${String(startM).padStart(2, '0')}`;
+        const endStr = `${endH}:${String(endM).padStart(2, '0')}`;
+
+        return `
+            <div class="timeline-ruler-row flex justify-between items-center text-[8px] font-mono text-gray-400 dark:text-gray-500 mt-1 px-0.5 select-none opacity-80">
+                <span>${startStr}</span>
+                <span class="text-[7.5px] uppercase tracking-wider text-gray-400/80">Schedule</span>
+                <span>${endStr}</span>
+            </div>`;
+    };
+
+    const generateTimelineNeedleHtml = (nowMinutes, TIMELINE_START_MIN, TIMELINE_END_MIN, TOTAL_DURATION_MIN, style = 'modern') => {
+        if (nowMinutes < TIMELINE_START_MIN || nowMinutes > TIMELINE_END_MIN) return '';
+        const nowPosition = ((nowMinutes - TIMELINE_START_MIN) / TOTAL_DURATION_MIN) * 100;
+        
+        if (style === 'neon') {
+            return `<div class="timeline-neon-indicator" style="left: ${nowPosition}%;"></div>`;
+        } else {
+            // Modern & continuous bars (Glowing laser needle pin)
+            return `
+                <div class="timeline-needle-pin" style="left: ${nowPosition}%;">
+                    <div class="w-2 h-2 -ml-[3px] -mt-[3px] rounded-full bg-amber-300 ring-2 ring-amber-500 shadow-md animate-pulse"></div>
+                </div>`;
+        }
+    };
+
+    const generateCardTimelineCapsules = (status, now) => {
         let targetTimetable = null;
         if (status.type === 'section' && state.sections[status.name]) {
             targetTimetable = state.sections[status.name].timetable;
         }
         
         const timeSlots = targetTimetable?.timeSlots || [
-            { lecture: 1, time: '09:00-10:00' },
-            { lecture: 2, time: '10:00-11:00' },
-            { lecture: 3, time: '11:00-12:00' },
-            { lecture: 4, time: '12:00-13:00' },
-            { lecture: 5, time: '13:00-14:00' },
-            { lecture: 6, time: '14:00-15:00' },
-            { lecture: 7, time: '15:00-16:00' },
-            { lecture: 8, time: '16:00-17:00' }
+            { lecture: 1, time: '8.00-8.50' },
+            { lecture: 2, time: '8.50-9.40' },
+            { lecture: 3, time: '9.40-10.30' },
+            { lecture: 4, time: '10.30-11.20' },
+            { lecture: 5, time: '11.20-12.05' },
+            { lecture: 6, time: '12.05-12.50' }
+        ];
+
+        let daySchedule = null;
+        if (status.type === 'section' && targetTimetable) {
+            daySchedule = getScheduleForDay(targetTimetable, now);
+        }
+
+        const nowMinutes = now.getHours() * 60 + now.getMinutes();
+        const capsules = [];
+        let skipUntilLecture = -1;
+
+        timeSlots.forEach((slot, idx) => {
+            const lectureNum = slot.lecture || (idx + 1);
+            if (lectureNum < skipUntilLecture) return;
+
+            const [startTimeStr, endTimeStr] = slot.time.split('-');
+            const [startH, startM] = startTimeStr.split(/[.:]/).map(Number);
+            const [endH, endM] = endTimeStr.split(/[.:]/).map(Number);
+            const slotStartMin = startH * 60 + startM;
+            let slotEndMin = endH * 60 + endM;
+
+            let isBusy = false;
+            let span = 1;
+            let title = `P${lectureNum} (${slot.time}): Free`;
+            let label = `P${lectureNum}`;
+
+            if (status.type === 'section') {
+                if (daySchedule && daySchedule.classes) {
+                    const classInfo = daySchedule.classes.find(c => c.subject && c.lecture === lectureNum);
+                    if (classInfo) {
+                        isBusy = true;
+                        span = classInfo.span || 1;
+                        if (span > 1) {
+                            skipUntilLecture = lectureNum + span;
+                            label = `P${lectureNum}-${lectureNum + span - 1}`;
+                            const endSlot = timeSlots.find(ts => ts.lecture === lectureNum + span - 1);
+                            if (endSlot) {
+                                const [, endSpanTimeStr] = endSlot.time.split('-');
+                                const [esh, esm] = endSpanTimeStr.split(/[.:]/).map(Number);
+                                slotEndMin = esh * 60 + esm;
+                            }
+                            title = `${classInfo.subject} (P${lectureNum}-${lectureNum + span - 1}) at ${classInfo.venue || 'TBA'}`;
+                        } else {
+                            title = `P${lectureNum}: ${classInfo.subject} at ${classInfo.venue || 'TBA'}`;
+                        }
+                    } else {
+                        const covering = daySchedule.classes.find(c => c.subject && lectureNum >= c.lecture && lectureNum < c.lecture + (c.span || 1));
+                        if (covering) return;
+                    }
+                }
+            } else { // group
+                const busySlots = getBusySlotsForTimeline(status, now);
+                const matchingSlot = busySlots.find(b => b.start < slotEndMin && b.end > slotStartMin);
+                isBusy = Boolean(matchingSlot);
+                title = `P${lectureNum} (${slot.time}): ${isBusy ? 'Members Busy' : 'All Free'}`;
+            }
+
+            const isCurrent = nowMinutes >= slotStartMin && nowMinutes < slotEndMin;
+
+            let capsuleClass = 'timeline-capsule-item ';
+            if (isBusy) {
+                capsuleClass += 'is-busy ';
+            } else {
+                capsuleClass += 'is-free ';
+            }
+
+            if (isCurrent) {
+                capsuleClass += 'is-current ring-2 ring-amber-400 ring-offset-1 ring-offset-black/40 animate-pulse ';
+            }
+
+            capsules.push(`
+                <div class="${capsuleClass}" style="flex: ${span};" title="${escapeHTML(title)}">
+                    <span class="truncate px-1">${escapeHTML(label)}</span>
+                </div>
+            `);
+        });
+
+        return capsules.join('');
+    };
+
+    const generateCardTimelinePips = (status, now) => {
+        let targetTimetable = null;
+        if (status.type === 'section' && state.sections[status.name]) {
+            targetTimetable = state.sections[status.name].timetable;
+        }
+        
+        const timeSlots = targetTimetable?.timeSlots || [
+            { lecture: 1, time: '8.00-8.50' },
+            { lecture: 2, time: '8.50-9.40' },
+            { lecture: 3, time: '9.40-10.30' },
+            { lecture: 4, time: '10.30-11.20' },
+            { lecture: 5, time: '11.20-12.05' },
+            { lecture: 6, time: '12.05-12.50' }
         ];
 
         let daySchedule = null;
@@ -3611,53 +3887,45 @@ document.addEventListener('DOMContentLoaded', () => {
         const nowMinutes = now.getHours() * 60 + now.getMinutes();
 
         return timeSlots.map((slot, idx) => {
+            const lectureNum = slot.lecture || (idx + 1);
             const [startTimeStr, endTimeStr] = slot.time.split('-');
             const [startH, startM] = startTimeStr.split(/[.:]/).map(Number);
             const [endH, endM] = endTimeStr.split(/[.:]/).map(Number);
             const slotStartMin = startH * 60 + startM;
             const slotEndMin = endH * 60 + endM;
 
-            const isCurrent = nowMinutes >= slotStartMin && nowMinutes < slotEndMin;
-
             let isBusy = false;
-            let title = `P${slot.lecture || idx + 1} (${slot.time}): Free`;
+            let title = `P${lectureNum} (${slot.time}): Free`;
 
             if (status.type === 'section') {
                 if (daySchedule && daySchedule.classes) {
-                    const classInfo = daySchedule.classes.find(c =>
-                        c.subject &&
-                        slot.lecture >= c.lecture &&
-                        slot.lecture < c.lecture + (c.span || 1)
-                    );
+                    const classInfo = daySchedule.classes.find(c => c.subject && slot.lecture >= c.lecture && slot.lecture < c.lecture + (c.span || 1));
                     if (classInfo) {
                         isBusy = true;
-                        title = `P${slot.lecture || idx + 1} (${slot.time}): ${classInfo.subject}${classInfo.venue ? ` at ${classInfo.venue}` : ''}`;
+                        title = `P${lectureNum}: ${classInfo.subject} at ${classInfo.venue || 'TBA'}`;
                     }
                 }
-            } else { // group
+            } else {
                 const busySlots = getBusySlotsForTimeline(status, now);
-                isBusy = busySlots.some(b => b.start < slotEndMin && b.end > slotStartMin);
-                title = `P${slot.lecture || idx + 1} (${slot.time}): ${isBusy ? 'Members Busy' : 'All Free'}`;
+                const matchingSlot = busySlots.find(b => b.start < slotEndMin && b.end > slotStartMin);
+                isBusy = Boolean(matchingSlot);
+                title = `P${lectureNum} (${slot.time}): ${isBusy ? 'Members Busy' : 'All Free'}`;
             }
 
-            let podClass = '';
+            const isCurrent = nowMinutes >= slotStartMin && nowMinutes < slotEndMin;
+
+            let pipClass = 'timeline-pip-item ';
             if (isBusy) {
-                podClass = 'bg-rose-500 text-white shadow-2xs border border-rose-600/30';
+                pipClass += 'is-busy ';
             } else {
-                podClass = 'bg-emerald-500/25 text-emerald-700 dark:text-emerald-300 border border-emerald-500/30';
+                pipClass += 'is-free ';
             }
 
             if (isCurrent) {
-                podClass += ' ring-2 ring-amber-400 ring-offset-1 ring-offset-black/30 shadow-[0_0_10px_rgba(251,191,36,0.9)] animate-pulse is-current font-black';
+                pipClass += 'is-current ';
             }
 
-            const label = slot.lecture ? `P${slot.lecture}` : `${idx + 1}`;
-
-            return `
-                <div class="timeline-pod-item ${podClass}" title="${escapeHTML(title)}">
-                    <span>${escapeHTML(label)}</span>
-                </div>
-            `;
+            return `<div class="${pipClass}" title="${escapeHTML(title)}"></div>`;
         }).join('');
     };
 
@@ -3670,35 +3938,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
         let busySlots = getBusySlotsForTimeline(status, now);
         let segmentsHtml = '';
+        const style = state.settings.cardTimelineStyle || 'modern';
 
-        if (state.settings.cardTimelineStyle === 'classic') {
-            const events = [{ time: TIMELINE_START_MIN, type: 'free' }];
-            busySlots.forEach(slot => {
-                events.push({ time: slot.start, type: 'busy' });
-                events.push({ time: slot.end, type: 'free' });
-            });
-            events.push({ time: TIMELINE_END_MIN, type: 'end' });
-            events.sort((a, b) => a.time - b.time);
-
-            let lastTime = TIMELINE_START_MIN;
-            let isBusy = busySlots.some(slot => slot.start <= lastTime && slot.end > lastTime);
-
-            for (const event of events) {
-                const currentTime = Math.max(TIMELINE_START_MIN, Math.min(event.time, TIMELINE_END_MIN));
-                const duration = currentTime - lastTime;
-
-                if (duration > 0) {
-                    const width = (duration / TOTAL_DURATION_MIN) * 100;
-                    const left = ((lastTime - TIMELINE_START_MIN) / TOTAL_DURATION_MIN) * 100;
-                    const segmentClass = isBusy ? 'timeline-card-segment-busy' : 'timeline-card-segment-free';
-                    segmentsHtml += `<div class="${segmentClass}" style="left: ${left}%; width: ${width}%;"></div>`;
-                }
-
-                if (event.type === 'busy') isBusy = true;
-                if (event.type === 'free') isBusy = false;
-                lastTime = currentTime;
-            }
-        } else if (state.settings.cardTimelineStyle === 'neon') {
+        if (style === 'neon') {
             busySlots.forEach(slot => {
                 const startClamp = Math.max(TIMELINE_START_MIN, slot.start);
                 const endClamp = Math.min(TIMELINE_END_MIN, slot.end);
@@ -3708,10 +3950,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 const width = ((endClamp - startClamp) / TOTAL_DURATION_MIN) * 100;
 
                 segmentsHtml += `
-                    <div class="absolute top-[1.5px] bottom-[1.5px] rounded-full bg-gradient-to-r from-rose-500 to-pink-500 shadow-[0_0_10px_rgba(244,63,94,0.85)] z-10 border border-rose-300/60"
-                         style="left: calc(${left}% + 1px); width: calc(${width}% - 2px);"></div>`;
+                    <div class="absolute top-[1.5px] bottom-[1.5px] rounded-full z-10 border bg-gradient-to-r from-rose-500 to-red-500 shadow-[0_0_10px_rgba(244,63,94,0.85)] border-rose-300/60"
+                         style="left: calc(${left}% + 1px); width: calc(${width}% - 2px);" title="${slot.subject || 'In Class'}"></div>`;
             });
-        } else { // 'modern'
+        } else { // 'modern' (and fallback)
             busySlots.forEach(slot => {
                 const startClamp = Math.max(TIMELINE_START_MIN, slot.start);
                 const endClamp = Math.min(TIMELINE_END_MIN, slot.end);
@@ -3721,12 +3963,89 @@ document.addEventListener('DOMContentLoaded', () => {
                 const width = ((endClamp - startClamp) / TOTAL_DURATION_MIN) * 100;
 
                 segmentsHtml += `
-                    <div class="absolute top-[1px] bottom-[1px] rounded-full bg-red-500/90 shadow-[0_1px_2px_rgba(239,68,68,0.4)] z-10"
-                         style="left: calc(${left}% + 1px); width: calc(${width}% - 2px);"></div>`;
+                    <div class="absolute top-[1px] bottom-[1px] rounded-full bg-red-500 shadow-[0_1px_3px_rgba(239,68,68,0.4)] z-10"
+                         style="left: calc(${left}% + 1px); width: calc(${width}% - 2px);" title="${slot.subject || 'In Class'}"></div>`;
             });
         }
         
         return segmentsHtml;
+    };
+
+    const renderCardTimelineHtml = (status, now) => {
+        if (!state.settings.cardTimelineEnabled) return '';
+        let targetTimetable = null;
+        if (status.type === 'section' && state.sections[status.name]) {
+            targetTimetable = state.sections[status.name].timetable;
+        }
+        const { startMin: TIMELINE_START_MIN, endMin: TIMELINE_END_MIN, totalDurationMin: TOTAL_DURATION_MIN, periodTimes } = getTimelineBounds(targetTimetable);
+        const nowMinutes = now.getHours() * 60 + now.getMinutes();
+        const style = state.settings.cardTimelineStyle || 'modern';
+        const rulerHtml = generateTimelineRulerHtml(TIMELINE_START_MIN, TIMELINE_END_MIN);
+
+        if (style === 'capsules' || style === 'pods') {
+            const capsulesHtml = generateCardTimelineCapsules(status, now);
+            return `
+                <div class="card-timeline-wrap w-full mt-2.5">
+                    <div class="timeline-capsules-container relative w-full select-none">${capsulesHtml}</div>
+                    ${rulerHtml}
+                </div>`;
+        }
+
+        if (style === 'pips') {
+            const pipsHtml = generateCardTimelinePips(status, now);
+            return `
+                <div class="card-timeline-wrap w-full mt-2.5">
+                    <div class="timeline-pips-container relative w-full flex items-center justify-between z-10 select-none bg-black/10 dark:bg-white/5 rounded-full px-2 py-1">${pipsHtml}</div>
+                    ${rulerHtml}
+                </div>`;
+        }
+
+        if (style === 'neon') {
+            const timelineSegmentsHtml = generateCardTimelineSegments(status, now);
+            const needleHtml = generateTimelineNeedleHtml(nowMinutes, TIMELINE_START_MIN, TIMELINE_END_MIN, TOTAL_DURATION_MIN, style);
+            const timelineMarkersHtml = periodTimes.map(timeStr => {
+                const [hour, minute] = timeStr.split(':').map(Number);
+                const minutesFromStart = (hour * 60 + minute) - TIMELINE_START_MIN;
+                if (minutesFromStart >= 0 && minutesFromStart <= TOTAL_DURATION_MIN) {
+                    const leftPosition = (minutesFromStart / TOTAL_DURATION_MIN) * 100;
+                    return `<div class="absolute top-0 bottom-0 border-l border-cyan-400/40 z-0 pointer-events-none" style="left: ${leftPosition}%;"></div>`;
+                }
+                return '';
+            }).join('');
+
+            return `
+                <div class="card-timeline-wrap w-full mt-2.5">
+                    <div class="timeline-neon-track relative h-2.5 w-full rounded-full overflow-hidden backdrop-blur-md">
+                        ${timelineMarkersHtml}
+                        ${timelineSegmentsHtml}
+                        <div class="timeline-current-indicator-wrapper w-full h-full absolute inset-0 pointer-events-none">${needleHtml}</div>
+                    </div>
+                    ${rulerHtml}
+                </div>`;
+        }
+
+        // Default 'modern' (and legacy fallbacks: classic, spectrum)
+        const timelineSegmentsHtml = generateCardTimelineSegments(status, now);
+        const needleHtml = generateTimelineNeedleHtml(nowMinutes, TIMELINE_START_MIN, TIMELINE_END_MIN, TOTAL_DURATION_MIN, 'modern');
+        const timelineMarkersHtml = periodTimes.map(timeStr => {
+            const [hour, minute] = timeStr.split(':').map(Number);
+            const minutesFromStart = (hour * 60 + minute) - TIMELINE_START_MIN;
+            if (minutesFromStart >= 0 && minutesFromStart <= TOTAL_DURATION_MIN) {
+                const leftPosition = (minutesFromStart / TOTAL_DURATION_MIN) * 100;
+                return `<div class="absolute top-0 bottom-0 border-l border-dashed border-gray-400/40 dark:border-gray-500/40 z-0 pointer-events-none" style="left: ${leftPosition}%;"></div>`;
+            }
+            return '';
+        }).join('');
+
+        return `
+            <div class="card-timeline-wrap w-full mt-2.5">
+                <div class="timeline-modern-track relative h-2 w-full bg-white/40 dark:bg-black/30 rounded-full overflow-hidden shadow-inner backdrop-blur-sm border border-gray-300/30 dark:border-gray-600/30">
+                    ${timelineMarkersHtml}
+                    ${timelineSegmentsHtml}
+                    <div class="timeline-current-indicator-wrapper w-full h-full absolute inset-0 pointer-events-none">${needleHtml}</div>
+                </div>
+                ${rulerHtml}
+            </div>`;
     };
     // --- END: Timeline Helper ---
 
@@ -4096,70 +4415,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             }
 
-            let timelineHtml = '';
-            if (state.settings.cardTimelineEnabled) {
-                let targetTimetable = null;
-                if (status.type === 'section' && state.sections[status.name]) {
-                    targetTimetable = state.sections[status.name].timetable;
-                }
-                const { startMin: TIMELINE_START_MIN, endMin: TIMELINE_END_MIN, totalDurationMin: TOTAL_DURATION_MIN, periodTimes } = getTimelineBounds(targetTimetable);
-
-                const timelineSegmentsHtml = generateCardTimelineSegments(status, now);
-
-                if (state.settings.cardTimelineStyle === 'classic') {
-                    const timelineMarkersHtml = periodTimes.map(timeStr => {
-                        const [hour, minute] = timeStr.split(':').map(Number);
-                        const minutesFromStart = (hour * 60 + minute) - TIMELINE_START_MIN;
-                        if (minutesFromStart >= 0 && minutesFromStart <= TOTAL_DURATION_MIN) {
-                            const leftPosition = (minutesFromStart / TOTAL_DURATION_MIN) * 100;
-                            return `<div class="timeline-marker" style="left: ${leftPosition}%;"></div>`;
-                        }
-                        return '';
-                    }).join('');
-                    
-                    timelineHtml = `<div class="card-timeline-container relative mt-2.5 h-2 w-full rounded-full overflow-hidden border border-black/20 dark:border-white/20">${timelineSegmentsHtml}${timelineMarkersHtml}<div class="timeline-current-indicator-wrapper"></div></div>`;
-                } else if (state.settings.cardTimelineStyle === 'neon') {
-                    const timelineMarkersHtml = periodTimes.map(timeStr => {
-                        const [hour, minute] = timeStr.split(':').map(Number);
-                        const minutesFromStart = (hour * 60 + minute) - TIMELINE_START_MIN;
-                        if (minutesFromStart >= 0 && minutesFromStart <= TOTAL_DURATION_MIN) {
-                            const leftPosition = (minutesFromStart / TOTAL_DURATION_MIN) * 100;
-                            return `<div class="absolute top-0 bottom-0 border-l border-cyan-400/40 z-0 pointer-events-none" style="left: ${leftPosition}%;"></div>`;
-                        }
-                        return '';
-                    }).join('');
-                    
-                    timelineHtml = `
-                        <div class="timeline-neon-track relative mt-2.5 h-2.5 w-full rounded-full overflow-hidden backdrop-blur-md">
-                            ${timelineMarkersHtml}
-                            ${timelineSegmentsHtml}
-                            <div class="timeline-current-indicator-wrapper w-full h-full absolute inset-0 pointer-events-none"></div>
-                        </div>`;
-                } else if (state.settings.cardTimelineStyle === 'pods') {
-                    const podsHtml = generateCardTimelinePods(status, now);
-                    timelineHtml = `
-                        <div class="timeline-pods-container relative mt-2.5 h-3.5 w-full flex items-center justify-between gap-1 z-10 select-none">
-                            ${podsHtml}
-                        </div>`;
-                } else { // 'modern'
-                    const timelineMarkersHtml = periodTimes.map(timeStr => {
-                        const [hour, minute] = timeStr.split(':').map(Number);
-                        const minutesFromStart = (hour * 60 + minute) - TIMELINE_START_MIN;
-                        if (minutesFromStart >= 0 && minutesFromStart <= TOTAL_DURATION_MIN) {
-                            const leftPosition = (minutesFromStart / TOTAL_DURATION_MIN) * 100;
-                            return `<div class="absolute top-0 bottom-0 border-l border-dashed border-gray-400/40 dark:border-gray-500/40 z-0 pointer-events-none" style="left: ${leftPosition}%;"></div>`;
-                        }
-                        return '';
-                    }).join('');
-                    
-                    timelineHtml = `
-                        <div class="timeline-modern-track relative mt-2.5 h-2 w-full bg-white/40 dark:bg-black/30 rounded-full overflow-hidden shadow-inner backdrop-blur-sm border border-gray-300/30 dark:border-gray-600/30">
-                            ${timelineMarkersHtml}
-                            ${timelineSegmentsHtml}
-                            <div class="timeline-current-indicator-wrapper w-full h-full absolute inset-0 pointer-events-none"></div>
-                        </div>`;
-                }
-            }
+            const timelineHtml = renderCardTimelineHtml(status, now);
             
             const contentPadding = 'p-3.5 sm:p-4.5';
 
@@ -4485,97 +4741,21 @@ document.addEventListener('DOMContentLoaded', () => {
 
             updateCardHeight(card);
 
-            // --- UPDATE CARD TIMELINES (ALL STYLES) ---
-            if (state.settings.cardTimelineEnabled) {
-                let targetTimetable = null;
-                if (status.type === 'section' && state.sections[status.name]) {
-                    targetTimetable = state.sections[status.name].timetable;
-                }
-                const { startMin: TIMELINE_START_MIN, endMin: TIMELINE_END_MIN, totalDurationMin: TOTAL_DURATION_MIN, periodTimes } = getTimelineBounds(targetTimetable);
-
-                const cardNormalContent = card.querySelector('.card-normal-view > .relative.z-10') || card.querySelector('.card-normal-view');
-                if (cardNormalContent) {
-                    if (state.settings.cardTimelineStyle === 'pods') {
-                        let podsContainer = cardNormalContent.querySelector('.timeline-pods-container');
-                        const newPodsHtml = generateCardTimelinePods(status, now);
-                        if (podsContainer) {
-                            if (podsContainer.innerHTML !== newPodsHtml) {
-                                podsContainer.innerHTML = newPodsHtml;
-                            }
-                        } else {
-                            const newPodsWrapper = document.createElement('div');
-                            newPodsWrapper.className = 'timeline-pods-container relative mt-2.5 h-3.5 w-full flex items-center justify-between gap-1 z-10 select-none';
-                            newPodsWrapper.innerHTML = newPodsHtml;
-                            cardNormalContent.appendChild(newPodsWrapper);
+            // --- UPDATE CARD TIMELINES (ALL 7 STYLES & RULERS) ---
+            const cardNormalContent = card.querySelector('.card-normal-view > .relative.z-10') || card.querySelector('.card-normal-view');
+            if (cardNormalContent) {
+                const existingTimeline = cardNormalContent.querySelector('.card-timeline-wrap');
+                if (state.settings.cardTimelineEnabled) {
+                    const newTimelineHtml = renderCardTimelineHtml(status, now);
+                    if (existingTimeline) {
+                        if (existingTimeline.outerHTML !== newTimelineHtml) {
+                            existingTimeline.outerHTML = newTimelineHtml;
                         }
-                    } else {
-                        const newSegmentsHtml = generateCardTimelineSegments(status, now);
-
-                        if (state.settings.cardTimelineStyle === 'classic') {
-                            const timelineContainer = cardNormalContent.querySelector('.card-timeline-container');
-                            if (timelineContainer) {
-                                const timelineMarkersHtml = periodTimes.map(timeStr => {
-                                    const [hour, minute] = timeStr.split(':').map(Number);
-                                    const minutesFromStart = (hour * 60 + minute) - TIMELINE_START_MIN;
-                                    if (minutesFromStart >= 0 && minutesFromStart <= TOTAL_DURATION_MIN) {
-                                        const leftPosition = (minutesFromStart / TOTAL_DURATION_MIN) * 100;
-                                        return `<div class="timeline-marker" style="left: ${leftPosition}%;"></div>`;
-                                    }
-                                    return '';
-                                }).join('');
-
-                                let indicatorHtml = '';
-                                if (nowMinutes >= TIMELINE_START_MIN && nowMinutes <= TIMELINE_END_MIN) {
-                                    const nowPosition = ((nowMinutes - TIMELINE_START_MIN) / TOTAL_DURATION_MIN) * 100;
-                                    indicatorHtml = `<div class="timeline-current-indicator" style="left: ${nowPosition}%;"></div>`;
-                                }
-                                timelineContainer.innerHTML = `${newSegmentsHtml}${timelineMarkersHtml}<div class="timeline-current-indicator-wrapper">${indicatorHtml}</div>`;
-                            }
-                        } else if (state.settings.cardTimelineStyle === 'neon') {
-                            const timelineContainer = cardNormalContent.querySelector('.timeline-neon-track');
-                            if (timelineContainer) {
-                                const timelineMarkersHtml = periodTimes.map(timeStr => {
-                                    const [hour, minute] = timeStr.split(':').map(Number);
-                                    const minutesFromStart = (hour * 60 + minute) - TIMELINE_START_MIN;
-                                    if (minutesFromStart >= 0 && minutesFromStart <= TOTAL_DURATION_MIN) {
-                                        const leftPosition = (minutesFromStart / TOTAL_DURATION_MIN) * 100;
-                                        return `<div class="absolute top-0 bottom-0 border-l border-cyan-400/40 z-0 pointer-events-none" style="left: ${leftPosition}%;"></div>`;
-                                    }
-                                    return '';
-                                }).join('');
-
-                                let indicatorHtml = '';
-                                if (nowMinutes >= TIMELINE_START_MIN && nowMinutes <= TIMELINE_END_MIN) {
-                                    const nowPosition = ((nowMinutes - TIMELINE_START_MIN) / TOTAL_DURATION_MIN) * 100;
-                                    indicatorHtml = `<div class="timeline-neon-indicator" style="left: ${nowPosition}%;"></div>`;
-                                }
-                                timelineContainer.innerHTML = `${timelineMarkersHtml}${newSegmentsHtml}<div class="timeline-current-indicator-wrapper w-full h-full absolute inset-0 pointer-events-none">${indicatorHtml}</div>`;
-                            }
-                        } else { // 'modern'
-                            const timelineContainer = cardNormalContent.querySelector('.timeline-modern-track') || cardNormalContent.querySelector('.h-2\\.5.rounded-full');
-                            if (timelineContainer) {
-                                const timelineMarkersHtml = periodTimes.map(timeStr => {
-                                    const [hour, minute] = timeStr.split(':').map(Number);
-                                    const minutesFromStart = (hour * 60 + minute) - TIMELINE_START_MIN;
-                                    if (minutesFromStart >= 0 && minutesFromStart <= TOTAL_DURATION_MIN) {
-                                        const leftPosition = (minutesFromStart / TOTAL_DURATION_MIN) * 100;
-                                        return `<div class="absolute top-0 bottom-0 border-l border-dashed border-gray-400/40 dark:border-gray-500/40 z-0 pointer-events-none" style="left: ${leftPosition}%;"></div>`;
-                                    }
-                                    return '';
-                                }).join('');
-
-                                let indicatorHtml = '';
-                                if (nowMinutes >= TIMELINE_START_MIN && nowMinutes <= TIMELINE_END_MIN) {
-                                    const nowPosition = ((nowMinutes - TIMELINE_START_MIN) / TOTAL_DURATION_MIN) * 100;
-                                    indicatorHtml = `
-                                        <div class="timeline-current-indicator absolute top-0 bottom-0 w-[2px] bg-amber-500 z-20 shadow-[0_0_5px_rgba(245,158,11,0.8)] pointer-events-none" style="left: ${nowPosition}%;">
-                                            <div class="absolute top-1/2 w-1.5 h-1.5 rounded-full bg-amber-500 transform -translate-x-1/2 -translate-y-1/2 shadow-[0_0_3px_rgba(245,158,11,1)]"></div>
-                                        </div>`;
-                                }
-                                timelineContainer.innerHTML = `${timelineMarkersHtml}${newSegmentsHtml}<div class="timeline-current-indicator-wrapper w-full h-full absolute inset-0 pointer-events-none">${indicatorHtml}</div>`;
-                            }
-                        }
+                    } else if (newTimelineHtml) {
+                        cardNormalContent.insertAdjacentHTML('beforeend', newTimelineHtml);
                     }
+                } else if (existingTimeline) {
+                    existingTimeline.remove();
                 }
             }
         });
@@ -7531,6 +7711,22 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- FLOATING DYNAMIC ISLAND LOGIC ---
     let isDynamicIslandExpanded = false;
 
+    const formatDurationFriendly = (diffMs) => {
+        if (!diffMs || diffMs <= 0 || diffMs === Infinity) return '';
+        const totalMinutes = Math.max(1, Math.round(diffMs / 60000));
+        if (totalMinutes < 60) {
+            return `${totalMinutes}m`;
+        }
+        const hours = Math.floor(totalMinutes / 60);
+        const mins = totalMinutes % 60;
+        if (hours < 24) {
+            return mins > 0 ? `${hours}h ${mins}m` : `${hours}h`;
+        }
+        const days = Math.floor(hours / 24);
+        const remHours = hours % 24;
+        return remHours > 0 ? `${days}d ${remHours}h` : `${days}d`;
+    };
+
     const updateDynamicIsland = () => {
         if (!state.settings.dynamicIslandEnabled || !floatingStatusIsland) return;
 
@@ -7539,7 +7735,6 @@ document.addEventListener('DOMContentLoaded', () => {
         let totalFreeSections = 0;
         const freeFriendsList = [];
         let soonestTransitionMs = Infinity;
-        let soonestTransitionLabel = '';
 
         Object.entries(state.sections).forEach(([sectionName, sectionData]) => {
             if (!sectionData || !sectionData.timetable) return;
@@ -7550,34 +7745,34 @@ document.addEventListener('DOMContentLoaded', () => {
             if (isFree) {
                 totalFreeSections++;
                 totalFreeFriends += friends.length;
-                friends.forEach(f => freeFriendsList.push({ name: f, section: sectionName }));
                 const nextClass = getNextClass(sectionData.timetable, now);
+                let freeUntilStr = '';
                 if (nextClass) {
                     const diff = nextClass.startTime.getTime() - now.getTime();
                     if (diff > 0 && diff < soonestTransitionMs) {
                         soonestTransitionMs = diff;
-                        const min = Math.ceil(diff / 60000);
-                        soonestTransitionLabel = `${min}m`;
                     }
+                    freeUntilStr = formatDurationFriendly(diff);
                 }
+                friends.forEach(f => freeFriendsList.push({ name: f, section: sectionName, freeDuration: freeUntilStr }));
             } else {
                 const freeTime = getNextFreeTime(sectionData.timetable, now);
                 if (freeTime) {
                     const diff = freeTime.getTime() - now.getTime();
                     if (diff > 0 && diff < soonestTransitionMs) {
                         soonestTransitionMs = diff;
-                        const min = Math.ceil(diff / 60000);
-                        soonestTransitionLabel = `${min}m`;
                     }
                 }
             }
         });
 
+        const formattedTransition = soonestTransitionMs !== Infinity ? formatDurationFriendly(soonestTransitionMs) : '';
+
         if (islandFreeText) {
             islandFreeText.textContent = `${totalFreeFriends} Friend${totalFreeFriends === 1 ? '' : 's'} Free`;
         }
         if (islandNextText) {
-            islandNextText.textContent = soonestTransitionLabel ? `Next in ${soonestTransitionLabel}` : 'All Clear';
+            islandNextText.textContent = formattedTransition ? `Next in ${formattedTransition}` : 'All Clear';
         }
         if (islandSheetTime) {
             islandSheetTime.textContent = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
@@ -7596,7 +7791,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         <div class="flex items-center space-x-2">
                             <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
                             <span class="font-medium text-white text-xs">${escapeHTML(item.name)}</span>
-                            <span class="text-[10px] text-white/50">(${escapeHTML(item.section)})</span>
+                            <span class="text-[10px] text-white/50">(${escapeHTML(item.section)})${item.freeDuration ? ` • free for ${escapeHTML(item.freeDuration)}` : ''}</span>
                         </div>
                         <a href="https://wa.me/?text=Hey%20${encodeURIComponent(item.name)}!%20Are%20you%20free%20to%20catch%20up?" target="_blank" rel="noopener noreferrer" class="p-1 rounded-lg bg-emerald-500/20 text-emerald-300 hover:bg-emerald-500/30 text-[10px] font-semibold px-2 transition-all active:scale-95" title="Ping on WhatsApp">
                             Ping
@@ -8297,6 +8492,17 @@ document.addEventListener('DOMContentLoaded', () => {
                 renderDashboard();
                 showToast(`Timeline style set to ${btn.textContent.trim()}`);
             }
+        });
+    }
+
+    if (timelineRulersToggle) {
+        timelineRulersToggle.addEventListener('click', () => {
+            triggerHaptic('selection');
+            state.settings.showTimelineRulers = !state.settings.showTimelineRulers;
+            applyCardTimelineSetting();
+            saveState();
+            renderDashboard();
+            showToast(state.settings.showTimelineRulers ? 'Timestamp rulers enabled' : 'Timestamp rulers disabled');
         });
     }
     
