@@ -75,19 +75,28 @@
             transform: translateX(-300%);
         }
         
-        /* Card Nav Chevrons */
+        /* Card Nav Chevrons (Desktop Only) */
         .card-nav-btn {
             opacity: 0;
             transition: opacity 0.2s ease, transform 0.2s ease, background-color 0.2s ease;
             pointer-events: none;
         }
-        .group:hover .card-nav-btn {
-            opacity: 0.85;
-            pointer-events: auto;
+        @media (hover: hover) and (pointer: fine) and (min-width: 640px) {
+            .group:hover .card-nav-btn {
+                opacity: 0.85;
+                pointer-events: auto;
+            }
+            .group:hover .card-nav-btn:hover {
+                opacity: 1;
+                transform: translateY(-50%) scale(1.1);
+            }
         }
-        .group:hover .card-nav-btn:hover {
-            opacity: 1;
-            transform: translateY(-50%) scale(1.1);
+        @media (max-width: 639px), (hover: none), (pointer: coarse) {
+            .card-nav-btn {
+                display: none !important;
+                visibility: hidden !important;
+                pointer-events: none !important;
+            }
         }
         [data-swipe-state="0"] .card-nav-prev {
             display: none !important;
@@ -363,9 +372,9 @@
         .timeline-capsules-container {
             display: flex;
             align-items: center;
-            gap: 3px;
+            gap: 5px;
             width: 100%;
-            height: 14px;
+            height: 15px;
         }
         .timeline-capsule-item {
             flex: 1;
@@ -377,7 +386,7 @@
             font-size: 8.5px;
             font-weight: 800;
             letter-spacing: -0.02em;
-            transition: all 0.2s ease;
+            transition: all 0.25s ease;
             position: relative;
             user-select: none;
             overflow: hidden;
@@ -398,9 +407,15 @@
             border-color: rgba(16, 185, 129, 0.35);
         }
         .timeline-capsule-item.is-current {
-            box-shadow: 0 0 10px rgba(251, 191, 36, 0.95);
-            transform: scale(1.06);
+            box-shadow: 0 0 0 1.5px #fbbf24, 0 0 10px rgba(251, 191, 36, 0.65), 0 1px 3px rgba(0, 0, 0, 0.2);
             z-index: 10;
+        }
+        .dark .timeline-capsule-item.is-current {
+            box-shadow: 0 0 0 1.5px #fbbf24, 0 0 12px rgba(251, 191, 36, 0.75), 0 1px 4px rgba(0, 0, 0, 0.35);
+        }
+        .timeline-capsule-progress {
+            border-top-left-radius: 9999px;
+            border-bottom-left-radius: 9999px;
         }
 
         /* --- 3. MICRO-LED PIPS TIMELINE --- */
@@ -3842,6 +3857,22 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             const isCurrent = nowMinutes >= slotStartMin && nowMinutes < slotEndMin;
+            let progressHtml = '';
+            
+            if (isCurrent) {
+                const totalSlotDuration = Math.max(1, slotEndMin - slotStartMin);
+                const elapsedMin = Math.max(0, Math.min(totalSlotDuration, nowMinutes - slotStartMin));
+                const progressPct = Math.min(100, Math.round((elapsedMin / totalSlotDuration) * 100));
+                const remainingMin = totalSlotDuration - elapsedMin;
+                
+                title += ` • ${progressPct}% passed (${remainingMin}m remaining)`;
+                
+                const progressClass = isBusy 
+                    ? 'bg-black/25 dark:bg-black/35 border-r border-white/80' 
+                    : 'bg-emerald-600/30 dark:bg-emerald-400/30 border-r border-emerald-500/80';
+                
+                progressHtml = `<div class="timeline-capsule-progress absolute inset-y-0 left-0 pointer-events-none transition-all duration-500 ${progressClass}" style="width: ${progressPct}%;"></div>`;
+            }
 
             let capsuleClass = 'timeline-capsule-item ';
             if (isBusy) {
@@ -3851,12 +3882,13 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             if (isCurrent) {
-                capsuleClass += 'is-current ring-2 ring-amber-400 ring-offset-1 ring-offset-black/40 animate-pulse ';
+                capsuleClass += 'is-current ';
             }
 
             capsules.push(`
                 <div class="${capsuleClass}" style="flex: ${span};" title="${escapeHTML(title)}">
-                    <span class="truncate px-1">${escapeHTML(label)}</span>
+                    ${progressHtml}
+                    <span class="relative z-10 truncate px-1 font-extrabold">${escapeHTML(label)}</span>
                 </div>
             `);
         });
@@ -4492,10 +4524,10 @@ document.addEventListener('DOMContentLoaded', () => {
                     </div>` : `<div class="p-3.5 sm:p-4.5 text-center text-gray-500 text-sm">No schedule data.</div>`;
 
                 cardHtml = `
-                <button data-action="prev-view" class="card-nav-btn card-nav-prev absolute left-2 top-1/2 -translate-y-1/2 z-30 p-1.5 rounded-full bg-black/30 hover:bg-black/60 text-white dark:bg-black/40 dark:hover:bg-black/70 shadow-md backdrop-blur-sm focus:outline-none" title="Previous view" aria-label="Previous view">
+                <button data-action="prev-view" class="card-nav-btn card-nav-prev hidden sm:flex absolute left-2 top-1/2 -translate-y-1/2 z-30 p-1.5 rounded-full bg-black/30 hover:bg-black/60 text-white dark:bg-black/40 dark:hover:bg-black/70 shadow-md backdrop-blur-sm focus:outline-none" title="Previous view" aria-label="Previous view">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"/></svg>
                 </button>
-                <button data-action="next-view" class="card-nav-btn card-nav-next absolute right-2 top-1/2 -translate-y-1/2 z-30 p-1.5 rounded-full bg-black/30 hover:bg-black/60 text-white dark:bg-black/40 dark:hover:bg-black/70 shadow-md backdrop-blur-sm focus:outline-none" title="Next view" aria-label="Next view">
+                <button data-action="next-view" class="card-nav-btn card-nav-next hidden sm:flex absolute right-2 top-1/2 -translate-y-1/2 z-30 p-1.5 rounded-full bg-black/30 hover:bg-black/60 text-white dark:bg-black/40 dark:hover:bg-black/70 shadow-md backdrop-blur-sm focus:outline-none" title="Next view" aria-label="Next view">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/></svg>
                 </button>
                 <div class="card-inner-wrapper">
