@@ -941,6 +941,37 @@
                         </div>
                     </div>
 
+                    <!-- Friend Profile Avatar & Initials Style -->
+                    <div class="settings-searchable-item p-3.5 bg-gray-50/80 dark:bg-gray-800/60 border border-gray-200/70 dark:border-gray-700/60 rounded-2xl space-y-2.5 shadow-2xs">
+                        <div class="flex justify-between items-center">
+                            <div>
+                                <label class="font-bold text-sm text-gray-900 dark:text-white block">Friend Avatar Style</label>
+                                <span class="text-[11px] text-gray-500 dark:text-gray-400">Display format for friend badges across cards</span>
+                            </div>
+                            <span id="current-avatar-style-name" class="text-xs font-bold px-2 py-0.5 rounded-md bg-indigo-100 dark:bg-indigo-950/80 text-indigo-700 dark:text-indigo-300 capitalize">Pill</span>
+                        </div>
+                        <div class="grid grid-cols-2 sm:grid-cols-4 gap-1.5 pt-1" id="friend-avatar-style-selector">
+                            <button data-avatar-style="pill" class="avatar-style-btn p-2 rounded-xl border text-xs font-semibold transition-all text-center flex flex-col items-center gap-1 bg-white dark:bg-gray-800 border-indigo-500 ring-2 ring-indigo-500/40 shadow-2xs">
+                                <span class="px-2 py-0.5 rounded-full bg-gray-200 dark:bg-gray-700 text-[10px] font-bold">Alex</span>
+                                <span>Pill (Classic)</span>
+                            </button>
+                            <button data-avatar-style="initials" class="avatar-style-btn p-2 rounded-xl border text-xs font-semibold transition-all text-center flex flex-col items-center gap-1 bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 hover:border-indigo-400 shadow-2xs">
+                                <span class="w-5 h-5 rounded-full bg-gradient-to-tr from-indigo-500 to-purple-600 text-white flex items-center justify-center text-[9px] font-black shadow-xs">AL</span>
+                                <span>Initials Circle</span>
+                            </button>
+                            <button data-avatar-style="emoji" class="avatar-style-btn p-2 rounded-xl border text-xs font-semibold transition-all text-center flex flex-col items-center gap-1 bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 hover:border-indigo-400 shadow-2xs">
+                                <span class="text-sm">⚡</span>
+                                <span>Emoji Persona</span>
+                            </button>
+                            <button data-avatar-style="glow-ring" class="avatar-style-btn p-2 rounded-xl border text-xs font-semibold transition-all text-center flex flex-col items-center gap-1 bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 hover:border-indigo-400 shadow-2xs">
+                                <span class="w-5 h-5 rounded-full p-0.5 bg-gradient-to-tr from-violet-500 to-pink-500 flex items-center justify-center">
+                                    <span class="w-full h-full rounded-full bg-white dark:bg-gray-900 flex items-center justify-center text-[8px] font-extrabold">AL</span>
+                                </span>
+                                <span>Glow Ring</span>
+                            </button>
+                        </div>
+                    </div>
+
                     <!-- 3D Card Perspective Tilt -->
                     <div class="settings-searchable-item flex justify-between items-center p-3.5 bg-gray-50/80 dark:bg-gray-800/60 border border-gray-200/70 dark:border-gray-700/60 rounded-2xl shadow-2xs">
                         <div>
@@ -1064,6 +1095,26 @@
                             </div>
                         </div>
                     </div>
+
+                    <!-- Live Lock-Screen & Island Notification -->
+                    <div class="settings-searchable-item flex flex-col p-3.5 bg-gray-50/80 dark:bg-gray-800/60 border border-gray-200/70 dark:border-gray-700/60 rounded-2xl space-y-2.5 shadow-2xs">
+                        <div class="flex justify-between items-center w-full">
+                            <div>
+                                <label for="live-lockscreen-toggle" class="font-bold text-sm text-gray-900 dark:text-white flex items-center gap-1.5">
+                                    <span>📲</span>
+                                    <span>Live Lock-Screen & Island Alert</span>
+                                </label>
+                                <span class="text-[11px] text-gray-500 dark:text-gray-400 block">Persistent live countdown on lock-screen & status tray</span>
+                            </div>
+                            <button id="live-lockscreen-toggle" class="relative inline-flex items-center h-6 rounded-full w-11 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-gray-800 flex-shrink-0">
+                                <span class="sr-only">Enable Live Lock-Screen Notification</span>
+                                <span class="inline-block w-4 h-4 transform bg-white rounded-full transition-transform"></span>
+                            </button>
+                        </div>
+                        <p class="text-[10px] text-gray-500 dark:text-gray-400 leading-tight">
+                            💡 <em>Keeps a real-time, silent availability card in your notification tray and Android/iOS lock-screen with live class countdowns.</em>
+                        </p>
+                    </div>
                 </div>
 
                 <!-- ==================== PANE 3: DIRECTORY & GROUPS ==================== -->
@@ -1099,6 +1150,22 @@
                             <select id="friend-section-select" required class="w-full bg-white dark:bg-gray-700/80 border border-gray-200 dark:border-gray-600 rounded-xl p-2 text-xs text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:outline-none">
                                 <option value="">Select a section</option>
                             </select>
+                            <div>
+                                <label class="text-[10px] font-bold uppercase tracking-wider text-gray-400 block mb-1">Optional Persona Emoji</label>
+                                <div class="flex items-center gap-1.5 flex-wrap" id="friend-emoji-chips">
+                                    <button type="button" data-emoji="⚡" class="friend-emoji-chip w-7 h-7 rounded-lg bg-gray-100 dark:bg-gray-700 hover:bg-indigo-100 dark:hover:bg-indigo-900 flex items-center justify-center text-sm transition-all">⚡</button>
+                                    <button type="button" data-emoji="🚀" class="friend-emoji-chip w-7 h-7 rounded-lg bg-gray-100 dark:bg-gray-700 hover:bg-indigo-100 dark:hover:bg-indigo-900 flex items-center justify-center text-sm transition-all">🚀</button>
+                                    <button type="button" data-emoji="🎧" class="friend-emoji-chip w-7 h-7 rounded-lg bg-gray-100 dark:bg-gray-700 hover:bg-indigo-100 dark:hover:bg-indigo-900 flex items-center justify-center text-sm transition-all">🎧</button>
+                                    <button type="button" data-emoji="☕" class="friend-emoji-chip w-7 h-7 rounded-lg bg-gray-100 dark:bg-gray-700 hover:bg-indigo-100 dark:hover:bg-indigo-900 flex items-center justify-center text-sm transition-all">☕</button>
+                                    <button type="button" data-emoji="📚" class="friend-emoji-chip w-7 h-7 rounded-lg bg-gray-100 dark:bg-gray-700 hover:bg-indigo-100 dark:hover:bg-indigo-900 flex items-center justify-center text-sm transition-all">📚</button>
+                                    <button type="button" data-emoji="💻" class="friend-emoji-chip w-7 h-7 rounded-lg bg-gray-100 dark:bg-gray-700 hover:bg-indigo-100 dark:hover:bg-indigo-900 flex items-center justify-center text-sm transition-all">💻</button>
+                                    <button type="button" data-emoji="✨" class="friend-emoji-chip w-7 h-7 rounded-lg bg-gray-100 dark:bg-gray-700 hover:bg-indigo-100 dark:hover:bg-indigo-900 flex items-center justify-center text-sm transition-all">✨</button>
+                                    <button type="button" data-emoji="🎨" class="friend-emoji-chip w-7 h-7 rounded-lg bg-gray-100 dark:bg-gray-700 hover:bg-indigo-100 dark:hover:bg-indigo-900 flex items-center justify-center text-sm transition-all">🎨</button>
+                                    <button type="button" data-emoji="🔥" class="friend-emoji-chip w-7 h-7 rounded-lg bg-gray-100 dark:bg-gray-700 hover:bg-indigo-100 dark:hover:bg-indigo-900 flex items-center justify-center text-sm transition-all">🔥</button>
+                                    <button type="button" data-emoji="🎯" class="friend-emoji-chip w-7 h-7 rounded-lg bg-gray-100 dark:bg-gray-700 hover:bg-indigo-100 dark:hover:bg-indigo-900 flex items-center justify-center text-sm transition-all">🎯</button>
+                                    <input type="text" id="custom-friend-emoji-input" maxlength="2" placeholder="Custom" class="w-16 bg-white dark:bg-gray-700/80 border border-gray-200 dark:border-gray-600 rounded-lg p-1 text-xs text-center text-gray-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-indigo-500">
+                                </div>
+                            </div>
                             <button type="submit" class="w-full bg-indigo-600 text-white py-2 rounded-xl hover:bg-indigo-700 transition-colors font-semibold text-xs shadow-xs active:scale-[0.98]">Add Friend</button>
                         </form>
                     </div>
@@ -1626,6 +1693,70 @@
     </div>
     <!-- END: Social Insights & Hangout Analytics Modal -->
 
+    <!-- START: Friend Avatar Customizer Modal -->
+    <div id="friend-avatar-modal" class="fixed inset-0 bg-black bg-opacity-70 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-sm overflow-hidden border border-gray-100 dark:border-gray-700 transition-all transform scale-100">
+            <!-- Modal Header -->
+            <div class="relative bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 p-5 text-white shadow-sm">
+                <button id="close-friend-avatar-modal" class="absolute top-3.5 right-3.5 p-1.5 rounded-full bg-black/20 hover:bg-black/40 text-white transition-colors" title="Close">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+                <span class="inline-block px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-white/20 uppercase tracking-wider backdrop-blur-sm mb-1 shadow-2xs">Friend Profile</span>
+                <h3 id="modal-friend-avatar-name" class="text-xl font-extrabold text-white">Alex</h3>
+                <p id="modal-friend-avatar-section" class="text-xs text-indigo-100">Section A-1</p>
+            </div>
+
+            <!-- Body -->
+            <div class="p-5 space-y-4 text-xs">
+                <!-- Live Avatar Preview Card -->
+                <div class="p-3.5 bg-gray-50 dark:bg-gray-900/60 rounded-xl border border-gray-100 dark:border-gray-700/60 text-center space-y-2">
+                    <span class="text-[10px] font-bold uppercase tracking-wider text-gray-400 block">Avatar Preview</span>
+                    <div id="modal-avatar-preview-container" class="flex items-center justify-center gap-2 flex-wrap min-h-[32px]">
+                        <!-- Preview badges injected here -->
+                    </div>
+                </div>
+
+                <!-- Custom Initials / Name -->
+                <div class="space-y-1">
+                    <label class="font-bold text-[10px] uppercase tracking-wider text-gray-500 dark:text-gray-400">Custom Initials (1-2 chars)</label>
+                    <input type="text" id="modal-friend-initials-input" maxlength="3" class="w-full bg-white dark:bg-gray-700/80 border border-gray-200 dark:border-gray-600 rounded-xl p-2 font-bold text-gray-900 dark:text-white uppercase focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                </div>
+
+                <!-- Persona Emoji Selector -->
+                <div class="space-y-1.5">
+                    <label class="font-bold text-[10px] uppercase tracking-wider text-gray-500 dark:text-gray-400">Signature Persona Emoji</label>
+                    <div class="flex items-center gap-1.5 flex-wrap" id="modal-friend-emoji-grid">
+                        <button type="button" data-emoji="⚡" class="modal-emoji-btn w-8 h-8 rounded-xl bg-gray-100 dark:bg-gray-700 hover:scale-110 flex items-center justify-center text-base transition-all">⚡</button>
+                        <button type="button" data-emoji="🚀" class="modal-emoji-btn w-8 h-8 rounded-xl bg-gray-100 dark:bg-gray-700 hover:scale-110 flex items-center justify-center text-base transition-all">🚀</button>
+                        <button type="button" data-emoji="🎧" class="modal-emoji-btn w-8 h-8 rounded-xl bg-gray-100 dark:bg-gray-700 hover:scale-110 flex items-center justify-center text-base transition-all">🎧</button>
+                        <button type="button" data-emoji="☕" class="modal-emoji-btn w-8 h-8 rounded-xl bg-gray-100 dark:bg-gray-700 hover:scale-110 flex items-center justify-center text-base transition-all">☕</button>
+                        <button type="button" data-emoji="📚" class="modal-emoji-btn w-8 h-8 rounded-xl bg-gray-100 dark:bg-gray-700 hover:scale-110 flex items-center justify-center text-base transition-all">📚</button>
+                        <button type="button" data-emoji="💻" class="modal-emoji-btn w-8 h-8 rounded-xl bg-gray-100 dark:bg-gray-700 hover:scale-110 flex items-center justify-center text-base transition-all">💻</button>
+                        <button type="button" data-emoji="✨" class="modal-emoji-btn w-8 h-8 rounded-xl bg-gray-100 dark:bg-gray-700 hover:scale-110 flex items-center justify-center text-base transition-all">✨</button>
+                        <button type="button" data-emoji="🎨" class="modal-emoji-btn w-8 h-8 rounded-xl bg-gray-100 dark:bg-gray-700 hover:scale-110 flex items-center justify-center text-base transition-all">🎨</button>
+                        <button type="button" data-emoji="🔥" class="modal-emoji-btn w-8 h-8 rounded-xl bg-gray-100 dark:bg-gray-700 hover:scale-110 flex items-center justify-center text-base transition-all">🔥</button>
+                        <button type="button" data-emoji="🎯" class="modal-emoji-btn w-8 h-8 rounded-xl bg-gray-100 dark:bg-gray-700 hover:scale-110 flex items-center justify-center text-base transition-all">🎯</button>
+                        <button type="button" data-emoji="🌟" class="modal-emoji-btn w-8 h-8 rounded-xl bg-gray-100 dark:bg-gray-700 hover:scale-110 flex items-center justify-center text-base transition-all">🌟</button>
+                        <button type="button" data-emoji="🎸" class="modal-emoji-btn w-8 h-8 rounded-xl bg-gray-100 dark:bg-gray-700 hover:scale-110 flex items-center justify-center text-base transition-all">🎸</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Footer -->
+            <div class="p-3.5 bg-gray-50 dark:bg-gray-900/90 border-t border-gray-100 dark:border-gray-700 flex justify-end space-x-2">
+                <button id="cancel-friend-avatar-btn" class="px-3.5 py-2 bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-800 dark:text-gray-200 font-semibold rounded-xl transition-all">
+                    Cancel
+                </button>
+                <button id="save-friend-avatar-btn" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl transition-all shadow-xs">
+                    Save Profile
+                </button>
+            </div>
+        </div>
+    </div>
+    <!-- END: Friend Avatar Customizer Modal -->
+
     <!-- START: Floating Dynamic Island Status Widget -->
     <div id="floating-status-island" class="hidden">
         <div id="dynamic-island-pill-btn" class="dynamic-island-pill flex items-center space-x-2.5">
@@ -1695,8 +1826,11 @@ document.addEventListener('DOMContentLoaded', () => {
             card3dParallaxEnabled: true,
             dynamicIslandEnabled: true,
             socialInsightsEnabled: true,
-            hapticFeedbackEnabled: true
+            hapticFeedbackEnabled: true,
+            friendAvatarStyle: 'pill',
+            liveLockScreenEnabled: false
         },
+        friendAvatars: {}, // { friendName: { emoji: '⚡', customInitials: 'JS', gradient: 'from-indigo-500 to-purple-600' } }
         debugTime: null,
         remoteTimetablesVersion: 0,
         removedSections: []
@@ -1722,6 +1856,24 @@ document.addEventListener('DOMContentLoaded', () => {
     const transitionAlertsOptions = document.getElementById('transition-alerts-options');
     const audioChimeToggle = document.getElementById('audio-chime-toggle');
     const alertLeadTimeInput = document.getElementById('alert-lead-time');
+
+    // Friend Profile & Avatar Style
+    const friendAvatarStyleSelector = document.getElementById('friend-avatar-style-selector');
+    const currentAvatarStyleNameEl = document.getElementById('current-avatar-style-name');
+    const liveLockscreenToggle = document.getElementById('live-lockscreen-toggle');
+
+    // Friend Avatar Customizer Modal elements
+    const friendAvatarModal = document.getElementById('friend-avatar-modal');
+    const closeFriendAvatarModalBtn = document.getElementById('close-friend-avatar-modal');
+    const cancelFriendAvatarBtn = document.getElementById('cancel-friend-avatar-btn');
+    const saveFriendAvatarBtn = document.getElementById('save-friend-avatar-btn');
+    const modalFriendAvatarName = document.getElementById('modal-friend-avatar-name');
+    const modalFriendAvatarSection = document.getElementById('modal-friend-avatar-section');
+    const modalFriendInitialsInput = document.getElementById('modal-friend-initials-input');
+    const modalAvatarPreviewContainer = document.getElementById('modal-avatar-preview-container');
+    const modalFriendEmojiGrid = document.getElementById('modal-friend-emoji-grid');
+    const customFriendEmojiInput = document.getElementById('custom-friend-emoji-input');
+    const friendEmojiChips = document.getElementById('friend-emoji-chips');
 
     // Visual & UI Settings Toggles
     const bottomSheetsToggle = document.getElementById('bottom-sheets-toggle');
@@ -1891,6 +2043,123 @@ document.addEventListener('DOMContentLoaded', () => {
     let currentSearchQuery = '';
     let currentStatusFilter = 'all'; // 'all', 'free', 'busy'
 
+
+    // --- EMBEDDED DEFAULT TIMETABLES (Instant Zero-Latency Fallback) ---
+    const FALLBACK_DEFAULT_TIMETABLES = [
+        {
+            university: "JECRC UNIVERSITY",
+            department: "DEPARTMENT OF COMPUTER SCIENCE AND ENGINEERING",
+            timetableInfo: { title: "TIME-TABLE", section: "DF", year: "III", semester: "V Sem", type: "Seminar 1" },
+            timeSlots: [
+                { lecture: 1, time: "8.00-8.50" },
+                { lecture: 2, time: "8.50-9.40" },
+                { lecture: 3, time: "9.40-10.30" },
+                { lecture: 4, time: "10.30-11.20" },
+                { lecture: 5, time: "11.20-12.05" },
+                { lecture: 6, time: "12.05-12.50" }
+            ],
+            schedule: [
+                { day: "Monday", classes: [{ lecture: 1, details: null }, { lecture: 2, details: null }, { lecture: 3, details: null }, { lecture: 4, details: null }, { lecture: 5, details: null }, { lecture: 6, details: null }] },
+                { day: "Tuesday", classes: [{ lecture: 1, details: null }, { lecture: 2, details: null }, { lecture: 3, details: null }, { lecture: 4, details: null }, { lecture: 5, details: null }, { lecture: 6, details: null }] },
+                { day: "Wednesday", classes: [{ lecture: 1, details: null }, { lecture: 2, details: null }, { lecture: 3, subject: "IP", venue: "Seminar 1", faculty: "Mr. Jay" }, { lecture: 4, subject: "DAA", venue: "Seminar 1", faculty: "Dr. Seema Sharma" }, { lecture: 5, subject: "ML", venue: "Seminar 2", faculty: "Mr. Ankit Taneza" }, { lecture: 6, details: null }] },
+                { day: "Thursday", classes: [{ lecture: 1, subject: "IP", venue: "Seminar 2", faculty: "Mr. Jay" }, { lecture: 2, subject: "FLAT", venue: "Seminar 2", faculty: "Mr. Vedprakash" }, { lecture: 3, subject: "ML Lab", venue: "VIB 511", faculty: "Mr. Ankit Taneza", span: 2 }, { lecture: 5, subject: "DAA", venue: "Seminar 1", faculty: "Dr. Seema Sharma" }, { lecture: 6, subject: "Digital Forensic", venue: "Seminar 1", faculty: "NF6" }] },
+                { day: "Friday", classes: [{ lecture: 1, subject: "FLAT", venue: "Seminar 1", faculty: "Mr. Vedprakash" }, { lecture: 2, subject: "DAA", venue: "Seminar 1", faculty: "Dr. Seema Sharma" }, { lecture: 3, subject: "ML", venue: "Seminar 1", faculty: "Mr. Ankit Taneza" }, { lecture: 4, subject: "Digital Forensic", venue: "Seminar 1", faculty: "NF6" }, { lecture: 5, subject: "IP Lab", venue: "VIB 511", faculty: "Mr. Jay", span: 2 }] },
+                { day: "Saturday", classes: [{ lecture: 1, subject: "DAA Lab", venue: "VIB 511", faculty: "Dr. Seema Sharma", span: 2 }, { lecture: 3, subject: "FLAT", venue: "Seminar 1", faculty: "Mr. Vedprakash" }, { lecture: 4, subject: "IP", venue: "Seminar 1", faculty: "Mr. Jay" }, { lecture: 5, subject: "Digital Forensic", venue: "Seminar 1", faculty: "NF6" }, { lecture: 6, subject: "ML", venue: "Seminar 1", faculty: "Mr. Ankit Taneza" }] }
+            ],
+            faculty: [
+                { subject: "FLAT", faculty: "Mr. Vedprakash" },
+                { subject: "DAA", faculty: "Dr. Seema Sharma" },
+                { subject: "IP", faculty: "Mr. Jay" },
+                { subject: "ML", faculty: "Mr. Ankit Taneza" },
+                { subject: "Digital Forensic", faculty: "NF6" },
+                { subject: "ML Lab", faculty: "Mr. Ankit Taneza" },
+                { subject: "IP Lab", faculty: "Mr. Jay" },
+                { subject: "DAA Lab", faculty: "Dr. Seema Sharma" }
+            ]
+        },
+        {
+            university: "JECRC UNIVERSITY",
+            department: "DEPARTMENT OF COMPUTER SCIENCE AND ENGINEERING",
+            timetableInfo: { title: "TIME-TABLE", section: "DG", year: "III", semester: "V Sem", type: "Seminar 1" },
+            timeSlots: [
+                { lecture: 1, time: "8.00-8.50" },
+                { lecture: 2, time: "8.50-9.40" },
+                { lecture: 3, time: "9.40-10.30" },
+                { lecture: 4, time: "10.30-11.20" },
+                { lecture: 5, time: "11.20-12.05" },
+                { lecture: 6, time: "12.05-12.50" }
+            ],
+            schedule: [
+                { day: "Monday", classes: [{ lecture: 1, details: null }, { lecture: 2, details: null }, { lecture: 3, details: null }, { lecture: 4, details: null }, { lecture: 5, details: null }, { lecture: 6, details: null }] },
+                { day: "Tuesday", classes: [{ lecture: 1, details: null }, { lecture: 2, details: null }, { lecture: 3, details: null }, { lecture: 4, details: null }, { lecture: 5, details: null }, { lecture: 6, details: null }] },
+                { day: "Wednesday", classes: [{ lecture: 1, details: null }, { lecture: 2, details: null }, { lecture: 3, subject: "IP", venue: "Seminar 1", faculty: "Ms. Garima Sharma" }, { lecture: 4, subject: "DAA", venue: "Seminar 1", faculty: "NF3" }, { lecture: 5, subject: "ML", venue: "Seminar 2", faculty: "Ms. Shalini Sharma" }, { lecture: 6, details: null }] },
+                { day: "Thursday", classes: [{ lecture: 1, subject: "IP", venue: "Seminar 2", faculty: "Ms. Garima Sharma" }, { lecture: 2, subject: "FLAT", venue: "Seminar 2", faculty: "NF1" }, { lecture: 3, subject: "ML Lab", venue: "VIB 508", faculty: "Ms. Shalini Sharma", span: 2 }, { lecture: 5, subject: "DAA", venue: "Seminar 1", faculty: "NF3" }, { lecture: 6, subject: "Digital Forensic", venue: "Seminar 1", faculty: "NF4" }] },
+                { day: "Friday", classes: [{ lecture: 1, subject: "FLAT", venue: "Seminar 1", faculty: "NF1" }, { lecture: 2, subject: "DAA", venue: "Seminar 1", faculty: "NF3" }, { lecture: 3, subject: "ML", venue: "Seminar 1", faculty: "Ms. Shalini Sharma" }, { lecture: 4, subject: "Digital Forensic", venue: "Seminar 1", faculty: "NF4" }, { lecture: 5, subject: "IP Lab", venue: "VIB 512", faculty: "Ms. Garima Sharma", span: 2 }] },
+                { day: "Saturday", classes: [{ lecture: 1, subject: "DAA Lab", venue: "VIB 508", faculty: "NF3", span: 2 }, { lecture: 3, subject: "FLAT", venue: "Seminar 1", faculty: "NF1" }, { lecture: 4, subject: "IP", venue: "Seminar 1", faculty: "Ms. Garima Sharma" }, { lecture: 5, subject: "Digital Forensic", venue: "Seminar 1", faculty: "NF4" }, { lecture: 6, subject: "ML", venue: "Seminar 1", faculty: "Ms. Shalini Sharma" }] }
+            ],
+            faculty: [
+                { subject: "FLAT", faculty: "NF1" },
+                { subject: "DAA", faculty: "NF3" },
+                { subject: "IP", faculty: "Ms. Garima Sharma" },
+                { subject: "ML", faculty: "Ms. Shalini Sharma" },
+                { subject: "Digital Forensic", faculty: "NF4" },
+                { subject: "ML Lab", faculty: "Ms. Shalini Sharma" },
+                { subject: "IP Lab", faculty: "Ms. Garima Sharma" },
+                { subject: "DAA Lab", faculty: "NF3" }
+            ]
+        },
+        {
+            university: "JECRC UNIVERSITY",
+            department: "DEPARTMENT OF COMPUTER SCIENCE AND ENGINEERING",
+            timetableInfo: { title: "TIME-TABLE", section: "DH", year: "III", semester: "V Sem", type: "SEMINAR HALL-1" },
+            timeSlots: [
+                { lecture: 1, time: "8.00-8.50" },
+                { lecture: 2, time: "8.50-9.40" },
+                { lecture: 3, time: "9.40-10.30" },
+                { lecture: 4, time: "10.30-11.20" },
+                { lecture: 5, time: "11.20-12.05" },
+                { lecture: 6, time: "12.05-12.50" }
+            ],
+            schedule: [
+                { day: "Monday", classes: [{ lecture: 1, subject: "DAA Lab", venue: "VIB 511", faculty: "Mr. Pushpendra Sharma", span: 2 }, { lecture: 3, subject: "FLAT", venue: "SEMINAR HALL-1", faculty: "Ms. Pragya Bharti" }, { lecture: 4, subject: "IP", venue: "SEMINAR HALL-1", faculty: "Mr. Jay" }, { lecture: 5, subject: "Digital Forensic", venue: "SEMINAR HALL-1", faculty: "NF7" }, { lecture: 6, subject: "ML", venue: "SEMINAR HALL-1", faculty: "NF8" }] },
+                { day: "Tuesday", classes: [{ lecture: 1, subject: "FLAT", venue: "SEMINAR HALL-1", faculty: "Ms. Pragya Bharti" }, { lecture: 2, subject: "DAA", venue: "SEMINAR HALL-1", faculty: "Mr. Pushpendra Sharma" }, { lecture: 3, subject: "ML", venue: "SEMINAR HALL-1", faculty: "NF8" }, { lecture: 4, subject: "Digital Forensic", venue: "SEMINAR HALL-1", faculty: "NF7" }, { lecture: 5, subject: "IP Lab", venue: "VIB 511", faculty: "Mr. Jay", span: 2 }] },
+                { day: "Wednesday", classes: [{ lecture: 1, subject: "IP", venue: "SEMINAR HALL-1", faculty: "Mr. Jay" }, { lecture: 2, subject: "FLAT", venue: "SEMINAR HALL-1", faculty: "Ms. Pragya Bharti" }, { lecture: 3, subject: "ML Lab", venue: "VIB 508", faculty: "NF8", span: 2 }, { lecture: 5, subject: "DAA", venue: "SEMINAR HALL-1", faculty: "Mr. Pushpendra Sharma" }, { lecture: 6, subject: "Digital Forensic", venue: "SEMINAR HALL-1", faculty: "NF7" }] },
+                { day: "Thursday", classes: [{ lecture: 1, subject: "DAA", venue: "SEMINAR HALL-1", faculty: "Mr. Pushpendra Sharma" }, { lecture: 2, subject: "ML", venue: "SEMINAR HALL-1", faculty: "NF8" }, { lecture: 3, subject: "IP", venue: "SEMINAR HALL-1", faculty: "Mr. Jay" }, { lecture: 4, details: null }, { lecture: 5, details: null }, { lecture: 6, details: null }] },
+                { day: "Friday", classes: [{ lecture: 1, details: null }, { lecture: 2, details: null }, { lecture: 3, details: null }, { lecture: 4, details: null }, { lecture: 5, details: null }, { lecture: 6, details: null }] },
+                { day: "Saturday", classes: [{ lecture: 1, details: null }, { lecture: 2, details: null }, { lecture: 3, details: null }, { lecture: 4, details: null }, { lecture: 5, details: null }, { lecture: 6, details: null }] }
+            ],
+            faculty: [
+                { subject: "FLAT", faculty: "Ms. Pragya Bharti" },
+                { subject: "DAA", faculty: "Mr. Pushpendra Sharma" },
+                { subject: "IP", faculty: "Mr. Jay" },
+                { subject: "ML", faculty: "NF8" },
+                { subject: "Digital Forensic", faculty: "NF7" },
+                { subject: "DAA Lab", faculty: "Mr. Pushpendra Sharma" },
+                { subject: "IP Lab", faculty: "Mr. Jay" },
+                { subject: "ML Lab", faculty: "NF8" }
+            ]
+        }
+    ];
+
+    const populateFallbackSections = () => {
+        if (!state.sections || Object.keys(state.sections).length === 0) {
+            state.sections = {};
+            FALLBACK_DEFAULT_TIMETABLES.forEach(timetable => {
+                const sectionName = timetable.timetableInfo?.section;
+                if (sectionName) {
+                    state.sections[sectionName] = {
+                        timetable,
+                        friends: [],
+                        pinned: false,
+                        highlighted: false,
+                        isLocal: false,
+                        color: 'default'
+                    };
+                }
+            });
+            logger("Populated state with embedded default fallback timetables (DF, DG, DH).");
+        }
+    };
 
     // --- CONSTANTS ---
     const DAYS = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
@@ -2085,11 +2354,17 @@ document.addEventListener('DOMContentLoaded', () => {
                     if (typeof parsedState.settings.ambientTheme === 'undefined') {
                         parsedState.settings.ambientTheme = 'default';
                     }
-                    if (typeof parsedState.settings.hapticFeedbackEnabled === 'undefined') {
-                        parsedState.settings.hapticFeedbackEnabled = true;
-                    }
                     if (typeof parsedState.settings.hapticIntensity === 'undefined') {
                         parsedState.settings.hapticIntensity = 'normal';
+                    }
+                    if (typeof parsedState.settings.friendAvatarStyle === 'undefined') {
+                        parsedState.settings.friendAvatarStyle = 'pill';
+                    }
+                    if (typeof parsedState.settings.liveLockScreenEnabled === 'undefined') {
+                        parsedState.settings.liveLockScreenEnabled = false;
+                    }
+                    if (!parsedState.friendAvatars) {
+                        parsedState.friendAvatars = {};
                     }
 
                     Object.assign(state, parsedState);
@@ -2106,6 +2381,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 saveState();
             }
         }
+        populateFallbackSections();
     };
     
     // --- HELPER TO FETCH JSON WITH MULTI-PATH FALLBACKS ---
@@ -2254,6 +2530,10 @@ document.addEventListener('DOMContentLoaded', () => {
                     }
                 } else {
                     logger("No timetable files could be fetched from server.");
+                    if (Object.keys(state.sections || {}).length === 0) {
+                        populateFallbackSections();
+                        hasChanges = true;
+                    }
                 }
             } else {
                 logger("Timetables are up to date.");
@@ -2261,6 +2541,10 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         } catch (error) {
             logger("Could not fetch remote timetables:", error);
+            if (Object.keys(state.sections || {}).length === 0) {
+                populateFallbackSections();
+                hasChanges = true;
+            }
             if (isFirstVisit && welcomeModal) {
                 welcomeModal.classList.remove('hidden');
             }
@@ -2600,6 +2884,220 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
+    const applyFriendAvatarStyleSetting = () => {
+        const currentStyle = state.settings.friendAvatarStyle || 'pill';
+        if (currentAvatarStyleNameEl) {
+            currentAvatarStyleNameEl.textContent = currentStyle === 'glow-ring' ? 'Glow Ring' : (currentStyle === 'emoji' ? 'Emoji' : (currentStyle === 'initials' ? 'Initials' : 'Pill'));
+        }
+        if (friendAvatarStyleSelector) {
+            const btns = friendAvatarStyleSelector.querySelectorAll('.avatar-style-btn');
+            btns.forEach(btn => {
+                const style = btn.dataset.avatarStyle;
+                if (style === currentStyle) {
+                    btn.classList.add('border-indigo-500', 'ring-2', 'ring-indigo-500/40');
+                    btn.classList.remove('border-gray-200', 'dark:border-gray-700');
+                } else {
+                    btn.classList.remove('border-indigo-500', 'ring-2', 'ring-indigo-500/40');
+                    btn.classList.add('border-gray-200', 'dark:border-gray-700');
+                }
+            });
+        }
+    };
+
+    const applyLiveLockscreenSetting = () => {
+        const enabled = state.settings.liveLockScreenEnabled;
+        if (liveLockscreenToggle) {
+            if (enabled) {
+                liveLockscreenToggle.classList.add('bg-indigo-600');
+                liveLockscreenToggle.lastElementChild.classList.add('translate-x-5');
+            } else {
+                liveLockscreenToggle.classList.remove('bg-indigo-600');
+                liveLockscreenToggle.lastElementChild.classList.remove('translate-x-5');
+            }
+        }
+        if (!enabled) {
+            clearLiveLockScreenNotification();
+        } else {
+            updateLiveLockScreenNotification(getCurrentTime(), true);
+        }
+    };
+
+    // --- AVATAR & FRIEND PROFILE HELPERS ---
+    const getAvatarGradient = (name = '') => {
+        const gradients = [
+            'from-indigo-500 to-purple-600',
+            'from-rose-500 to-pink-600',
+            'from-emerald-500 to-teal-600',
+            'from-amber-500 to-orange-600',
+            'from-blue-500 to-cyan-600',
+            'from-violet-600 to-fuchsia-600',
+            'from-cyan-500 to-blue-600',
+            'from-pink-500 to-rose-600'
+        ];
+        let hash = 0;
+        for (let i = 0; i < name.length; i++) {
+            hash = name.charCodeAt(i) + ((hash << 5) - hash);
+        }
+        return gradients[Math.abs(hash) % gradients.length];
+    };
+
+    const getFriendInitials = (name = '') => {
+        if (!name) return '?';
+        const parts = name.trim().split(/\s+/);
+        if (parts.length === 1) {
+            return parts[0].slice(0, 2).toUpperCase();
+        }
+        return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+    };
+
+    const DEFAULT_EMOJIS = ['⚡', '🚀', '🎧', '☕', '📚', '💻', '✨', '🎨', '🔥', '👾', '🍕', '🎯', '🌟', '🎸'];
+
+    const getAutoEmojiForName = (name = '') => {
+        let hash = 0;
+        for (let i = 0; i < name.length; i++) {
+            hash = name.charCodeAt(i) + ((hash << 5) - hash);
+        }
+        return DEFAULT_EMOJIS[Math.abs(hash) % DEFAULT_EMOJIS.length];
+    };
+
+    const renderFriendBadgeHtml = (friendName, sectionName = '', options = { removable: true, interactive: true }) => {
+        const avatarStyle = state.settings.friendAvatarStyle || 'pill';
+        const customData = state.friendAvatars && state.friendAvatars[friendName] ? state.friendAvatars[friendName] : null;
+        const emoji = customData?.emoji || getAutoEmojiForName(friendName);
+        const initials = customData?.customInitials || getFriendInitials(friendName);
+        const gradient = customData?.gradient || getAvatarGradient(friendName);
+        
+        const removeBtnHtml = options.removable ? `
+            <button data-friend="${escapeHTML(friendName)}" data-section="${escapeHTML(sectionName || '')}" class="remove-friend-btn ml-1 -mr-0.5 p-0.5 rounded-full text-gray-400 hover:text-red-500 dark:text-gray-400 dark:hover:text-red-400 hover:bg-gray-300/60 dark:hover:bg-gray-600/60 transition-colors" title="Remove friend">&times;</button>` : '';
+
+        const editAttr = options.interactive ? `data-action="edit-avatar" data-friend="${escapeHTML(friendName)}" data-section="${escapeHTML(sectionName || '')}" title="Click to customize profile avatar"` : '';
+        const cursorClass = options.interactive ? 'cursor-pointer hover:shadow-xs' : '';
+
+        if (avatarStyle === 'initials') {
+            return `
+                <span class="inline-flex items-center bg-gray-200/90 dark:bg-gray-700/90 text-gray-800 dark:text-gray-100 rounded-full pl-1 pr-2.5 py-0.5 text-xs font-semibold shadow-2xs border border-gray-300/40 dark:border-gray-600/40 transition-all hover:scale-105 select-none ${cursorClass}" ${editAttr}>
+                    <span class="w-5 h-5 rounded-full bg-gradient-to-tr ${gradient} text-white flex items-center justify-center text-[9px] font-black mr-1.5 shadow-xs flex-shrink-0 pointer-events-none">${escapeHTML(initials)}</span>
+                    <span class="truncate max-w-[120px] pointer-events-none">${escapeHTML(friendName)}</span>
+                    ${removeBtnHtml}
+                </span>`;
+        } else if (avatarStyle === 'emoji') {
+            return `
+                <span class="inline-flex items-center bg-gray-200/90 dark:bg-gray-700/90 text-gray-800 dark:text-gray-100 rounded-full pl-1.5 pr-2.5 py-0.5 text-xs font-semibold shadow-2xs border border-gray-300/40 dark:border-gray-600/40 transition-all hover:scale-105 select-none ${cursorClass}" ${editAttr}>
+                    <span class="text-xs mr-1 flex-shrink-0 pointer-events-none">${emoji}</span>
+                    <span class="truncate max-w-[120px] pointer-events-none">${escapeHTML(friendName)}</span>
+                    ${removeBtnHtml}
+                </span>`;
+        } else if (avatarStyle === 'glow-ring') {
+            return `
+                <span class="inline-flex items-center bg-white/80 dark:bg-gray-800/80 text-gray-900 dark:text-white rounded-full pl-1 pr-2.5 py-0.5 text-xs font-semibold shadow-xs border border-indigo-300/50 dark:border-indigo-700/50 transition-all hover:scale-105 select-none ${cursorClass}" ${editAttr}>
+                    <span class="w-5 h-5 rounded-full p-0.5 bg-gradient-to-tr ${gradient} flex items-center justify-center mr-1.5 flex-shrink-0 pointer-events-none">
+                        <span class="w-full h-full rounded-full bg-white dark:bg-gray-900 flex items-center justify-center text-[8px] font-extrabold text-gray-800 dark:text-gray-200">${escapeHTML(initials)}</span>
+                    </span>
+                    <span class="truncate max-w-[120px] pointer-events-none">${escapeHTML(friendName)}</span>
+                    ${removeBtnHtml}
+                </span>`;
+        } else {
+            // Default pill
+            return `
+                <span class="inline-flex items-center bg-gray-200/90 dark:bg-gray-700/90 text-gray-800 dark:text-gray-200 rounded-full px-2.5 py-0.5 text-xs font-semibold shadow-2xs transition-all select-none ${cursorClass}" ${editAttr}>
+                    <span class="pointer-events-none">${escapeHTML(friendName)}</span>
+                    ${removeBtnHtml}
+                </span>`;
+        }
+    };
+
+    // --- LIVE LOCK-SCREEN & ISLAND NOTIFICATION ENGINE ---
+    let lastLockscreenPayload = '';
+    let lastLockscreenUpdate = 0;
+
+    const clearLiveLockScreenNotification = () => {
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.ready.then(reg => {
+                if (reg && reg.getNotifications) {
+                    reg.getNotifications({ tag: 'syncup-live-lockscreen' }).then(notifications => {
+                        notifications.forEach(n => n.close());
+                    }).catch(() => {});
+                }
+            }).catch(() => {});
+        }
+    };
+
+    const updateLiveLockScreenNotification = (now = getCurrentTime(), force = false) => {
+        if (!state.settings.liveLockScreenEnabled) return;
+        if (!('Notification' in window) || Notification.permission !== 'granted') return;
+
+        // Throttle updates to at most once every 10 seconds unless forced
+        const currentTs = Date.now();
+        if (!force && currentTs - lastLockscreenUpdate < 10000) return;
+        lastLockscreenUpdate = currentTs;
+
+        const statuses = calculateAllStatusesAndGroups();
+        if (statuses.length === 0) return;
+
+        // Prioritize pinned section, then first section
+        const targetSection = statuses.find(s => s.type === 'section' && s.isPinned) || statuses.find(s => s.type === 'section') || statuses[0];
+        if (!targetSection) return;
+
+        const title = `SyncUp • ${targetSection.name} • ${targetSection.isFree ? '🟢 FREE NOW' : '🔴 IN CLASS'}`;
+        let body = '';
+        if (targetSection.isFree) {
+            const until = targetSection.freeUntilTime ? targetSection.freeUntilTime.timeStr : (targetSection.nextClassTime ? targetSection.nextClassTime : 'End of Day');
+            body = `Free until ${until}`;
+            if (targetSection.nextClassForSwipe && targetSection.nextClassForSwipe.subject) {
+                body += ` • Next: ${targetSection.nextClassForSwipe.subject} (${targetSection.nextClassForSwipe.venue || 'TBA'})`;
+            }
+        } else {
+            body = `${targetSection.currentClassSubject || 'Lecture'} (${targetSection.currentClassVenue || 'TBA'}) • Ends ${targetSection.currentClassEnd || ''}`;
+            if (targetSection.nextClassForSwipe && targetSection.nextClassForSwipe.subject) {
+                body += ` • Next: ${targetSection.nextClassForSwipe.subject}`;
+            }
+        }
+
+        const payloadKey = `${title}|${body}`;
+        if (payloadKey === lastLockscreenPayload && !force) return;
+        lastLockscreenPayload = payloadKey;
+
+        // 1. Service Worker Persistent Lockscreen Notification
+        if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
+            navigator.serviceWorker.ready.then(registration => {
+                registration.showNotification(title, {
+                    body: body,
+                    icon: './icons/icon-192.png',
+                    badge: './icons/icon-192.png',
+                    tag: 'syncup-live-lockscreen',
+                    renotify: false,
+                    silent: true,
+                    data: { url: window.location.href }
+                }).catch(e => logger('SW Lockscreen notification error:', e));
+            }).catch(() => {});
+        } else {
+            try {
+                new Notification(title, {
+                    body: body,
+                    icon: './icons/icon-192.png',
+                    tag: 'syncup-live-lockscreen',
+                    renotify: false,
+                    silent: true
+                });
+            } catch (e) {}
+        }
+
+        // 2. Media Session Live Lockscreen Widget (Android & iOS)
+        if ('mediaSession' in navigator) {
+            try {
+                navigator.mediaSession.metadata = new MediaMetadata({
+                    title: `${targetSection.isFree ? '🟢 Free Now' : '🔴 ' + (targetSection.currentClassSubject || 'In Class')}`,
+                    artist: `${targetSection.name} • ${body}`,
+                    album: 'SyncUp Live Campus Availability',
+                    artwork: [
+                        { src: './icons/icon-192.png', sizes: '192x192', type: 'image/png' },
+                        { src: './icons/icon-512.png', sizes: '512x512', type: 'image/png' }
+                    ]
+                });
+            } catch (e) {}
+        }
+    };
+
     // --- HAPTIC FEEDBACK (ANDROID VIBRATION MOTOR) ENGINE ---
     const triggerHaptic = (type = 'light') => {
         if (!state.settings.hapticFeedbackEnabled) return false;
@@ -2828,6 +3326,15 @@ document.addEventListener('DOMContentLoaded', () => {
                 <button type="button" data-section="${escapeHTML(name)}" data-color="${cKey}" class="set-section-color-btn w-4 h-4 rounded-full ${COLOR_PALETTES[cKey].dotClass} transition-transform hover:scale-125 ${activeColor === cKey ? 'ring-2 ring-offset-1 ring-indigo-500 scale-110 shadow-xs' : 'opacity-50 hover:opacity-100'}" title="${COLOR_PALETTES[cKey].name}"></button>
             `).join('');
 
+            const friendsInSec = section.friends || [];
+            const friendsBadgesHtml = friendsInSec.length > 0 ? `
+                <div class="pt-2 border-t border-gray-200/50 dark:border-gray-700/50">
+                    <span class="text-[10px] uppercase tracking-wider font-bold text-gray-400 block mb-1">Friends (${friendsInSec.length}):</span>
+                    <div class="flex flex-wrap gap-1.5">
+                        ${friendsInSec.map(f => renderFriendBadgeHtml(f, name, { removable: true, interactive: true })).join('')}
+                    </div>
+                </div>` : '';
+
             sectionDiv.innerHTML = `
                 <div class="flex justify-between items-center w-full">
                     <div class="flex items-center"><span class="font-bold text-xs sm:text-sm text-gray-800 dark:text-gray-100">${escapeHTML(name)}</span>${localIndicator}</div>
@@ -2840,7 +3347,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 <div class="flex items-center space-x-2 pt-2 border-t border-gray-200/50 dark:border-gray-700/50">
                     <span class="text-[10px] uppercase tracking-wider font-bold text-gray-400">Palette:</span>
                     <div class="flex items-center space-x-1.5">${swatchesHtml}</div>
-                </div>`;
+                </div>
+                ${friendsBadgesHtml}`;
             sectionsList.appendChild(sectionDiv);
         });
 
@@ -3222,6 +3730,218 @@ document.addEventListener('DOMContentLoaded', () => {
     };
     // --- END: Timeline Helper ---
 
+    // --- START: Next Up View Template Helper ---
+    const renderNextClassViewHtml = (status) => {
+        const data = status.nextClassForSwipe;
+        if (!data) {
+            return `
+                <div class="p-3.5 sm:p-5 h-full flex flex-col justify-center items-center text-center">
+                    <div class="w-12 h-12 rounded-2xl bg-emerald-500/15 dark:bg-emerald-950/60 border border-emerald-500/30 flex items-center justify-center text-emerald-600 dark:text-emerald-400 mb-2 shadow-inner">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                    </div>
+                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wider bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 border border-emerald-500/30 mb-1">
+                        Curriculum Concluded
+                    </span>
+                    <h3 class="text-base font-black text-gray-900 dark:text-white">All Lectures Adjourned</h3>
+                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5 max-w-xs leading-relaxed">
+                        No further academic sessions scheduled for today. You're fully liberated!
+                    </p>
+                </div>`;
+        }
+
+        return `
+            <div class="p-3.5 sm:p-4 h-full flex flex-col justify-between">
+                <!-- Header Badge & Status -->
+                <div class="flex items-center justify-between mb-2">
+                    <div class="flex items-center space-x-1.5 min-w-0 flex-1 pr-2">
+                        <span class="inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-black uppercase tracking-wider bg-indigo-500/20 text-indigo-700 dark:text-indigo-300 border border-indigo-500/30 flex-shrink-0">
+                            <span class="w-1.5 h-1.5 rounded-full bg-indigo-500 animate-pulse mr-1.5"></span>
+                            Next Session
+                        </span>
+                        <span class="text-[11px] font-bold text-gray-500 dark:text-gray-400 truncate">
+                            ${escapeHTML(data.dayLabel)} • Period ${data.lectureNum}${data.span > 1 ? `-${data.lectureNum + data.span - 1}` : ''}
+                        </span>
+                    </div>
+                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-extrabold bg-amber-500/15 dark:bg-amber-950/60 text-amber-800 dark:text-amber-300 border border-amber-500/30 flex-shrink-0 shadow-2xs">
+                        ${escapeHTML(data.relativeTimeStr)}
+                    </span>
+                </div>
+
+                <!-- Course Title Hero Card with interactive details click -->
+                <div class="lecture-tile-btn cursor-pointer bg-white/60 dark:bg-gray-800/60 backdrop-blur-md rounded-xl p-2.5 sm:p-3 border border-gray-200/60 dark:border-gray-700/60 shadow-2xs hover:border-indigo-400 dark:hover:border-indigo-500 transition-all active:scale-[0.99] mb-2"
+                     data-subject="${escapeHTML(data.subject)}" data-venue="${escapeHTML(data.venue)}" data-faculty="${escapeHTML(data.faculty)}" data-day="${escapeHTML(data.dayLabel)}" data-time="${escapeHTML(data.timeRange)}" data-span="${data.span}" data-section="${escapeHTML(status.name)}" title="Click to view comprehensive lecture insights">
+                    <div class="flex items-center justify-between mb-0.5">
+                        <p class="text-[10px] uppercase tracking-wider font-extrabold text-indigo-600 dark:text-indigo-400">Academic Module</p>
+                        <svg class="w-3.5 h-3.5 text-gray-400 opacity-60" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                    </div>
+                    <h3 class="text-sm sm:text-base font-black text-gray-900 dark:text-white leading-snug break-words">
+                        ${escapeHTML(data.subject)}
+                    </h3>
+                </div>
+
+                <!-- 2-Column Info Grid: Schedule & Hall -->
+                <div class="grid grid-cols-2 gap-2 text-xs">
+                    <!-- Schedule Window -->
+                    <div class="bg-white/40 dark:bg-gray-800/40 backdrop-blur-xs rounded-xl p-2 border border-gray-200/40 dark:border-gray-700/40">
+                        <div class="flex items-center text-gray-400 dark:text-gray-500 mb-0.5 space-x-1">
+                            <svg class="w-3.5 h-3.5 text-indigo-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                            <span class="text-[10px] uppercase tracking-wider font-bold text-gray-500 dark:text-gray-400">Timeline</span>
+                        </div>
+                        <p class="font-bold text-gray-800 dark:text-gray-200 text-xs truncate">${escapeHTML(data.timeRange)}</p>
+                    </div>
+
+                    <!-- Location / Hall -->
+                    <div class="bg-white/40 dark:bg-gray-800/40 backdrop-blur-xs rounded-xl p-2 border border-gray-200/40 dark:border-gray-700/40">
+                        <div class="flex items-center text-gray-400 dark:text-gray-500 mb-0.5 space-x-1">
+                            <svg class="w-3.5 h-3.5 text-emerald-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                            <span class="text-[10px] uppercase tracking-wider font-bold text-gray-500 dark:text-gray-400">Location</span>
+                        </div>
+                        <p class="font-bold text-gray-800 dark:text-gray-200 text-xs truncate">${escapeHTML(data.venue)}</p>
+                    </div>
+                </div>
+
+                <!-- Instructor Footer Row -->
+                <div class="mt-2 flex items-center justify-between px-0.5 text-[11px] text-gray-600 dark:text-gray-300">
+                    <div class="flex items-center space-x-1.5 min-w-0 flex-1 pr-2">
+                        <svg class="w-3.5 h-3.5 text-purple-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+                        <span class="font-medium text-gray-500 dark:text-gray-400 flex-shrink-0">Faculty:</span>
+                        <span class="font-semibold text-gray-800 dark:text-gray-100 truncate">${escapeHTML(data.faculty)}</span>
+                    </div>
+                    <span class="text-[10px] font-semibold text-gray-400 dark:text-gray-500 whitespace-nowrap">Schedule ➔</span>
+                </div>
+            </div>
+        `;
+    };
+    // --- END: Next Up View Template Helper ---
+
+    // --- START: Day Schedule (3rd View) Template Helper ---
+    const renderDayScheduleViewHtml = (status, now = getCurrentTime()) => {
+        const schedule = status.dayScheduleForView;
+        if (!schedule || schedule.length === 0) {
+            return `
+                <div class="p-3.5 sm:p-5 h-full flex flex-col justify-center items-center text-center">
+                    <div class="w-12 h-12 rounded-2xl bg-indigo-500/15 dark:bg-indigo-950/60 border border-indigo-500/30 flex items-center justify-center text-indigo-600 dark:text-indigo-400 mb-2 shadow-inner">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                    </div>
+                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wider bg-indigo-500/20 text-indigo-700 dark:text-indigo-300 border border-indigo-500/30 mb-1">
+                        Schedule Open
+                    </span>
+                    <h3 class="text-base font-black text-gray-900 dark:text-white">No Scheduled Sessions</h3>
+                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5 max-w-xs leading-relaxed">
+                        There are no academic lectures scheduled for today.
+                    </p>
+                </div>`;
+        }
+
+        const totalLectures = schedule.filter(s => s.subject).length;
+        const totalBreaks = schedule.filter(s => !s.subject).length;
+        const dayName = DAYS[now.getDay()];
+
+        return `
+            <div class="p-3 sm:p-4 flex flex-col w-full">
+                <!-- Header with Agenda Pill and Stat Count -->
+                <div class="flex items-center justify-between mb-2.5 px-0.5">
+                    <div class="flex items-center space-x-1.5 min-w-0">
+                        <span class="inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-black uppercase tracking-wider bg-indigo-500/20 text-indigo-700 dark:text-indigo-300 border border-indigo-500/30 flex-shrink-0">
+                            <span class="w-1.5 h-1.5 rounded-full bg-indigo-500 mr-1.5"></span>
+                            Daily Itinerary
+                        </span>
+                        <span class="text-xs font-bold text-gray-700 dark:text-gray-300 truncate">
+                            ${escapeHTML(dayName)}
+                        </span>
+                    </div>
+                    <span class="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-gray-200/80 dark:bg-gray-700/80 text-gray-600 dark:text-gray-300 border border-gray-300/40 dark:border-gray-600/40">
+                        ${totalLectures} Lecture${totalLectures === 1 ? '' : 's'} • ${totalBreaks} Break${totalBreaks === 1 ? '' : 's'}
+                    </span>
+                </div>
+
+                <!-- Schedule Tiles List -->
+                <div class="space-y-1.5 w-full">
+                    ${schedule.map((slot, idx) => {
+                        const periodNum = slot.lecture || (idx + 1);
+                        const isClass = Boolean(slot.subject);
+                        
+                        if (!isClass) {
+                            return `
+                                <div class="flex items-center justify-between py-1.5 px-2.5 sm:px-3 rounded-xl border border-dashed border-gray-300/60 dark:border-gray-700/60 bg-white/20 dark:bg-gray-800/20 text-xs select-none">
+                                    <div class="flex items-center space-x-2">
+                                        <span class="text-[10px] font-extrabold px-1.5 py-0.5 rounded-md bg-gray-200/60 dark:bg-gray-700/60 text-gray-500 dark:text-gray-400">P${periodNum}</span>
+                                        <span class="font-medium text-gray-500 dark:text-gray-400">${escapeHTML(slot.time)}</span>
+                                    </div>
+                                    <span class="text-[11px] font-semibold text-emerald-600 dark:text-emerald-400 flex items-center">
+                                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-500/80 mr-1"></span>
+                                        Academic Recess
+                                    </span>
+                                </div>
+                            `;
+                        }
+
+                        let tileContainerClass = 'lecture-tile-btn cursor-pointer transition-all active:scale-[0.99] select-none p-2 sm:p-2.5 rounded-xl border shadow-2xs ';
+                        let badgeHtml = '';
+
+                        if (slot.isCurrent) {
+                            tileContainerClass += 'bg-indigo-50/95 dark:bg-indigo-950/80 border-indigo-400 dark:border-indigo-600 ring-2 ring-indigo-500/30 shadow-sm';
+                            badgeHtml = `
+                                <span class="inline-flex items-center px-1.5 py-0.2 rounded text-[9px] font-black uppercase tracking-wider bg-indigo-500 text-white animate-pulse shadow-xs">
+                                    Live Now
+                                </span>`;
+                        } else if (slot.isPast) {
+                            tileContainerClass += 'bg-white/40 dark:bg-gray-800/40 border-gray-200/50 dark:border-gray-700/50 opacity-70 hover:opacity-100 hover:border-gray-400 dark:hover:border-gray-600';
+                            badgeHtml = `
+                                <span class="text-[10px] font-bold text-gray-400 dark:text-gray-500">
+                                    Concluded
+                                </span>`;
+                        } else {
+                            tileContainerClass += 'bg-white/70 dark:bg-gray-800/70 border-gray-200/70 dark:border-gray-700/70 hover:border-indigo-300 dark:hover:border-indigo-600 hover:bg-white/90 dark:hover:bg-gray-800/90';
+                            badgeHtml = slot.venue ? `
+                                <span class="inline-flex items-center text-[10px] font-bold px-1.5 py-0.2 rounded-md bg-gray-100 dark:bg-gray-700/80 text-gray-700 dark:text-gray-200 border border-gray-200/60 dark:border-gray-600/60 truncate max-w-[100px]">
+                                    📍 ${escapeHTML(slot.venue)}
+                                </span>` : '';
+                        }
+
+                        return `
+                            <div class="${tileContainerClass}"
+                                 data-subject="${escapeHTML(slot.subject)}"
+                                 data-venue="${escapeHTML(slot.venue || 'TBA')}"
+                                 data-faculty="${escapeHTML(slot.faculty || 'Unassigned')}"
+                                 data-day="${escapeHTML(slot.day)}"
+                                 data-time="${escapeHTML(slot.time)}"
+                                 data-span="${slot.span || 1}"
+                                 data-section="${escapeHTML(status.name)}"
+                                 title="Click for comprehensive session details">
+                                <div class="flex items-center justify-between gap-2 pointer-events-none">
+                                    <div class="flex items-center space-x-2 min-w-0 flex-1">
+                                        <span class="text-[10px] font-extrabold px-1.5 py-0.5 rounded-md ${slot.isCurrent ? 'bg-indigo-600 text-white' : 'bg-indigo-100 dark:bg-indigo-900/60 text-indigo-700 dark:text-indigo-300'} flex-shrink-0">
+                                            P${periodNum}${slot.span > 1 ? `-${periodNum + slot.span - 1}` : ''}
+                                        </span>
+                                        <div class="min-w-0 flex-1">
+                                            <p class="font-black text-xs sm:text-sm text-gray-900 dark:text-white truncate leading-tight">
+                                                ${escapeHTML(slot.subject)}
+                                            </p>
+                                            <p class="text-[10px] text-gray-500 dark:text-gray-400 truncate mt-0.5 font-medium">
+                                                ${escapeHTML(slot.time)}${slot.faculty ? ` • ${escapeHTML(slot.faculty)}` : ''}
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <div class="flex-shrink-0">
+                                        ${badgeHtml}
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    }).join('')}
+                </div>
+
+                <!-- Footer affordance -->
+                <div class="mt-2.5 pt-2 border-t border-gray-200/40 dark:border-gray-700/40 flex items-center justify-between text-[10px] font-semibold text-gray-400 dark:text-gray-500 px-0.5">
+                    <span>Tap any session for details</span>
+                    <span>Swipe for Weekly Schedule ➔</span>
+                </div>
+            </div>
+        `;
+    };
+    // --- END: Day Schedule (3rd View) Template Helper ---
+
 
     const renderDashboard = () => {
         const statuses = calculateAllStatusesAndGroups();
@@ -3448,48 +4168,13 @@ document.addEventListener('DOMContentLoaded', () => {
             if (status.type === 'section') {
                 const friendsList = state.sections[status.name]?.friends || [];
                 const hasFriends = friendsList.length > 0;
-                const friendsHtml = hasFriends ? friendsList.map(friend => `
-                    <span class="inline-flex items-center bg-gray-200/90 dark:bg-gray-700/90 text-gray-800 dark:text-gray-200 rounded-full px-2.5 py-0.5 text-xs font-semibold shadow-2xs">
-                        <span>${escapeHTML(friend)}</span>
-                        <button data-friend="${escapeHTML(friend)}" data-section="${escapeHTML(status.name)}" class="remove-friend-btn ml-1.5 -mr-1 p-0.5 rounded-full text-gray-500 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-500">&times;</button>
-                    </span>`).join(' ') : '';
+                const friendsHtml = hasFriends ? friendsList.map(friend => renderFriendBadgeHtml(friend, status.name)).join(' ') : '';
                 
                 const ledIndicatorHtml = state.settings.ledIndicatorEnabled ? `<div class="led-indicator led-${status.ledColor}"></div>` : '';
                 
-                const nextClassDetailsHtml = status.nextClassForSwipe ? `
-                    <div class="p-3.5 sm:p-4.5 h-full flex flex-col justify-center">
-                        <p class="font-bold text-base sm:text-lg text-gray-800 dark:text-gray-200 text-center mb-1">Next Up</p>
-                        <div class="mt-1.5 text-xs sm:text-sm text-gray-700 dark:text-gray-300 space-y-1 max-w-sm mx-auto w-full">
-                            <p class="break-words leading-tight"><span class="font-medium text-gray-500 dark:text-gray-400 w-14 inline-block">Time:</span> ${escapeHTML(status.nextClassForSwipe.time)}</p>
-                            <p class="break-words leading-tight"><span class="font-medium text-gray-500 dark:text-gray-400 w-14 inline-block">Subject:</span> ${escapeHTML(status.nextClassForSwipe.subject)}</p>
-                            <p class="break-words leading-tight"><span class="font-medium text-gray-500 dark:text-gray-400 w-14 inline-block">Venue:</span> ${escapeHTML(status.nextClassForSwipe.venue)}</p>
-                            <p class="break-words leading-tight"><span class="font-medium text-gray-500 dark:text-gray-400 w-14 inline-block">Faculty:</span> ${escapeHTML(status.nextClassForSwipe.faculty)}</p>
-                        </div>
-                    </div>` : `
-                    <div class="p-3.5 sm:p-4.5 h-full flex flex-col justify-center items-center text-center">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-9 w-9 text-gray-400 mb-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.293 2.293a1 1 0 010 1.414L11 12l4.293 4.293a1 1 0 01-1.414 1.414L10 13.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 12 4.293 7.707a1 1 0 011.414-1.414L10 10.586 14.293 6.293a1 1 0 011.414 0L18 8.586m-5 5l2.293-2.293a1 1 0 011.414 0L21 15m-4-4l-2.293 2.293a1 1 0 01-1.414 0L9 11" /></svg>
-                        <h3 class="text-base font-bold text-gray-700 dark:text-gray-300">All Done!</h3>
-                        <p class="text-xs text-gray-500">No further classes are scheduled.</p>
-                    </div>`;
+                const nextClassDetailsHtml = renderNextClassViewHtml(status);
 
-                const timetableHtml = status.dayScheduleForView && status.dayScheduleForView.length > 0 ? `
-                    <div class="p-3.5 sm:p-4.5 flex flex-col w-full">
-                        <p class="font-bold text-base sm:text-lg text-gray-800 dark:text-gray-200 text-center mb-2">Today's Schedule</p>
-                        <div class="space-y-1 w-full">
-                            ${status.dayScheduleForView.map(slot => `
-                                <div class="${slot.subject ? 'lecture-tile-btn cursor-pointer hover:border-indigo-400 dark:hover:border-indigo-500 transition-all active:scale-[0.98]' : ''} grid grid-cols-3 gap-1.5 text-xs py-1.5 px-2.5 sm:py-2 sm:px-3 rounded-lg border border-gray-200/50 dark:border-gray-700/50 ${slot.isCurrent ? 'bg-indigo-50 dark:bg-indigo-950/60 border-indigo-200 dark:border-indigo-800' : 'bg-white/40 dark:bg-gray-800/40'}"
-                                     ${slot.subject ? `data-subject="${escapeHTML(slot.subject)}" data-venue="${escapeHTML(slot.venue || 'N/A')}" data-faculty="${escapeHTML(slot.faculty || 'N/A')}" data-day="${escapeHTML(slot.day)}" data-time="${escapeHTML(slot.time)}" data-span="${slot.span || 1}" data-section="${escapeHTML(status.name)}" title="Click for details"` : ''}>
-                                    <span class="text-left col-span-1 font-medium text-gray-600 dark:text-gray-400 pointer-events-none">${escapeHTML(slot.time)}</span>
-                                    <span class="text-left col-span-2 ${slot.subject ? 'font-semibold text-gray-800 dark:text-gray-100' : 'text-gray-400 dark:text-gray-500'} pointer-events-none">
-                                        ${slot.subject ? `${escapeHTML(slot.subject)} <span class="font-normal text-gray-500 dark:text-gray-400">(${escapeHTML(slot.venue)})</span>` : 'Free Period'}
-                                    </span>
-                                </div>`
-                            ).join('')}
-                        </div>
-                    </div>` : `
-                    <div class="p-3.5 sm:p-4.5 flex flex-col justify-center items-center text-center">
-                        <h3 class="text-base font-bold text-gray-700 dark:text-gray-300">No Classes Today</h3>
-                    </div>`;
+                const timetableHtml = renderDayScheduleViewHtml(status, now);
 
                 const fullTimetableHtml = status.fullScheduleForView ? `
                     <div class="p-2.5 sm:p-4 flex flex-col w-full">
@@ -3590,10 +4275,7 @@ document.addEventListener('DOMContentLoaded', () => {
             } else { // status.type === 'group'
                 const membersList = state.groups[status.name]?.members || [];
                 const hasMembers = membersList.length > 0;
-                const membersHtml = hasMembers ? membersList.map(member => `
-                    <span class="inline-flex items-center bg-gray-200/90 dark:bg-gray-700/90 text-gray-800 dark:text-gray-200 rounded-full px-2.5 py-0.5 text-xs font-semibold shadow-2xs">
-                        <span>${escapeHTML(member.name)}</span> <span class="text-[10px] text-gray-500 dark:text-gray-400 ml-1">(${escapeHTML(member.section)})</span>
-                    </span>`).join(' ') : '';
+                const membersHtml = hasMembers ? membersList.map(member => renderFriendBadgeHtml(member.name, member.section, { removable: false, interactive: true })).join(' ') : '';
 
                 cardHtml = `
                 <div class="card-normal-view">
@@ -3756,44 +4438,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 const timetableContainer = card.querySelector('.card-timetable-view');
                 if (timetableContainer) {
-                    let newTimetableHtml = status.dayScheduleForView && status.dayScheduleForView.length > 0 ? `
-                        <div class="p-3.5 sm:p-4.5 flex flex-col w-full">
-                            <p class="font-bold text-base sm:text-lg text-gray-800 dark:text-gray-200 text-center mb-2">Today's Schedule</p>
-                            <div class="space-y-1 w-full">
-                                ${status.dayScheduleForView.map(slot => `
-                                    <div class="${slot.subject ? 'lecture-tile-btn cursor-pointer hover:border-indigo-400 dark:hover:border-indigo-500 transition-all active:scale-[0.98]' : ''} grid grid-cols-3 gap-1.5 text-xs py-1.5 px-2.5 sm:py-2 sm:px-3 rounded-lg border border-gray-200/50 dark:border-gray-700/50 ${slot.isCurrent ? 'bg-indigo-50 dark:bg-indigo-950/60 border-indigo-200 dark:border-indigo-800' : 'bg-white/40 dark:bg-gray-800/40'}"
-                                         ${slot.subject ? `data-subject="${escapeHTML(slot.subject)}" data-venue="${escapeHTML(slot.venue || 'N/A')}" data-faculty="${escapeHTML(slot.faculty || 'N/A')}" data-day="${escapeHTML(slot.day)}" data-time="${escapeHTML(slot.time)}" data-span="${slot.span || 1}" data-section="${escapeHTML(status.name)}" title="Click for details"` : ''}>
-                                        <span class="text-left col-span-1 font-medium text-gray-600 dark:text-gray-400 pointer-events-none">${escapeHTML(slot.time)}</span>
-                                        <span class="text-left col-span-2 ${slot.subject ? 'font-semibold text-gray-800 dark:text-gray-100' : 'text-gray-400 dark:text-gray-500'} pointer-events-none">
-                                            ${slot.subject ? `${escapeHTML(slot.subject)} <span class="font-normal text-gray-500 dark:text-gray-400">(${escapeHTML(slot.venue)})</span>` : 'Free Period'}
-                                        </span>
-                                    </div>`
-                                ).join('')}
-                            </div>
-                        </div>` : `
-                        <div class="p-3.5 sm:p-4.5 flex flex-col justify-center items-center text-center">
-                            <h3 class="text-base font-bold text-gray-700 dark:text-gray-300">No Classes Today</h3>
-                        </div>`;
+                    let newTimetableHtml = renderDayScheduleViewHtml(status, now);
                     if (timetableContainer.innerHTML !== newTimetableHtml) timetableContainer.innerHTML = newTimetableHtml;
                 }
                 
                 const nextClassContainer = card.querySelector('.card-next-class-view');
                 if (nextClassContainer) {
-                    let newNextClassHtml = status.nextClassForSwipe ? `
-                        <div class="p-3.5 sm:p-4.5 h-full flex flex-col justify-center">
-                            <p class="font-bold text-base sm:text-lg text-gray-800 dark:text-gray-200 text-center mb-1">Next Up</p>
-                            <div class="mt-1.5 text-xs sm:text-sm text-gray-700 dark:text-gray-300 space-y-1 max-w-sm mx-auto w-full">
-                                <p class="break-words leading-tight"><span class="font-medium text-gray-500 dark:text-gray-400 w-14 inline-block">Time:</span> ${escapeHTML(status.nextClassForSwipe.time)}</p>
-                                <p class="break-words leading-tight"><span class="font-medium text-gray-500 dark:text-gray-400 w-14 inline-block">Subject:</span> ${escapeHTML(status.nextClassForSwipe.subject)}</p>
-                                <p class="break-words leading-tight"><span class="font-medium text-gray-500 dark:text-gray-400 w-14 inline-block">Venue:</span> ${escapeHTML(status.nextClassForSwipe.venue)}</p>
-                                <p class="break-words leading-tight"><span class="font-medium text-gray-500 dark:text-gray-400 w-14 inline-block">Faculty:</span> ${escapeHTML(status.nextClassForSwipe.faculty)}</p>
-                            </div>
-                        </div>` : `
-                        <div class="p-3.5 sm:p-4.5 h-full flex flex-col justify-center items-center text-center">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-9 w-9 text-gray-400 mb-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.293 2.293a1 1 0 010 1.414L11 12l4.293 4.293a1 1 0 01-1.414 1.414L10 13.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 12 4.293 7.707a1 1 0 011.414-1.414L10 10.586 14.293 6.293a1 1 0 011.414 0L18 8.586m-5 5l2.293-2.293a1 1 0 011.414 0L21 15m-4-4l-2.293 2.293a1 1 0 01-1.414 0L9 11" /></svg>
-                            <h3 class="text-base font-bold text-gray-700 dark:text-gray-300">All Done!</h3>
-                            <p class="text-xs text-gray-500">No further classes are scheduled.</p>
-                        </div>`;
+                    let newNextClassHtml = renderNextClassViewHtml(status);
                     if (nextClassContainer.innerHTML !== newNextClassHtml) nextClassContainer.innerHTML = newNextClassHtml;
                 }
             } else { // status.type === 'group'
@@ -4140,6 +4791,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Check for class transition push alerts
         checkAndTriggerTransitionNotifications();
+
+        // Live Lock-Screen & Island Notification Update
+        updateLiveLockScreenNotification(now);
     };
 
     const parseTime = (timeStr, date) => {
@@ -4432,25 +5086,118 @@ document.addEventListener('DOMContentLoaded', () => {
             const currentClass = getClassAtTime(timetable, now);
             const absoluteNextClass = getNextClass(timetable, now);
 
-            let nextClassForSwipeData = absoluteNextClass ? { time: formatTimeWithDay(absoluteNextClass.startTime), subject: absoluteNextClass.subject, venue: absoluteNextClass.venue || 'N/A', faculty: absoluteNextClass.faculty || 'N/A' } : null;
+            let nextClassForSwipeData = null;
+            if (absoluteNextClass) {
+                const diffMs = absoluteNextClass.startTime.getTime() - now.getTime();
+                const isToday = absoluteNextClass.startTime.toDateString() === now.toDateString();
+                const isTomorrow = new Date(now.getTime() + 86400000).toDateString() === absoluteNextClass.startTime.toDateString();
+
+                let relativeTimeStr = '';
+                if (diffMs > 0) {
+                    const totalMins = Math.floor(diffMs / 60000);
+                    if (totalMins < 60) {
+                        relativeTimeStr = `Starts in ${totalMins}m`;
+                    } else if (totalMins < 24 * 60) {
+                        const h = Math.floor(totalMins / 60);
+                        const m = totalMins % 60;
+                        relativeTimeStr = `Starts in ${h}h ${m > 0 ? m + 'm' : ''}`;
+                    } else if (isTomorrow) {
+                        relativeTimeStr = 'Tomorrow';
+                    } else {
+                        relativeTimeStr = DAYS[absoluteNextClass.startTime.getDay()];
+                    }
+                } else {
+                    relativeTimeStr = 'In Progress';
+                }
+
+                const dayLabel = isToday ? 'Today' : (isTomorrow ? 'Tomorrow' : DAYS[absoluteNextClass.startTime.getDay()]);
+                const timeRange = `${formatTime(absoluteNextClass.startTime)} - ${formatTime(absoluteNextClass.endTime)}`;
+
+                nextClassForSwipeData = {
+                    time: formatTimeWithDay(absoluteNextClass.startTime),
+                    timeRange,
+                    dayLabel,
+                    relativeTimeStr,
+                    isToday,
+                    subject: absoluteNextClass.subject,
+                    venue: absoluteNextClass.venue || 'TBA',
+                    faculty: absoluteNextClass.faculty || 'Unassigned Faculty',
+                    lectureNum: absoluteNextClass.lecture,
+                    span: absoluteNextClass.span || 1
+                };
+            }
 
             let dayScheduleForView = null;
             const todaySchedule = getScheduleForDay(timetable, now);
-            if (todaySchedule) {
-                dayScheduleForView = timetable.timeSlots.map(slot => {
-                    let classForThisSlot = todaySchedule.classes.find(c => c.subject && slot.lecture >= c.lecture && slot.lecture < c.lecture + (c.span || 1));
-                    const startTime = parseTime(slot.time.split('-')[0], now);
-                    const endTime = parseTime(slot.time.split('-')[1], now);
-                    return { 
-                        time: slot.time, 
-                        subject: classForThisSlot?.subject, 
-                        venue: classForThisSlot?.venue || '', 
-                        faculty: classForThisSlot?.faculty || '',
-                        span: classForThisSlot?.span || 1,
-                        day: DAYS[now.getDay()],
-                        isCurrent: now >= startTime && now < endTime && classForThisSlot 
-                    };
+            if (todaySchedule && timetable.timeSlots) {
+                const processedSlots = [];
+                let skipUntilLecture = -1;
+
+                timetable.timeSlots.forEach((slot, slotIdx) => {
+                    const lectureNum = slot.lecture || (slotIdx + 1);
+                    if (lectureNum < skipUntilLecture) {
+                        return; // Skip consecutive periods belonging to the same multi-period lab
+                    }
+
+                    const classForThisSlot = todaySchedule.classes.find(c => c.subject && c.lecture === lectureNum);
+
+                    if (classForThisSlot) {
+                        const span = classForThisSlot.span || 1;
+                        skipUntilLecture = lectureNum + span;
+
+                        const [startTimeStr] = slot.time.split('-');
+                        let endTimeStr = slot.time.split('-')[1];
+
+                        if (span > 1) {
+                            const endLectureNum = lectureNum + span - 1;
+                            const endSlot = timetable.timeSlots.find(ts => ts.lecture === endLectureNum);
+                            if (endSlot) {
+                                endTimeStr = endSlot.time.split('-')[1];
+                            }
+                        }
+
+                        const startTime = parseTime(startTimeStr, now);
+                        const endTime = parseTime(endTimeStr, now);
+                        const timeDisplay = `${startTimeStr}-${endTimeStr}`;
+
+                        processedSlots.push({
+                            time: timeDisplay,
+                            lecture: lectureNum,
+                            subject: classForThisSlot.subject,
+                            venue: classForThisSlot.venue || '',
+                            faculty: classForThisSlot.faculty || '',
+                            span: span,
+                            day: DAYS[now.getDay()],
+                            isCurrent: now >= startTime && now < endTime,
+                            isPast: now >= endTime,
+                            isUpcoming: now < startTime
+                        });
+                    } else {
+                        // Check if covered by an earlier class (safety check)
+                        const coveringClass = todaySchedule.classes.find(c => c.subject && lectureNum >= c.lecture && lectureNum < c.lecture + (c.span || 1));
+                        if (coveringClass) {
+                            return;
+                        }
+
+                        const startTime = parseTime(slot.time.split('-')[0], now);
+                        const endTime = parseTime(slot.time.split('-')[1], now);
+
+                        processedSlots.push({
+                            time: slot.time,
+                            lecture: lectureNum,
+                            subject: null,
+                            venue: '',
+                            faculty: '',
+                            span: 1,
+                            day: DAYS[now.getDay()],
+                            isCurrent: now >= startTime && now < endTime,
+                            isPast: now >= endTime,
+                            isUpcoming: now < startTime
+                        });
+                    }
                 });
+
+                dayScheduleForView = processedSlots;
             }
 
             let fullTimetableForView = null;
@@ -4774,6 +5521,22 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         triggerHaptic('success');
         state.sections[section].friends.push(name);
+
+        const chosenEmoji = newFriendSelectedEmoji || customFriendEmojiInput?.value?.trim() || getAutoEmojiForName(name);
+        if (!state.friendAvatars) state.friendAvatars = {};
+        state.friendAvatars[name] = {
+            emoji: chosenEmoji,
+            customInitials: getFriendInitials(name),
+            gradient: getAvatarGradient(name)
+        };
+        newFriendSelectedEmoji = '';
+        if (customFriendEmojiInput) customFriendEmojiInput.value = '';
+        if (friendEmojiChips) {
+            friendEmojiChips.querySelectorAll('.friend-emoji-chip').forEach(b => {
+                b.classList.remove('ring-2', 'ring-indigo-500', 'bg-indigo-100', 'dark:bg-indigo-900', 'scale-110');
+            });
+        }
+
         saveState();
         renderDashboard();
         renderSettings();
@@ -4791,6 +5554,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 const index = friendsList.indexOf(friend);
                 if (index > -1) {
                     friendsList.splice(index, 1);
+                    if (state.friendAvatars && state.friendAvatars[friend]) {
+                        delete state.friendAvatars[friend];
+                    }
                     Object.values(state.groups).forEach(group => {
                         group.members = group.members.filter(m => !(m.name === friend && m.section === section));
                     });
@@ -4906,6 +5672,79 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         };
         reader.readAsText(file);
+    };
+
+    // --- FRIEND PROFILE & AVATAR CUSTOMIZER CONTROLLER ---
+    let currentCustomizingFriend = null;
+    let currentCustomizingSection = null;
+    let selectedModalEmoji = null;
+
+    const renderModalAvatarPreview = (friendName, emoji, initials, gradient) => {
+        if (!modalAvatarPreviewContainer) return;
+        
+        const initialsBadge = `
+            <span class="inline-flex items-center bg-gray-200/90 dark:bg-gray-700/90 text-gray-800 dark:text-gray-100 rounded-full pl-1 pr-2.5 py-1 text-xs font-semibold shadow-2xs border border-gray-300/40 dark:border-gray-600/40">
+                <span class="w-5 h-5 rounded-full bg-gradient-to-tr ${gradient} text-white flex items-center justify-center text-[9px] font-black mr-1.5 shadow-xs flex-shrink-0">${escapeHTML(initials)}</span>
+                <span class="truncate max-w-[100px]">${escapeHTML(friendName)}</span>
+            </span>`;
+        const emojiBadge = `
+            <span class="inline-flex items-center bg-gray-200/90 dark:bg-gray-700/90 text-gray-800 dark:text-gray-100 rounded-full pl-1.5 pr-2.5 py-1 text-xs font-semibold shadow-2xs border border-gray-300/40 dark:border-gray-600/40">
+                <span class="text-xs mr-1 flex-shrink-0">${emoji}</span>
+                <span class="truncate max-w-[100px]">${escapeHTML(friendName)}</span>
+            </span>`;
+        const glowRingBadge = `
+            <span class="inline-flex items-center bg-white/80 dark:bg-gray-800/80 text-gray-900 dark:text-white rounded-full pl-1 pr-2.5 py-1 text-xs font-semibold shadow-xs border border-indigo-300/50 dark:border-indigo-700/50">
+                <span class="w-5 h-5 rounded-full p-0.5 bg-gradient-to-tr ${gradient} flex items-center justify-center mr-1.5 flex-shrink-0">
+                    <span class="w-full h-full rounded-full bg-white dark:bg-gray-900 flex items-center justify-center text-[8px] font-extrabold text-gray-800 dark:text-gray-200">${escapeHTML(initials)}</span>
+                </span>
+                <span class="truncate max-w-[100px]">${escapeHTML(friendName)}</span>
+            </span>`;
+
+        modalAvatarPreviewContainer.innerHTML = `
+            <div class="flex items-center justify-center gap-2 flex-wrap">
+                ${initialsBadge}
+                ${emojiBadge}
+                ${glowRingBadge}
+            </div>`;
+    };
+
+    const openFriendAvatarModal = (friendName, sectionName = '') => {
+        if (!friendAvatarModal || !friendName) return;
+        triggerHaptic('modal');
+        currentCustomizingFriend = friendName;
+        currentCustomizingSection = sectionName;
+
+        const customData = state.friendAvatars && state.friendAvatars[friendName] ? state.friendAvatars[friendName] : null;
+        selectedModalEmoji = customData?.emoji || getAutoEmojiForName(friendName);
+        const currentInitials = customData?.customInitials || getFriendInitials(friendName);
+        const currentGradient = customData?.gradient || getAvatarGradient(friendName);
+
+        if (modalFriendAvatarName) modalFriendAvatarName.textContent = friendName;
+        if (modalFriendAvatarSection) modalFriendAvatarSection.textContent = sectionName ? `Linked to ${sectionName}` : 'Friend Profile';
+        if (modalFriendInitialsInput) modalFriendInitialsInput.value = currentInitials;
+
+        // Highlight selected emoji button
+        if (modalFriendEmojiGrid) {
+            const btns = modalFriendEmojiGrid.querySelectorAll('.modal-emoji-btn');
+            btns.forEach(b => {
+                if (b.dataset.emoji === selectedModalEmoji) {
+                    b.classList.add('ring-2', 'ring-indigo-500', 'bg-indigo-100', 'dark:bg-indigo-900', 'scale-110');
+                } else {
+                    b.classList.remove('ring-2', 'ring-indigo-500', 'bg-indigo-100', 'dark:bg-indigo-900', 'scale-110');
+                }
+            });
+        }
+
+        renderModalAvatarPreview(friendName, selectedModalEmoji, currentInitials, currentGradient);
+        friendAvatarModal.classList.remove('hidden');
+    };
+
+    const closeFriendAvatarModal = () => {
+        if (!friendAvatarModal) return;
+        triggerHaptic('tap');
+        friendAvatarModal.classList.add('hidden');
+        currentCustomizingFriend = null;
+        currentCustomizingSection = null;
     };
 
     // --- CARD VIEW & SWIPE / DRAG HANDLING ---
@@ -5788,9 +6627,11 @@ document.addEventListener('DOMContentLoaded', () => {
             (secData.friends || []).forEach(friendName => {
                 const key = `friend:${friendName}|${secName}`;
                 const isSelected = selectedMeetupParticipants.has(key);
+                const customData = state.friendAvatars && state.friendAvatars[friendName] ? state.friendAvatars[friendName] : null;
+                const emoji = customData?.emoji || getAutoEmojiForName(friendName);
                 chips.push(`
                     <button type="button" data-key="${escapeHTML(key)}" class="meetup-participant-chip px-2.5 py-1 rounded-lg text-xs font-medium border transition-all flex items-center space-x-1.5 ${isSelected ? 'bg-purple-50 dark:bg-purple-950/80 border-purple-300 dark:border-purple-700 text-purple-700 dark:text-purple-300 shadow-xs' : 'bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-400 opacity-60'}">
-                        <span class="w-2 h-2 rounded-full ${isSelected ? 'bg-purple-600' : 'bg-gray-400'}"></span>
+                        <span class="text-xs">${emoji}</span>
                         <span>${escapeHTML(friendName)}</span>
                     </button>
                 `);
@@ -6070,7 +6911,7 @@ document.addEventListener('DOMContentLoaded', () => {
             whosFreeList.innerHTML = freeItems.map(item => {
                 const palette = COLOR_PALETTES[item.color] || COLOR_PALETTES.default;
                 const friendsChips = (item.friends || []).map(f => 
-                    `<span class="px-2 py-0.5 rounded-full bg-white/90 dark:bg-gray-800 text-[11px] font-medium text-gray-700 dark:text-gray-300 border border-gray-200/70 dark:border-gray-700 shadow-2xs">${escapeHTML(f)}</span>`
+                    renderFriendBadgeHtml(f, item.name, { removable: false, interactive: true })
                 ).join(' ');
 
                 return `
@@ -7136,6 +7977,8 @@ document.addEventListener('DOMContentLoaded', () => {
         applyDynamicIslandSetting();
         applySocialInsightsSetting();
         applyHapticFeedbackSetting();
+        applyFriendAvatarStyleSetting();
+        applyLiveLockscreenSetting();
         updateDebugIndicator();
         initGyroscope();
         
@@ -7648,6 +8491,140 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // Friend Profile Avatar Style Selector Listener
+    if (friendAvatarStyleSelector) {
+        friendAvatarStyleSelector.addEventListener('click', (e) => {
+            const btn = e.target.closest('.avatar-style-btn');
+            if (btn && btn.dataset.avatarStyle) {
+                triggerHaptic('selection');
+                state.settings.friendAvatarStyle = btn.dataset.avatarStyle;
+                applyFriendAvatarStyleSetting();
+                saveState();
+                renderDashboard();
+                renderSettings();
+                showToast(`Avatar style set to ${btn.dataset.avatarStyle.toUpperCase()}`);
+            }
+        });
+    }
+
+    // Live Lock-Screen & Island Notification Toggle Listener
+    if (liveLockscreenToggle) {
+        liveLockscreenToggle.addEventListener('click', async () => {
+            if (!state.settings.liveLockScreenEnabled) {
+                if ('Notification' in window) {
+                    const perm = await Notification.requestPermission();
+                    if (perm !== 'granted') {
+                        showToast('Notification permission was denied.', 'error');
+                        return;
+                    }
+                } else {
+                    showToast('Live notifications not supported on this browser.', 'error');
+                    return;
+                }
+                state.settings.liveLockScreenEnabled = true;
+                triggerHaptic('success');
+                showToast('🟢 Live Lock-Screen & Island Active');
+            } else {
+                state.settings.liveLockScreenEnabled = false;
+                triggerHaptic('tap');
+                showToast('Live Lock-Screen disabled');
+            }
+            applyLiveLockscreenSetting();
+            saveState();
+        });
+    }
+
+    // Friend Profile & Avatar Customizer Modal Listeners
+    if (closeFriendAvatarModalBtn) {
+        closeFriendAvatarModalBtn.addEventListener('click', closeFriendAvatarModal);
+    }
+    if (cancelFriendAvatarBtn) {
+        cancelFriendAvatarBtn.addEventListener('click', closeFriendAvatarModal);
+    }
+    if (friendAvatarModal) {
+        friendAvatarModal.addEventListener('click', (e) => {
+            if (e.target === friendAvatarModal) closeFriendAvatarModal();
+        });
+    }
+    if (modalFriendEmojiGrid) {
+        modalFriendEmojiGrid.addEventListener('click', (e) => {
+            const btn = e.target.closest('.modal-emoji-btn');
+            if (btn) {
+                triggerHaptic('selection');
+                selectedModalEmoji = btn.dataset.emoji;
+                modalFriendEmojiGrid.querySelectorAll('.modal-emoji-btn').forEach(b => {
+                    if (b === btn) {
+                        b.classList.add('ring-2', 'ring-indigo-500', 'bg-indigo-100', 'dark:bg-indigo-900', 'scale-110');
+                    } else {
+                        b.classList.remove('ring-2', 'ring-indigo-500', 'bg-indigo-100', 'dark:bg-indigo-900', 'scale-110');
+                    }
+                });
+                const curInitials = modalFriendInitialsInput?.value?.trim() || getFriendInitials(currentCustomizingFriend);
+                const curGradient = getAvatarGradient(currentCustomizingFriend);
+                renderModalAvatarPreview(currentCustomizingFriend, selectedModalEmoji, curInitials, curGradient);
+            }
+        });
+    }
+    if (modalFriendInitialsInput) {
+        modalFriendInitialsInput.addEventListener('input', (e) => {
+            const curInitials = e.target.value.trim().toUpperCase() || getFriendInitials(currentCustomizingFriend);
+            const curGradient = getAvatarGradient(currentCustomizingFriend);
+            renderModalAvatarPreview(currentCustomizingFriend, selectedModalEmoji, curInitials, curGradient);
+        });
+    }
+    if (saveFriendAvatarBtn) {
+        saveFriendAvatarBtn.addEventListener('click', () => {
+            if (!currentCustomizingFriend) return;
+            triggerHaptic('success');
+            const customInitials = modalFriendInitialsInput?.value?.trim().toUpperCase() || getFriendInitials(currentCustomizingFriend);
+            const emoji = selectedModalEmoji || getAutoEmojiForName(currentCustomizingFriend);
+            const gradient = getAvatarGradient(currentCustomizingFriend);
+
+            if (!state.friendAvatars) state.friendAvatars = {};
+            state.friendAvatars[currentCustomizingFriend] = {
+                emoji,
+                customInitials,
+                gradient
+            };
+
+            saveState();
+            renderDashboard();
+            renderSettings();
+            closeFriendAvatarModal();
+            showToast(`Profile avatar updated for ${currentCustomizingFriend}!`);
+        });
+    }
+
+    // Persona Emoji Chips in Add Friend Form
+    let newFriendSelectedEmoji = '';
+    if (friendEmojiChips) {
+        friendEmojiChips.addEventListener('click', (e) => {
+            const btn = e.target.closest('.friend-emoji-chip');
+            if (btn) {
+                triggerHaptic('selection');
+                newFriendSelectedEmoji = btn.dataset.emoji;
+                if (customFriendEmojiInput) customFriendEmojiInput.value = '';
+                friendEmojiChips.querySelectorAll('.friend-emoji-chip').forEach(b => {
+                    if (b === btn) {
+                        b.classList.add('ring-2', 'ring-indigo-500', 'bg-indigo-100', 'dark:bg-indigo-900', 'scale-110');
+                    } else {
+                        b.classList.remove('ring-2', 'ring-indigo-500', 'bg-indigo-100', 'dark:bg-indigo-900', 'scale-110');
+                    }
+                });
+            }
+        });
+    }
+    if (customFriendEmojiInput) {
+        customFriendEmojiInput.addEventListener('input', (e) => {
+            newFriendSelectedEmoji = e.target.value.trim();
+            if (friendEmojiChips) {
+                friendEmojiChips.querySelectorAll('.friend-emoji-chip').forEach(b => {
+                    b.classList.remove('ring-2', 'ring-indigo-500', 'bg-indigo-100', 'dark:bg-indigo-900', 'scale-110');
+                });
+            }
+        });
+    }
+
     if (dynamicIslandPillBtn) {
         dynamicIslandPillBtn.addEventListener('click', () => toggleDynamicIsland());
     }
@@ -7762,6 +8739,18 @@ document.addEventListener('DOMContentLoaded', () => {
         if (pinBtn) handlePinSection(pinBtn.dataset.section);
         const highlightBtn = e.target.closest('.highlight-section-btn');
         if (highlightBtn) handleHighlightSection(highlightBtn.dataset.section);
+
+        const removeFriendBtn = e.target.closest('.remove-friend-btn');
+        if (removeFriendBtn) {
+            handleRemoveFriend(removeFriendBtn.dataset.friend, removeFriendBtn.dataset.section);
+            return;
+        }
+
+        const avatarBadge = e.target.closest('[data-action="edit-avatar"]');
+        if (avatarBadge) {
+            openFriendAvatarModal(avatarBadge.dataset.friend, avatarBadge.dataset.section);
+            return;
+        }
     });
 
     groupsList.addEventListener('click', (e) => {
@@ -7785,6 +8774,12 @@ document.addEventListener('DOMContentLoaded', () => {
         if (pinBtn) handlePinGroup(pinBtn.dataset.group);
         const highlightBtn = e.target.closest('.highlight-group-btn');
         if (highlightBtn) handleHighlightGroup(highlightBtn.dataset.group);
+
+        const avatarBadge = e.target.closest('[data-action="edit-avatar"]');
+        if (avatarBadge) {
+            openFriendAvatarModal(avatarBadge.dataset.friend, avatarBadge.dataset.section);
+            return;
+        }
     });
 
     dashboard.addEventListener('click', (e) => {
@@ -7822,7 +8817,16 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         const removeBtn = e.target.closest('.remove-friend-btn');
-        if (removeBtn) handleRemoveFriend(removeBtn.dataset.friend, removeBtn.dataset.section);
+        if (removeBtn) {
+            handleRemoveFriend(removeBtn.dataset.friend, removeBtn.dataset.section);
+            return;
+        }
+
+        const avatarBadge = e.target.closest('[data-action="edit-avatar"]');
+        if (avatarBadge) {
+            openFriendAvatarModal(avatarBadge.dataset.friend, avatarBadge.dataset.section);
+            return;
+        }
         
         const timelineBtn = e.target.closest('.view-timeline-btn');
         if (timelineBtn) {
