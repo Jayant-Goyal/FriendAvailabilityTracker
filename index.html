@@ -43,15 +43,17 @@
             to { opacity: 1; transform: translateY(0); }
         }
         .card-fade-in {
-            animation: fadeIn 0.5s ease-out forwards;
-            /* Add smooth height transition */
-            transition: height 0.4s cubic-bezier(0.25, 0.8, 0.25, 1), box-shadow 0.3s ease-in-out, border 0.3s ease-in-out, order 0.5s ease;
+            animation: fadeIn 0.45s ease-out forwards;
+            /* Smooth fluid height and perspective transitions */
+            transition: height 0.42s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s ease-in-out, border 0.3s ease-in-out, order 0.5s ease;
+            transform-style: preserve-3d;
+            will-change: height, transform;
         }
         /* Styles for swipeable cards */
         .card-inner-wrapper {
             display: flex;
             align-items: flex-start;
-            transition: transform 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+            transition: transform 0.42s cubic-bezier(0.4, 0, 0.2, 1);
             user-select: none;
             width: 100%;
         }
@@ -60,6 +62,7 @@
             flex-shrink: 0;
             align-self: flex-start;
             box-sizing: border-box;
+            transition: opacity 0.25s ease-in-out;
         }
         /* Handle 4 swipe states */
         [data-swipe-state="1"] .card-inner-wrapper {
@@ -4162,9 +4165,17 @@ document.addEventListener('DOMContentLoaded', () => {
         return `${DAYS[date.getDay()]} at ${formatTime(date)}`;
     };
 
-    const getScheduleForDay = (timetable, date) => {
-        const dayName = DAYS[date.getDay()];
-        return timetable.schedule.find(s => s.day.toLowerCase() === dayName.toLowerCase());
+    const getScheduleForDay = (timetable, dateOrDayName) => {
+        if (!timetable || !timetable.schedule) return null;
+        let dayName = '';
+        if (typeof dateOrDayName === 'string') {
+            dayName = dateOrDayName.toLowerCase();
+        } else if (dateOrDayName instanceof Date) {
+            dayName = DAYS[dateOrDayName.getDay()].toLowerCase();
+        } else {
+            return null;
+        }
+        return timetable.schedule.find(s => s.day && s.day.toLowerCase() === dayName);
     };
 
     const getClassAtTime = (timetable, date) => {
@@ -6681,27 +6692,51 @@ document.addEventListener('DOMContentLoaded', () => {
     const initCard3dParallax = () => {
         if (!dashboard) return;
 
+        let activeParallaxCard = null;
+
+        const resetParallaxCard = (card) => {
+            if (!card) return;
+            card.style.transition = 'transform 0.4s cubic-bezier(0.25, 0.8, 0.25, 1), box-shadow 0.3s ease, height 0.42s cubic-bezier(0.4, 0, 0.2, 1)';
+            card.style.transform = 'perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)';
+            card.style.zIndex = '';
+        };
+
         dashboard.addEventListener('mousemove', (e) => {
             if (!state.settings.card3dParallaxEnabled) return;
-            const card = e.target.closest('#dashboard > div');
-            if (!card) return;
+            if (window.innerWidth < 768) return; // Disable on small mobile touch devices to prevent conflict with swipe gestures
+
+            const card = e.target.closest('#dashboard > div[data-name]');
+            if (!card) {
+                if (activeParallaxCard) {
+                    resetParallaxCard(activeParallaxCard);
+                    activeParallaxCard = null;
+                }
+                return;
+            }
+
+            if (activeParallaxCard && activeParallaxCard !== card) {
+                resetParallaxCard(activeParallaxCard);
+            }
+            activeParallaxCard = card;
 
             const rect = card.getBoundingClientRect();
             const x = (e.clientX - rect.left) / rect.width - 0.5;
             const y = (e.clientY - rect.top) / rect.height - 0.5;
 
-            const rotateX = (-y * 8).toFixed(2);
-            const rotateY = (x * 8).toFixed(2);
+            const rotateX = (-y * 9).toFixed(2);
+            const rotateY = (x * 9).toFixed(2);
 
-            card.style.transform = `perspective(900px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.012, 1.012, 1.012)`;
+            card.style.transition = 'transform 0.08s ease-out, height 0.42s cubic-bezier(0.4, 0, 0.2, 1)';
+            card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.018, 1.018, 1.018)`;
+            card.style.zIndex = '15';
         }, { passive: true });
 
-        dashboard.addEventListener('mouseleave', (e) => {
-            const card = e.target.closest('#dashboard > div');
-            if (card) {
-                card.style.transform = '';
+        dashboard.addEventListener('mouseleave', () => {
+            if (activeParallaxCard) {
+                resetParallaxCard(activeParallaxCard);
+                activeParallaxCard = null;
             }
-        }, { capture: true, passive: true });
+        }, { passive: true });
     };
 
     // --- SOCIAL INSIGHTS & HANGOUT MATRIX ---
@@ -6710,30 +6745,38 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!baseSection || !baseSection.timetable) return [];
 
         const baseTimetable = baseSection.timetable;
-        const timeSlots = baseTimetable.timeSlots || [];
+        const baseSlots = baseTimetable.timeSlots || [];
         const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
-        const totalSlots = days.length * timeSlots.length;
-        if (totalSlots === 0) return [];
+        if (baseSlots.length === 0) return [];
 
         const results = [];
 
         Object.entries(state.sections).forEach(([secName, secData]) => {
-            if (secName === baseSectionName || !secData.timetable) return;
+            if (secName === baseSectionName || !secData || !secData.timetable) return;
 
+            const targetTimetable = secData.timetable;
             let sharedFreeCount = 0;
             let totalFreeForBase = 0;
             const dayMatchCounts = { Monday: 0, Tuesday: 0, Wednesday: 0, Thursday: 0, Friday: 0, Saturday: 0 };
 
             days.forEach(day => {
-                const baseDaySchedule = baseTimetable.schedule?.[day] || {};
-                const targetDaySchedule = secData.timetable.schedule?.[day] || {};
+                const baseDaySchedule = getScheduleForDay(baseTimetable, day);
+                const targetDaySchedule = getScheduleForDay(targetTimetable, day);
 
-                timeSlots.forEach(slot => {
-                    const baseClass = baseDaySchedule[slot];
-                    const targetClass = targetDaySchedule[slot];
+                baseSlots.forEach(slot => {
+                    const baseClass = baseDaySchedule?.classes?.find(c =>
+                        c.subject &&
+                        slot.lecture >= c.lecture &&
+                        slot.lecture < c.lecture + (c.span || 1)
+                    );
+                    const targetClass = targetDaySchedule?.classes?.find(c =>
+                        c.subject &&
+                        slot.lecture >= c.lecture &&
+                        slot.lecture < c.lecture + (c.span || 1)
+                    );
 
-                    const baseIsFree = !baseClass || !baseClass.subject;
-                    const targetIsFree = !targetClass || !targetClass.subject;
+                    const baseIsFree = !baseClass;
+                    const targetIsFree = !targetClass;
 
                     if (baseIsFree) totalFreeForBase++;
 
@@ -6775,7 +6818,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 matchScore,
                 sharedHours: sharedFreeCount,
                 bestDay,
-                bestDayHours: bestDayCount,
+                bestDayHours: Math.max(0, bestDayCount),
                 tier,
                 tierColor
             });
@@ -6790,43 +6833,49 @@ document.addEventListener('DOMContentLoaded', () => {
         const secList = Object.values(state.sections).filter(s => s && s.timetable);
         if (secList.length === 0) return [];
 
-        const hourStats = {};
+        const bounds = getTimelineBounds();
+        const periodTimes = bounds.periodTimes;
+        if (!periodTimes || periodTimes.length === 0) return [];
 
-        const standardHours = [
-            { label: '09:00 - 10:00', key: '9' },
-            { label: '10:00 - 11:00', key: '10' },
-            { label: '11:00 - 12:00', key: '11' },
-            { label: '12:00 - 01:00', key: '12' },
-            { label: '01:00 - 02:00', key: '13' },
-            { label: '02:00 - 03:00', key: '14' },
-            { label: '03:00 - 04:00', key: '15' },
-            { label: '04:00 - 05:00', key: '16' }
-        ];
+        const results = [];
 
-        standardHours.forEach(h => {
+        periodTimes.forEach((timeStr, idx) => {
+            if (idx === periodTimes.length - 1) return;
+            const nextTimeStr = periodTimes[idx + 1];
+            const [sh, sm] = timeStr.split(':').map(Number);
+
             let totalChecked = 0;
             let totalFree = 0;
 
-            secList.forEach(s => {
-                const slots = s.timetable.timeSlots || [];
-                days.forEach(d => {
-                    const sched = s.timetable.schedule?.[d] || {};
-                    slots.forEach(slotStr => {
-                        const startHour = parseInt(slotStr.split(':')[0], 10);
-                        if (startHour === parseInt(h.key, 10)) {
-                            totalChecked++;
-                            const cl = sched[slotStr];
-                            if (!cl || !cl.subject) totalFree++;
-                        }
-                    });
+            days.forEach(day => {
+                const sampleDate = new Date();
+                const dayIndex = DAYS.indexOf(day);
+                if (dayIndex !== -1) sampleDate.setDate(sampleDate.getDate() + (dayIndex - sampleDate.getDay()));
+                sampleDate.setHours(sh, sm, 0, 0);
+
+                secList.forEach(s => {
+                    totalChecked++;
+                    const currentClass = getClassAtTime(s.timetable, sampleDate);
+                    if (!currentClass) {
+                        totalFree++;
+                    }
                 });
             });
 
             const percent = totalChecked > 0 ? Math.round((totalFree / totalChecked) * 100) : 0;
-            hourStats[h.label] = percent;
+            const labelStart = formatTime(new Date(2000, 0, 1, sh, sm));
+            let labelEnd = '';
+            if (nextTimeStr) {
+                const [eh, em] = nextTimeStr.split(':').map(Number);
+                labelEnd = formatTime(new Date(2000, 0, 1, eh, em));
+            }
+            results.push({
+                hour: labelEnd ? `${labelStart} - ${labelEnd}` : labelStart,
+                percent
+            });
         });
 
-        return Object.entries(hourStats).map(([hour, percent]) => ({ hour, percent }));
+        return results;
     };
 
     const openAnalyticsModal = () => {
