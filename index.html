@@ -705,19 +705,36 @@
                         </button>
                     </div>
 
-                    <!-- Haptic Feedback (Android Vibration Motor) Toggle -->
-                    <div class="flex justify-between items-center p-3 bg-gray-100 dark:bg-gray-700 rounded-lg">
-                        <div>
-                            <label for="haptic-feedback-toggle" class="font-medium text-sm block flex items-center gap-1.5">
-                                <span>📳</span>
-                                <span>Haptic Vibration</span>
-                            </label>
-                            <span class="text-[11px] text-gray-500 dark:text-gray-400 block">Tactile response on taps, swipes & alerts</span>
+                    <!-- Haptic Feedback (Android Vibration Motor) -->
+                    <div class="p-3 bg-gray-100 dark:bg-gray-700 rounded-lg space-y-2.5">
+                        <div class="flex justify-between items-center">
+                            <div>
+                                <label for="haptic-feedback-toggle" class="font-medium text-sm block flex items-center gap-1.5">
+                                    <span>📳</span>
+                                    <span>Haptic Vibration</span>
+                                </label>
+                                <span class="text-[11px] text-gray-500 dark:text-gray-400 block">Tactile response on taps, swipes & alerts</span>
+                            </div>
+                            <button id="haptic-feedback-toggle" class="relative inline-flex items-center h-6 rounded-full w-11 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-gray-800">
+                                <span class="sr-only">Enable Haptic Feedback</span>
+                                <span class="inline-block w-4 h-4 transform bg-white rounded-full transition-transform"></span>
+                            </button>
                         </div>
-                        <button id="haptic-feedback-toggle" class="relative inline-flex items-center h-6 rounded-full w-11 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-gray-800">
-                            <span class="sr-only">Enable Haptic Feedback</span>
-                            <span class="inline-block w-4 h-4 transform bg-white rounded-full transition-transform"></span>
-                        </button>
+                        
+                        <!-- Vibration Test & Troubleshooting sub-panel -->
+                        <div id="haptic-options-panel" class="pt-2 border-t border-gray-200/60 dark:border-gray-600/60 space-y-2">
+                            <div class="flex items-center justify-between flex-wrap gap-2">
+                                <span class="text-xs font-semibold text-gray-700 dark:text-gray-300">Test Motor:</span>
+                                <div class="flex items-center gap-1.5">
+                                    <button id="test-vibrate-light-btn" type="button" class="px-2.5 py-1 text-xs font-semibold bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-lg border border-gray-200 dark:border-gray-600 shadow-2xs active:scale-95 transition-all">Light (50ms)</button>
+                                    <button id="test-vibrate-medium-btn" type="button" class="px-2.5 py-1 text-xs font-semibold bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 hover:bg-indigo-100 dark:hover:bg-indigo-900 rounded-lg border border-indigo-200 dark:border-indigo-800 shadow-2xs active:scale-95 transition-all">Medium (80ms)</button>
+                                    <button id="test-vibrate-pulse-btn" type="button" class="px-2.5 py-1 text-xs font-semibold bg-purple-50 dark:bg-purple-950/60 text-purple-700 dark:text-purple-300 hover:bg-purple-100 dark:hover:bg-purple-900 rounded-lg border border-purple-200 dark:border-purple-800 shadow-2xs active:scale-95 transition-all">Pulse ⚡</button>
+                                </div>
+                            </div>
+                            <p class="text-[10px] text-gray-500 dark:text-gray-400 leading-tight">
+                                💡 <em>Android tip: Ensure <strong>"Touch feedback / Haptic feedback"</strong> is turned ON in your Android System Settings ➔ Sound & Vibration.</em>
+                            </p>
+                        </div>
                     </div>
                 </div>
 
@@ -1217,6 +1234,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const glassmorphicGlowToggle = document.getElementById('glassmorphic-glow-toggle');
     const cardAnimationsToggle = document.getElementById('card-animations-toggle');
     const hapticFeedbackToggle = document.getElementById('haptic-feedback-toggle');
+    const hapticOptionsPanel = document.getElementById('haptic-options-panel');
+    const testVibrateLightBtn = document.getElementById('test-vibrate-light-btn');
+    const testVibrateMediumBtn = document.getElementById('test-vibrate-medium-btn');
+    const testVibratePulseBtn = document.getElementById('test-vibrate-pulse-btn');
 
     // Layout Mode Toggle elements
     const layoutToggleBtn = document.getElementById('layout-toggle-btn');
@@ -1879,48 +1900,61 @@ document.addEventListener('DOMContentLoaded', () => {
             if (enabled) {
                 hapticFeedbackToggle.classList.add('bg-indigo-600');
                 hapticFeedbackToggle.lastElementChild.classList.add('translate-x-5');
+                if (hapticOptionsPanel) hapticOptionsPanel.classList.remove('hidden');
             } else {
                 hapticFeedbackToggle.classList.remove('bg-indigo-600');
                 hapticFeedbackToggle.lastElementChild.classList.remove('translate-x-5');
+                if (hapticOptionsPanel) hapticOptionsPanel.classList.add('hidden');
             }
         }
     };
 
     // --- HAPTIC FEEDBACK (ANDROID VIBRATION MOTOR) ENGINE ---
     const triggerHaptic = (type = 'light') => {
-        if (!state.settings.hapticFeedbackEnabled) return;
-        if (!('vibrate' in navigator)) return;
+        if (!state.settings.hapticFeedbackEnabled) return false;
+        if (!('vibrate' in navigator)) {
+            logger("Web Vibration API (navigator.vibrate) not supported in this browser environment.");
+            return false;
+        }
 
         try {
+            let pattern = 50;
             switch (type) {
                 case 'selection':
                 case 'light':
-                    navigator.vibrate(15);
+                    pattern = 50; // Increased to 50ms for reliable physical motor response
                     break;
                 case 'click':
                 case 'medium':
-                    navigator.vibrate(30);
+                    pattern = 80; // 80ms solid tactile bump
+                    break;
+                case 'strong':
+                    pattern = 150;
                     break;
                 case 'success':
-                    navigator.vibrate([25, 35, 45]);
+                    pattern = [60, 50, 90]; // Tactile double pulse
                     break;
                 case 'alert':
                 case 'transition':
-                    navigator.vibrate([120, 60, 120]);
+                    pattern = [150, 70, 150]; // Two strong warning pulses
                     break;
                 case 'warning':
-                    navigator.vibrate([50, 40, 50, 40, 50]);
+                    pattern = [70, 40, 70, 40, 70];
                     break;
                 default:
                     if (typeof type === 'number' || Array.isArray(type)) {
-                        navigator.vibrate(type);
+                        pattern = type;
                     } else {
-                        navigator.vibrate(15);
+                        pattern = 50;
                     }
                     break;
             }
+            const result = navigator.vibrate(pattern);
+            logger(`Haptic vibration [${type}] fired:`, pattern, 'Result:', result);
+            return result;
         } catch (e) {
-            // Silently ignore
+            logger("Vibration error:", e);
+            return false;
         }
     };
 
@@ -4767,6 +4801,7 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     const copyMeetupSchedule = () => {
+        triggerHaptic('success');
         const freeSlots = calculateCommonFreeTime();
         if (freeSlots.length === 0) {
             showToast('No free slots to copy for this day.', 'error');
@@ -4792,7 +4827,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (navigator.clipboard && navigator.clipboard.writeText) {
             navigator.clipboard.writeText(message).then(() => {
-                triggerHaptic('success');
                 showToast('📋 Meetup schedule copied! Ready to share.');
             }).catch(() => {
                 showToast('Could not copy to clipboard.', 'error');
@@ -4905,6 +4939,7 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     const shareWhosFreeList = () => {
+        triggerHaptic('success');
         const statuses = calculateAllStatusesAndGroups();
         const freeItems = [];
 
@@ -4930,7 +4965,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (navigator.clipboard && navigator.clipboard.writeText) {
             navigator.clipboard.writeText(message).then(() => {
-                triggerHaptic('success');
                 showToast('📋 Free list copied to clipboard!');
             }).catch(() => {
                 showToast('Could not copy to clipboard.', 'error');
@@ -5694,6 +5728,39 @@ document.addEventListener('DOMContentLoaded', () => {
                 showToast('📳 Haptic Vibration enabled');
             } else {
                 showToast('Haptic Vibration disabled');
+            }
+        });
+    }
+
+    if (testVibrateLightBtn) {
+        testVibrateLightBtn.addEventListener('click', () => {
+            const res = triggerHaptic('light');
+            if (!('vibrate' in navigator)) {
+                showToast('Vibration API not supported on this browser.', 'error');
+            } else {
+                showToast('Light pulse (50ms) fired');
+            }
+        });
+    }
+
+    if (testVibrateMediumBtn) {
+        testVibrateMediumBtn.addEventListener('click', () => {
+            const res = triggerHaptic('medium');
+            if (!('vibrate' in navigator)) {
+                showToast('Vibration API not supported on this browser.', 'error');
+            } else {
+                showToast('Medium bump (80ms) fired');
+            }
+        });
+    }
+
+    if (testVibratePulseBtn) {
+        testVibratePulseBtn.addEventListener('click', () => {
+            const res = triggerHaptic('success');
+            if (!('vibrate' in navigator)) {
+                showToast('Vibration API not supported on this browser.', 'error');
+            } else {
+                showToast('Double pulse [60, 50, 90ms] fired');
             }
         });
     }
