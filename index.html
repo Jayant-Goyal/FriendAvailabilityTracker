@@ -146,41 +146,7 @@
             border: 1px solid rgba(252, 211, 77, 0.5);
         }
 
-        /* Timetable Fast-Scroll Bounce & Rubber-Band Animations */
-        @keyframes timetable-bounce-left {
-            0% { transform: translateX(0) scale(1); }
-            28% { transform: translateX(20px) scale(1.018); }
-            55% { transform: translateX(-8px) scale(0.995); }
-            78% { transform: translateX(3px) scale(1.002); }
-            100% { transform: translateX(0) scale(1); }
-        }
-        @keyframes timetable-bounce-right {
-            0% { transform: translateX(0) scale(1); }
-            28% { transform: translateX(-20px) scale(1.018); }
-            55% { transform: translateX(8px) scale(0.995); }
-            78% { transform: translateX(-3px) scale(1.002); }
-            100% { transform: translateX(0) scale(1); }
-        }
-        @keyframes timetable-bounce-generic {
-            0% { transform: scale(1); }
-            30% { transform: scale(1.03); }
-            60% { transform: scale(0.985); }
-            80% { transform: scale(1.008); }
-            100% { transform: scale(1); }
-        }
-        .timetable-bounce-left {
-            animation: timetable-bounce-left 0.48s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            will-change: transform;
-        }
-        .timetable-bounce-right {
-            animation: timetable-bounce-right 0.48s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            will-change: transform;
-        }
-        .timetable-bounce-fast {
-            animation: timetable-bounce-generic 0.45s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            will-change: transform;
-        }
-        
+
         /* --- START: LED INDICATOR STYLES --- */
         .led-indicator {
             width: 12px;
@@ -293,18 +259,16 @@
         }
         /* --- END: TIMELINE MODAL STYLES --- */
 
-        /* --- START: CARD TIMELINE STYLES (CLASSIC) --- */
         .card-timeline-container {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
+            position: relative;
             height: 10px;
             background-color: transparent; /* Background is now handled by segments */
-            border-top: 1px solid #000000;
+            border: 1px solid rgba(0, 0, 0, 0.2);
             overflow: hidden;
-            border-bottom-left-radius: 0.75rem;
-            border-bottom-right-radius: 0.75rem;
+            border-radius: 9999px;
+        }
+        .dark .card-timeline-container {
+            border-color: rgba(255, 255, 255, 0.2);
         }
         .timeline-card-segment-free, .timeline-card-segment-busy {
             position: absolute;
@@ -2641,17 +2605,16 @@ document.addEventListener('DOMContentLoaded', () => {
                 case 'dot':
                     pattern = scaleVal(45);
                     break;
+                case 'scroll':
+                case 'tick':
+                    pattern = scaleVal(30);
+                    break;
                 case 'selection':
                 case 'toggle':
                     pattern = scalePattern([40, 30, 45]);
                     break;
                 case 'swipe':
                     pattern = scaleVal(40);
-                    break;
-                case 'bounce':
-                case 'overscroll':
-                case 'rubberband':
-                    pattern = scalePattern([45, 25, 60]);
                     break;
                 case 'click':
                 case 'medium':
@@ -3417,7 +3380,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         return '';
                     }).join('');
                     
-                    timelineHtml = `<div class="card-timeline-container">${timelineSegmentsHtml}${timelineMarkersHtml}<div class="timeline-current-indicator-wrapper"></div></div>`;
+                    timelineHtml = `<div class="card-timeline-container relative mt-2.5 h-2 w-full rounded-full overflow-hidden border border-black/20 dark:border-white/20">${timelineSegmentsHtml}${timelineMarkersHtml}<div class="timeline-current-indicator-wrapper"></div></div>`;
                 } else if (state.settings.cardTimelineStyle === 'neon') {
                     const timelineMarkersHtml = periodTimes.map(timeStr => {
                         const [hour, minute] = timeStr.split(':').map(Number);
@@ -3430,7 +3393,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     }).join('');
                     
                     timelineHtml = `
-                        <div class="timeline-neon-track absolute bottom-2.5 left-4 right-4 h-3 rounded-full overflow-hidden backdrop-blur-md">
+                        <div class="timeline-neon-track relative mt-2.5 h-2.5 w-full rounded-full overflow-hidden backdrop-blur-md">
                             ${timelineMarkersHtml}
                             ${timelineSegmentsHtml}
                             <div class="timeline-current-indicator-wrapper w-full h-full absolute inset-0 pointer-events-none"></div>
@@ -3438,7 +3401,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 } else if (state.settings.cardTimelineStyle === 'pods') {
                     const podsHtml = generateCardTimelinePods(status, now);
                     timelineHtml = `
-                        <div class="timeline-pods-container absolute bottom-2.5 left-4 right-4 h-4 flex items-center justify-between gap-1 z-10 select-none">
+                        <div class="timeline-pods-container relative mt-2.5 h-3.5 w-full flex items-center justify-between gap-1 z-10 select-none">
                             ${podsHtml}
                         </div>`;
                 } else { // 'modern'
@@ -3453,7 +3416,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     }).join('');
                     
                     timelineHtml = `
-                        <div class="timeline-modern-track absolute bottom-2.5 left-4 right-4 h-2.5 bg-white/40 dark:bg-black/30 rounded-full overflow-hidden shadow-inner backdrop-blur-sm border border-gray-300/30 dark:border-gray-600/30">
+                        <div class="timeline-modern-track relative mt-2.5 h-2 w-full bg-white/40 dark:bg-black/30 rounded-full overflow-hidden shadow-inner backdrop-blur-sm border border-gray-300/30 dark:border-gray-600/30">
                             ${timelineMarkersHtml}
                             ${timelineSegmentsHtml}
                             <div class="timeline-current-indicator-wrapper w-full h-full absolute inset-0 pointer-events-none"></div>
@@ -3461,7 +3424,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             }
             
-            const contentPadding = state.settings.cardTimelineEnabled ? 'p-4 sm:p-5 pb-11 sm:pb-12' : 'p-4 sm:p-5';
+            const contentPadding = 'p-4 sm:p-5';
 
             let cardHtml = '';
 
@@ -3587,7 +3550,7 @@ document.addEventListener('DOMContentLoaded', () => {
                                         <span class="truncate">${escapeHTML(status.name)}</span>
                                     </h2>
                                     <div class="details-container mt-2"></div>
-                                    <div class="friends-container mt-3 flex flex-wrap gap-1.5 mb-1">${friendsHtml}</div>
+                                    <div class="friends-container mt-2.5 flex flex-wrap gap-1.5">${friendsHtml}</div>
                                 </div>
                                 <!-- Right Column: Status Text & Live Countdown Timer -->
                                 <div class="flex flex-col items-end flex-shrink-0 pt-0.5">
@@ -3598,8 +3561,8 @@ document.addEventListener('DOMContentLoaded', () => {
                                     <div class="card-countdown-badge mt-1.5 ${state.settings.showCountdownTimer ? '' : 'hidden'}"></div>
                                 </div>
                             </div>
+                            ${timelineHtml}
                         </div>
-                        ${timelineHtml}
                     </div>
                     <div class="card-next-class-view bg-gray-50 dark:bg-gray-800/50">${nextClassDetailsHtml}</div>
                     <div class="card-timetable-view bg-gray-50 dark:bg-gray-800/50">${timetableHtml}</div>
@@ -3623,8 +3586,8 @@ document.addEventListener('DOMContentLoaded', () => {
                                     <span class="truncate">${escapeHTML(status.name)}</span>
                                 </h2>
                                 <div class="details-container mt-2"></div>
-                                <div class="friends-container mt-3 flex flex-wrap gap-1.5 mb-1">${membersHtml}</div>
-                                <div class="mt-3.5">
+                                <div class="friends-container mt-2.5 flex flex-wrap gap-1.5">${membersHtml}</div>
+                                <div class="mt-3">
                                     <button data-group-name="${escapeHTML(status.name)}" class="view-timeline-btn w-full bg-purple-600 hover:bg-purple-700 text-white py-2 rounded-xl transition-colors font-semibold text-xs sm:text-sm shadow-2xs active:scale-[0.98]">View Timeline</button>
                                 </div>
                             </div>
@@ -3634,8 +3597,8 @@ document.addEventListener('DOMContentLoaded', () => {
                                 <div class="card-countdown-badge mt-1.5 ${state.settings.showCountdownTimer ? '' : 'hidden'}"></div>
                             </div>
                         </div>
+                        ${timelineHtml}
                     </div>
-                    ${timelineHtml}
                 </div>`;
             }
 
@@ -3847,10 +3810,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
                 const { startMin: TIMELINE_START_MIN, endMin: TIMELINE_END_MIN, totalDurationMin: TOTAL_DURATION_MIN, periodTimes } = getTimelineBounds(targetTimetable);
 
-                const cardNormalView = card.querySelector('.card-normal-view');
-                if (cardNormalView) {
+                const cardNormalContent = card.querySelector('.card-normal-view > .relative.z-10') || card.querySelector('.card-normal-view');
+                if (cardNormalContent) {
                     if (state.settings.cardTimelineStyle === 'pods') {
-                        let podsContainer = cardNormalView.querySelector('.timeline-pods-container');
+                        let podsContainer = cardNormalContent.querySelector('.timeline-pods-container');
                         const newPodsHtml = generateCardTimelinePods(status, now);
                         if (podsContainer) {
                             if (podsContainer.innerHTML !== newPodsHtml) {
@@ -3858,15 +3821,15 @@ document.addEventListener('DOMContentLoaded', () => {
                             }
                         } else {
                             const newPodsWrapper = document.createElement('div');
-                            newPodsWrapper.className = 'timeline-pods-container absolute bottom-2.5 left-4 right-4 h-4 flex items-center justify-between gap-1 z-10 select-none';
+                            newPodsWrapper.className = 'timeline-pods-container relative mt-2.5 h-3.5 w-full flex items-center justify-between gap-1 z-10 select-none';
                             newPodsWrapper.innerHTML = newPodsHtml;
-                            cardNormalView.appendChild(newPodsWrapper);
+                            cardNormalContent.appendChild(newPodsWrapper);
                         }
                     } else {
                         const newSegmentsHtml = generateCardTimelineSegments(status, now);
 
                         if (state.settings.cardTimelineStyle === 'classic') {
-                            const timelineContainer = cardNormalView.querySelector('.card-timeline-container');
+                            const timelineContainer = cardNormalContent.querySelector('.card-timeline-container');
                             if (timelineContainer) {
                                 const timelineMarkersHtml = periodTimes.map(timeStr => {
                                     const [hour, minute] = timeStr.split(':').map(Number);
@@ -3886,7 +3849,7 @@ document.addEventListener('DOMContentLoaded', () => {
                                 timelineContainer.innerHTML = `${newSegmentsHtml}${timelineMarkersHtml}<div class="timeline-current-indicator-wrapper">${indicatorHtml}</div>`;
                             }
                         } else if (state.settings.cardTimelineStyle === 'neon') {
-                            const timelineContainer = cardNormalView.querySelector('.timeline-neon-track');
+                            const timelineContainer = cardNormalContent.querySelector('.timeline-neon-track');
                             if (timelineContainer) {
                                 const timelineMarkersHtml = periodTimes.map(timeStr => {
                                     const [hour, minute] = timeStr.split(':').map(Number);
@@ -3906,7 +3869,7 @@ document.addEventListener('DOMContentLoaded', () => {
                                 timelineContainer.innerHTML = `${timelineMarkersHtml}${newSegmentsHtml}<div class="timeline-current-indicator-wrapper w-full h-full absolute inset-0 pointer-events-none">${indicatorHtml}</div>`;
                             }
                         } else { // 'modern'
-                            const timelineContainer = cardNormalView.querySelector('.timeline-modern-track') || cardNormalView.querySelector('.h-2\\.5.rounded-full');
+                            const timelineContainer = cardNormalContent.querySelector('.timeline-modern-track') || cardNormalContent.querySelector('.h-2\\.5.rounded-full');
                             if (timelineContainer) {
                                 const timelineMarkersHtml = periodTimes.map(timeStr => {
                                     const [hour, minute] = timeStr.split(':').map(Number);
@@ -5094,7 +5057,7 @@ document.addEventListener('DOMContentLoaded', () => {
         mouseCard = null;
     };
 
-    // --- FAST SCROLL & BOUNCE DETECTOR FOR 4th PAGE TIMETABLE ---
+    // --- SIMPLE SCROLLING HAPTIC FEEDBACK FOR TIMETABLE (4th View) ---
     const timetableScrollMap = new WeakMap();
 
     const handleTimetableScroll = (e) => {
@@ -5103,56 +5066,20 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const now = performance.now();
         const currentLeft = container.scrollLeft;
-        const maxScrollLeft = container.scrollWidth - container.clientWidth;
 
         let tracker = timetableScrollMap.get(container);
         if (!tracker) {
-            tracker = { lastLeft: currentLeft, lastTime: now, lastBounceTime: 0 };
+            tracker = { lastLeft: currentLeft, lastTime: now };
             timetableScrollMap.set(container, tracker);
             return;
         }
 
-        const timeDelta = Math.max(1, now - tracker.lastTime);
-        const scrollDelta = currentLeft - tracker.lastLeft;
-        const velocity = Math.abs(scrollDelta / timeDelta); // px/ms
-
-        tracker.lastLeft = currentLeft;
-        tracker.lastTime = now;
-
-        // Fast scroll velocity threshold (>= 0.85 px/ms indicates fast swipe/fling)
-        const FAST_SCROLL_VELOCITY = 0.85;
-        const BOUNCE_COOLDOWN = 380; // ms
-
-        if (now - tracker.lastBounceTime > BOUNCE_COOLDOWN) {
-            // Hit left boundary rapidly or hit right boundary rapidly
-            const hitLeft = currentLeft <= 0 && scrollDelta < 0 && velocity >= FAST_SCROLL_VELOCITY;
-            const hitRight = maxScrollLeft > 10 && currentLeft >= maxScrollLeft - 2 && scrollDelta > 0 && velocity >= FAST_SCROLL_VELOCITY;
-            // Or scrolling at very high fling velocity (>= 2.2 px/ms)
-            const isFuriousScroll = velocity >= 2.2;
-
-            if (hitLeft || hitRight || isFuriousScroll) {
-                tracker.lastBounceTime = now;
-                
-                // Trigger Rubber-Band Bounce Haptic
-                triggerHaptic('bounce');
-
-                // Apply Bounce Animation
-                const table = container.querySelector('.timetable-table') || container;
-                table.classList.remove('timetable-bounce-left', 'timetable-bounce-right', 'timetable-bounce-fast');
-                void table.offsetWidth; // Force CSS reflow
-
-                if (hitLeft) {
-                    table.classList.add('timetable-bounce-left');
-                } else if (hitRight) {
-                    table.classList.add('timetable-bounce-right');
-                } else {
-                    table.classList.add('timetable-bounce-fast');
-                }
-
-                setTimeout(() => {
-                    table.classList.remove('timetable-bounce-left', 'timetable-bounce-right', 'timetable-bounce-fast');
-                }, 500);
-            }
+        const scrollDist = Math.abs(currentLeft - tracker.lastLeft);
+        // Trigger subtle scroll tick every 60px of horizontal scroll distance
+        if (scrollDist >= 60 && (now - tracker.lastTime > 60)) {
+            tracker.lastLeft = currentLeft;
+            tracker.lastTime = now;
+            triggerHaptic('scroll');
         }
     };
 
@@ -5160,30 +5087,12 @@ document.addEventListener('DOMContentLoaded', () => {
         const container = e.target.closest ? e.target.closest('.timetable-scroll-container, .card-full-timetable-view .overflow-x-auto, .card-full-timetable-view .overflow-auto') : null;
         if (!container) return;
 
-        const maxScrollLeft = container.scrollWidth - container.clientWidth;
-        if (maxScrollLeft <= 0) return;
-
-        const deltaX = Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.deltaY;
-        const speed = Math.abs(deltaX);
-
-        if (speed > 60) { // Rapid wheel flick
-            const now = performance.now();
-            let tracker = timetableScrollMap.get(container) || { lastLeft: container.scrollLeft, lastTime: now, lastBounceTime: 0 };
-            if (now - tracker.lastBounceTime > 380) {
-                if ((container.scrollLeft <= 0 && deltaX < 0) || (container.scrollLeft >= maxScrollLeft - 2 && deltaX > 0)) {
-                    tracker.lastBounceTime = now;
-                    timetableScrollMap.set(container, tracker);
-                    triggerHaptic('bounce');
-                    const table = container.querySelector('.timetable-table') || container;
-                    table.classList.remove('timetable-bounce-left', 'timetable-bounce-right', 'timetable-bounce-fast');
-                    void table.offsetWidth;
-                    if (deltaX < 0) table.classList.add('timetable-bounce-left');
-                    else table.classList.add('timetable-bounce-right');
-                    setTimeout(() => {
-                        table.classList.remove('timetable-bounce-left', 'timetable-bounce-right', 'timetable-bounce-fast');
-                    }, 500);
-                }
-            }
+        const now = performance.now();
+        let tracker = timetableScrollMap.get(container) || { lastLeft: container.scrollLeft, lastTime: now };
+        if (now - tracker.lastTime > 120) {
+            tracker.lastTime = now;
+            timetableScrollMap.set(container, tracker);
+            triggerHaptic('scroll');
         }
     };
     
