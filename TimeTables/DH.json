@@ -6,7 +6,7 @@
     "section": "DH",
     "year": "III",
     "semester": "V Sem",
-    "type": "SEMINAR HALL-1"
+    "type": "LT"
   },
   "timeSlots": [
     { "lecture": 1, "time": "8.00-8.50" },
@@ -23,8 +23,8 @@
         { "lecture": 1, "subject": "DAA Lab", "venue": "VIB 511", "faculty": "Mr. Pushpendra Sharma", "span": 2 },
         { "lecture": 3, "subject": "FLAT", "venue": "SEMINAR HALL-1", "faculty": "Ms. Pragya Bharti" },
         { "lecture": 4, "subject": "IP", "venue": "SEMINAR HALL-1", "faculty": "Mr. Jay" },
-        { "lecture": 5, "subject": "Digital Forensic", "venue": "SEMINAR HALL-1", "faculty": "NF7" },
-        { "lecture": 6, "subject": "ML", "venue": "SEMINAR HALL-1", "faculty": "NF8" }
+        { "lecture": 5, "subject": "Digital Forensic", "venue": "SEMINAR HALL-1", "faculty": "Ms Jitisha" },
+        { "lecture": 6, "subject": "ML", "venue": "SEMINAR HALL-1", "faculty": "Ms Arpita" }
       ]
     },
     {
@@ -32,8 +32,8 @@
       "classes": [
         { "lecture": 1, "subject": "FLAT", "venue": "SEMINAR HALL-1", "faculty": "Ms. Pragya Bharti" },
         { "lecture": 2, "subject": "DAA", "venue": "SEMINAR HALL-1", "faculty": "Mr. Pushpendra Sharma" },
-        { "lecture": 3, "subject": "ML", "venue": "SEMINAR HALL-1", "faculty": "NF8" },
-        { "lecture": 4, "subject": "Digital Forensic", "venue": "SEMINAR HALL-1", "faculty": "NF7" },
+        { "lecture": 3, "subject": "ML", "venue": "SEMINAR HALL-1", "faculty": "Ms Arpita" },
+        { "lecture": 4, "subject": "Digital Forensic", "venue": "SEMINAR HALL-1", "faculty": "Ms Jitisha" },
         { "lecture": 5, "subject": "IP Lab", "venue": "VIB 511", "faculty": "Mr. Jay", "span": 2 }
       ]
     },
@@ -42,16 +42,16 @@
       "classes": [
         { "lecture": 1, "subject": "IP", "venue": "SEMINAR HALL-1", "faculty": "Mr. Jay" },
         { "lecture": 2, "subject": "FLAT", "venue": "SEMINAR HALL-1", "faculty": "Ms. Pragya Bharti" },
-        { "lecture": 3, "subject": "ML Lab", "venue": "VIB 508", "faculty": "NF8", "span": 2 },
+        { "lecture": 3, "subject": "ML Lab", "venue": "VIB 508", "faculty": "Ms Arpita", "span": 2 },
         { "lecture": 5, "subject": "DAA", "venue": "SEMINAR HALL-1", "faculty": "Mr. Pushpendra Sharma" },
-        { "lecture": 6, "subject": "Digital Forensic", "venue": "SEMINAR HALL-1", "faculty": "NF7" }
+        { "lecture": 6, "subject": "Digital Forensic", "venue": "SEMINAR HALL-1", "faculty": "Ms Jitisha" }
       ]
     },
     {
       "day": "Thursday",
       "classes": [
         { "lecture": 1, "subject": "DAA", "venue": "SEMINAR HALL-1", "faculty": "Mr. Pushpendra Sharma" },
-        { "lecture": 2, "subject": "ML", "venue": "SEMINAR HALL-1", "faculty": "NF8" },
+        { "lecture": 2, "subject": "ML", "venue": "SEMINAR HALL-1", "faculty": "Ms Arpita" },
         { "lecture": 3, "subject": "IP", "venue": "SEMINAR HALL-1", "faculty": "Mr. Jay" },
         { "lecture": 4, "details": null },
         { "lecture": 5, "details": null },
@@ -85,10 +85,10 @@
     { "subject": "FLAT", "faculty": "Ms. Pragya Bharti" },
     { "subject": "DAA", "faculty": "Mr. Pushpendra Sharma" },
     { "subject": "IP", "faculty": "Mr. Jay" },
-    { "subject": "ML", "faculty": "NF8" },
-    { "subject": "Digital Forensic", "faculty": "NF7" },
+    { "subject": "ML", "faculty": "Ms Arpita" },
+    { "subject": "Digital Forensic", "faculty": "Ms Jitisha" },
     { "subject": "DAA Lab", "faculty": "Mr. Pushpendra Sharma" },
     { "subject": "IP Lab", "faculty": "Mr. Jay" },
-    { "subject": "ML Lab", "faculty": "NF8" }
+    { "subject": "ML Lab", "faculty": "Ms Arpita" }
   ]
 }
