@@ -561,259 +561,399 @@
 
 
     <!-- Settings Panel (Modal) -->
-    <div id="settings-panel" class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm z-40 hidden">
-        <div id="settings-content" class="absolute top-0 right-0 h-full w-full max-w-sm bg-white dark:bg-gray-800 shadow-2xl transform translate-x-full transition-transform duration-300 ease-in-out p-6 flex flex-col">
-            <div class="flex justify-between items-center mb-6">
-                <h2 class="text-xl font-bold">Settings</h2>
-                <button id="close-settings-btn" class="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                    </svg>
-                </button>
-            </div>
-
-            <div class="flex-grow overflow-y-auto pr-2 -mr-2">
-                <!-- Theme Toggles -->
-                <div class="space-y-3 mb-6">
-                     <h3 class="font-semibold mb-2 border-b border-gray-200 dark:border-gray-600 pb-1">Display</h3>
-                    <div class="p-3 bg-gray-100 dark:bg-gray-700 rounded-lg">
-                        <div class="flex justify-between items-center mb-2">
-                            <label class="font-medium">App Theme Color</label>
-                            <span id="current-theme-name" class="text-xs font-semibold text-indigo-600 dark:text-indigo-400 capitalize">Indigo</span>
+    <div id="settings-panel" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 hidden">
+        <div id="settings-content" class="absolute top-0 right-0 h-full w-full max-w-md bg-white/95 dark:bg-gray-900/95 backdrop-blur-2xl border-l border-gray-200/80 dark:border-gray-800/80 shadow-2xl transform translate-x-full transition-transform duration-300 ease-out flex flex-col z-50">
+            
+            <!-- Header with Gradient Aura & Close button -->
+            <div class="px-5 pt-5 pb-3 border-b border-gray-200/70 dark:border-gray-800 flex flex-col space-y-3 bg-gradient-to-b from-indigo-50/50 dark:from-indigo-950/20 to-transparent flex-shrink-0">
+                <div class="flex justify-between items-center">
+                    <div class="flex items-center space-x-2.5">
+                        <div class="w-8 h-8 rounded-xl bg-indigo-600/10 dark:bg-indigo-400/20 flex items-center justify-center text-indigo-600 dark:text-indigo-400 flex-shrink-0">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
                         </div>
-                        <div class="flex justify-between gap-1.5 pt-1" id="theme-color-selector">
-                            <button data-theme="indigo" class="theme-picker-btn w-6 h-6 rounded-full bg-indigo-600 hover:scale-110 transition-transform shadow-xs" title="Indigo"></button>
-                            <button data-theme="purple" class="theme-picker-btn w-6 h-6 rounded-full bg-purple-600 hover:scale-110 transition-transform shadow-xs" title="Purple"></button>
-                            <button data-theme="blue" class="theme-picker-btn w-6 h-6 rounded-full bg-blue-600 hover:scale-110 transition-transform shadow-xs" title="Blue"></button>
-                            <button data-theme="emerald" class="theme-picker-btn w-6 h-6 rounded-full bg-emerald-600 hover:scale-110 transition-transform shadow-xs" title="Emerald"></button>
-                            <button data-theme="amber" class="theme-picker-btn w-6 h-6 rounded-full bg-amber-500 hover:scale-110 transition-transform shadow-xs" title="Amber"></button>
-                            <button data-theme="rose" class="theme-picker-btn w-6 h-6 rounded-full bg-rose-600 hover:scale-110 transition-transform shadow-xs" title="Rose"></button>
-                            <button data-theme="cyan" class="theme-picker-btn w-6 h-6 rounded-full bg-cyan-600 hover:scale-110 transition-transform shadow-xs" title="Cyan"></button>
+                        <div>
+                            <h2 class="text-base font-bold text-gray-900 dark:text-white tracking-tight">Preferences & Config</h2>
+                            <p class="text-[11px] text-gray-500 dark:text-gray-400">Themes, haptics, timetables & data</p>
                         </div>
                     </div>
-                    <div class="flex justify-between items-center p-3 bg-gray-100 dark:bg-gray-700 rounded-lg">
-                        <label for="dark-mode-toggle" class="font-medium">Dark Mode</label>
-                        <button id="dark-mode-toggle" class="relative inline-flex items-center h-6 rounded-full w-11 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-gray-800">
+                    <button id="close-settings-btn" class="p-2 rounded-xl text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors" title="Close Settings">
+                        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+
+                <!-- Instant Settings Search Bar -->
+                <div class="relative">
+                    <span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-gray-400">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                    </span>
+                    <input type="text" id="settings-search-input" placeholder="Search settings (e.g. vibrate, dark, timetable)..." class="w-full pl-9 pr-8 py-2 bg-gray-100/80 dark:bg-gray-800/80 border border-gray-200/80 dark:border-gray-700/80 rounded-xl text-xs text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all">
+                    <button id="settings-clear-search-btn" class="absolute inset-y-0 right-0 pr-2.5 flex items-center text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 hidden">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                    </button>
+                </div>
+
+                <!-- Category Segmented Navigation Tabs -->
+                <div class="flex p-1 bg-gray-100 dark:bg-gray-800/90 rounded-2xl gap-1 text-center" role="tablist">
+                    <button type="button" class="settings-tab-btn flex-1 py-1.5 px-2 text-xs font-semibold rounded-xl transition-all shadow-xs bg-indigo-600 text-white dark:bg-indigo-500" data-tab="display">
+                        🎨 Display
+                    </button>
+                    <button type="button" class="settings-tab-btn flex-1 py-1.5 px-2 text-xs font-medium rounded-xl transition-all text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-200/60 dark:hover:bg-gray-700/60" data-tab="haptics">
+                        📳 Haptics
+                    </button>
+                    <button type="button" class="settings-tab-btn flex-1 py-1.5 px-2 text-xs font-medium rounded-xl transition-all text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-200/60 dark:hover:bg-gray-700/60" data-tab="directory">
+                        👥 Directory
+                    </button>
+                    <button type="button" class="settings-tab-btn flex-1 py-1.5 px-2 text-xs font-medium rounded-xl transition-all text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-200/60 dark:hover:bg-gray-700/60" data-tab="data">
+                        ⚡ Data
+                    </button>
+                </div>
+            </div>
+
+            <!-- Scrollable Body with Panes -->
+            <div class="flex-grow overflow-y-auto px-5 py-4 space-y-3.5">
+                
+                <!-- ==================== PANE 1: DISPLAY & THEME ==================== -->
+                <div id="settings-pane-display" class="settings-pane space-y-3" data-pane="display">
+                    
+                    <!-- Theme Palette Card -->
+                    <div class="settings-searchable-item p-3.5 bg-gray-50/80 dark:bg-gray-800/60 border border-gray-200/70 dark:border-gray-700/60 rounded-2xl space-y-2.5 shadow-2xs">
+                        <div class="flex justify-between items-center">
+                            <div>
+                                <label class="font-bold text-sm text-gray-900 dark:text-white block">Accent Palette</label>
+                                <span class="text-[11px] text-gray-500 dark:text-gray-400">Primary dashboard & button tint</span>
+                            </div>
+                            <span id="current-theme-name" class="text-xs font-bold px-2 py-0.5 rounded-md bg-indigo-100 dark:bg-indigo-950/80 text-indigo-700 dark:text-indigo-300 capitalize">Indigo</span>
+                        </div>
+                        <div class="flex justify-between gap-1.5 pt-1" id="theme-color-selector">
+                            <button data-theme="indigo" class="theme-picker-btn w-7 h-7 rounded-full bg-indigo-600 hover:scale-110 transition-transform shadow-xs flex items-center justify-center text-white" title="Indigo"></button>
+                            <button data-theme="purple" class="theme-picker-btn w-7 h-7 rounded-full bg-purple-600 hover:scale-110 transition-transform shadow-xs flex items-center justify-center text-white" title="Purple"></button>
+                            <button data-theme="blue" class="theme-picker-btn w-7 h-7 rounded-full bg-blue-600 hover:scale-110 transition-transform shadow-xs flex items-center justify-center text-white" title="Blue"></button>
+                            <button data-theme="emerald" class="theme-picker-btn w-7 h-7 rounded-full bg-emerald-600 hover:scale-110 transition-transform shadow-xs flex items-center justify-center text-white" title="Emerald"></button>
+                            <button data-theme="amber" class="theme-picker-btn w-7 h-7 rounded-full bg-amber-500 hover:scale-110 transition-transform shadow-xs flex items-center justify-center text-white" title="Amber"></button>
+                            <button data-theme="rose" class="theme-picker-btn w-7 h-7 rounded-full bg-rose-600 hover:scale-110 transition-transform shadow-xs flex items-center justify-center text-white" title="Rose"></button>
+                            <button data-theme="cyan" class="theme-picker-btn w-7 h-7 rounded-full bg-cyan-600 hover:scale-110 transition-transform shadow-xs flex items-center justify-center text-white" title="Cyan"></button>
+                        </div>
+                    </div>
+
+                    <!-- Dark Mode Toggle -->
+                    <div class="settings-searchable-item flex justify-between items-center p-3.5 bg-gray-50/80 dark:bg-gray-800/60 border border-gray-200/70 dark:border-gray-700/60 rounded-2xl shadow-2xs">
+                        <div>
+                            <label for="dark-mode-toggle" class="font-bold text-sm text-gray-900 dark:text-white block">Dark Mode</label>
+                            <span class="text-[11px] text-gray-500 dark:text-gray-400">Deep slate theme for nighttime viewing</span>
+                        </div>
+                        <button id="dark-mode-toggle" class="relative inline-flex items-center h-6 rounded-full w-11 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-gray-800 flex-shrink-0">
                             <span class="sr-only">Enable dark mode</span>
                             <span class="inline-block w-4 h-4 transform bg-white rounded-full transition-transform"></span>
                         </button>
                     </div>
-                    <div class="flex justify-between items-center p-3 bg-gray-100 dark:bg-gray-700 rounded-lg">
-                        <label for="led-indicator-toggle" class="font-medium">LED Indicator</label>
-                        <button id="led-indicator-toggle" class="relative inline-flex items-center h-6 rounded-full w-11 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-gray-800">
+
+                    <!-- Glassmorphism & Ambient Glow -->
+                    <div class="settings-searchable-item flex justify-between items-center p-3.5 bg-gray-50/80 dark:bg-gray-800/60 border border-gray-200/70 dark:border-gray-700/60 rounded-2xl shadow-2xs">
+                        <div>
+                            <label for="glassmorphic-glow-toggle" class="font-bold text-sm text-gray-900 dark:text-white block">Glassmorphism Glow</label>
+                            <span class="text-[11px] text-gray-500 dark:text-gray-400">Frosted cards & status ambient aura</span>
+                        </div>
+                        <button id="glassmorphic-glow-toggle" class="relative inline-flex items-center h-6 rounded-full w-11 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-gray-800 flex-shrink-0">
+                            <span class="sr-only">Enable Glassmorphic Glow</span>
+                            <span class="inline-block w-4 h-4 transform bg-white rounded-full transition-transform"></span>
+                        </button>
+                    </div>
+
+                    <!-- Card Micro-Interactions -->
+                    <div class="settings-searchable-item flex justify-between items-center p-3.5 bg-gray-50/80 dark:bg-gray-800/60 border border-gray-200/70 dark:border-gray-700/60 rounded-2xl shadow-2xs">
+                        <div>
+                            <label for="card-animations-toggle" class="font-bold text-sm text-gray-900 dark:text-white block">Micro-Interactions</label>
+                            <span class="text-[11px] text-gray-500 dark:text-gray-400">Tactile press bounce & card elevations</span>
+                        </div>
+                        <button id="card-animations-toggle" class="relative inline-flex items-center h-6 rounded-full w-11 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-gray-800 flex-shrink-0">
+                            <span class="sr-only">Enable Card Micro-Interactions</span>
+                            <span class="inline-block w-4 h-4 transform bg-white rounded-full transition-transform"></span>
+                        </button>
+                    </div>
+
+                    <!-- Mobile Bottom Sheets -->
+                    <div class="settings-searchable-item flex justify-between items-center p-3.5 bg-gray-50/80 dark:bg-gray-800/60 border border-gray-200/70 dark:border-gray-700/60 rounded-2xl shadow-2xs">
+                        <div>
+                            <label for="bottom-sheets-toggle" class="font-bold text-sm text-gray-900 dark:text-white block">Mobile Bottom Sheets</label>
+                            <span class="text-[11px] text-gray-500 dark:text-gray-400">Slide-up sheets on mobile viewport</span>
+                        </div>
+                        <button id="bottom-sheets-toggle" class="relative inline-flex items-center h-6 rounded-full w-11 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-gray-800 flex-shrink-0">
+                            <span class="sr-only">Enable Mobile Bottom Sheets</span>
+                            <span class="inline-block w-4 h-4 transform bg-white rounded-full transition-transform"></span>
+                        </button>
+                    </div>
+
+                    <!-- LED Indicator Toggle -->
+                    <div class="settings-searchable-item flex justify-between items-center p-3.5 bg-gray-50/80 dark:bg-gray-800/60 border border-gray-200/70 dark:border-gray-700/60 rounded-2xl shadow-2xs">
+                        <div>
+                            <label for="led-indicator-toggle" class="font-bold text-sm text-gray-900 dark:text-white block">Status LED Dot</label>
+                            <span class="text-[11px] text-gray-500 dark:text-gray-400">Pulsing green/red availability indicator</span>
+                        </div>
+                        <button id="led-indicator-toggle" class="relative inline-flex items-center h-6 rounded-full w-11 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-gray-800 flex-shrink-0">
                             <span class="sr-only">Enable LED Indicator</span>
                             <span class="inline-block w-4 h-4 transform bg-white rounded-full transition-transform"></span>
                         </button>
                     </div>
-                    
-                    <div class="flex flex-col p-3 bg-gray-100 dark:bg-gray-700 rounded-lg">
-                        <div class="flex justify-between items-center w-full">
-                            <label for="card-timeline-toggle" class="font-medium">Show Card Timeline</label>
-                            <button id="card-timeline-toggle" class="relative inline-flex items-center h-6 rounded-full w-11 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-gray-800">
-                                <span class="sr-only">Enable Card Timeline</span>
-                                <span class="inline-block w-4 h-4 transform bg-white rounded-full transition-transform"></span>
-                            </button>
-                        </div>
-                        <div id="card-timeline-options" class="mt-3 hidden w-full">
-                            <label class="font-medium text-xs mb-1.5 block text-gray-500 dark:text-gray-400 uppercase tracking-wider">Style</label>
-                            <div class="flex space-x-2">
-                                <button data-style="modern" class="timeline-style-btn flex-1 py-1.5 px-3 text-sm rounded-md bg-indigo-600 text-white font-medium transition-colors shadow-sm">Modern</button>
-                                <button data-style="classic" class="timeline-style-btn flex-1 py-1.5 px-3 text-sm rounded-md bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-300 font-medium transition-colors hover:bg-gray-300 dark:hover:bg-gray-500">Classic</button>
-                            </div>
-                        </div>
-                    </div>
 
-                    <div class="flex justify-between items-center p-3 bg-gray-100 dark:bg-gray-700 rounded-lg">
-                        <label for="previous-venue-toggle" class="font-medium">Show Previous Venue</label>
-                        <button id="previous-venue-toggle" class="relative inline-flex items-center h-6 rounded-full w-11 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-gray-800">
-                            <span class="sr-only">Enable Previous Venue Widget</span>
-                            <span class="inline-block w-4 h-4 transform bg-white rounded-full transition-transform"></span>
-                        </button>
-                    </div>
-                    <div id="previous-venue-options" class="space-y-2 p-3 bg-gray-100 dark:bg-gray-700 rounded-lg hidden">
-                        <label for="previous-venue-time-limit" class="font-medium text-sm">Time Limit (minutes)</label>
-                        <input type="number" id="previous-venue-time-limit" min="1" max="60" class="w-full bg-gray-200 dark:bg-gray-600 border-gray-300 dark:border-gray-500 rounded-md p-2 text-sm focus:ring-indigo-500 focus:border-indigo-500">
-                    </div>
-
-                    <!-- Live Countdown Timer -->
-                    <div class="flex justify-between items-center p-3 bg-gray-100 dark:bg-gray-700 rounded-lg">
-                        <label for="countdown-toggle" class="font-medium">Live Countdown Badges</label>
-                        <button id="countdown-toggle" class="relative inline-flex items-center h-6 rounded-full w-11 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-gray-800">
+                    <!-- Live Countdown Badges -->
+                    <div class="settings-searchable-item flex justify-between items-center p-3.5 bg-gray-50/80 dark:bg-gray-800/60 border border-gray-200/70 dark:border-gray-700/60 rounded-2xl shadow-2xs">
+                        <div>
+                            <label for="countdown-toggle" class="font-bold text-sm text-gray-900 dark:text-white block">Live Countdown Badges</label>
+                            <span class="text-[11px] text-gray-500 dark:text-gray-400">Real-time ticker to next class/period</span>
+                        </div>
+                        <button id="countdown-toggle" class="relative inline-flex items-center h-6 rounded-full w-11 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-gray-800 flex-shrink-0">
                             <span class="sr-only">Enable Live Countdown Badges</span>
                             <span class="inline-block w-4 h-4 transform bg-white rounded-full transition-transform"></span>
                         </button>
                     </div>
 
-                    <!-- Class Transition Notifications & Chimes -->
-                    <div class="flex flex-col p-3 bg-gray-100 dark:bg-gray-700 rounded-lg space-y-3">
+                    <!-- Card Timeline Toggle & Style -->
+                    <div class="settings-searchable-item flex flex-col p-3.5 bg-gray-50/80 dark:bg-gray-800/60 border border-gray-200/70 dark:border-gray-700/60 rounded-2xl space-y-2.5 shadow-2xs">
                         <div class="flex justify-between items-center w-full">
-                            <label for="transition-alerts-toggle" class="font-medium">Class Transition Alerts</label>
-                            <button id="transition-alerts-toggle" class="relative inline-flex items-center h-6 rounded-full w-11 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-gray-800">
+                            <div>
+                                <label for="card-timeline-toggle" class="font-bold text-sm text-gray-900 dark:text-white block">Card Timeline Bar</label>
+                                <span class="text-[11px] text-gray-500 dark:text-gray-400">Mini progress bar directly on cards</span>
+                            </div>
+                            <button id="card-timeline-toggle" class="relative inline-flex items-center h-6 rounded-full w-11 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-gray-800 flex-shrink-0">
+                                <span class="sr-only">Enable Card Timeline</span>
+                                <span class="inline-block w-4 h-4 transform bg-white rounded-full transition-transform"></span>
+                            </button>
+                        </div>
+                        <div id="card-timeline-options" class="mt-2 hidden w-full pt-2.5 border-t border-gray-200/60 dark:border-gray-700/60">
+                            <label class="font-bold text-[10px] mb-1.5 block text-gray-500 dark:text-gray-400 uppercase tracking-wider">Timeline Rendering Style</label>
+                            <div class="flex space-x-2">
+                                <button data-style="modern" class="timeline-style-btn flex-1 py-1.5 px-3 text-xs rounded-xl bg-indigo-600 text-white font-semibold transition-colors shadow-xs">Modern Pill</button>
+                                <button data-style="classic" class="timeline-style-btn flex-1 py-1.5 px-3 text-xs rounded-xl bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 font-semibold transition-colors hover:bg-gray-300 dark:hover:bg-gray-600">Classic Segment</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Previous Venue Tracker -->
+                    <div class="settings-searchable-item flex flex-col p-3.5 bg-gray-50/80 dark:bg-gray-800/60 border border-gray-200/70 dark:border-gray-700/60 rounded-2xl space-y-2.5 shadow-2xs">
+                        <div class="flex justify-between items-center w-full">
+                            <div>
+                                <label for="previous-venue-toggle" class="font-bold text-sm text-gray-900 dark:text-white block">Previous Venue Tracker</label>
+                                <span class="text-[11px] text-gray-500 dark:text-gray-400">Show room from last attended class</span>
+                            </div>
+                            <button id="previous-venue-toggle" class="relative inline-flex items-center h-6 rounded-full w-11 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-gray-800 flex-shrink-0">
+                                <span class="sr-only">Enable Previous Venue Widget</span>
+                                <span class="inline-block w-4 h-4 transform bg-white rounded-full transition-transform"></span>
+                            </button>
+                        </div>
+                        <div id="previous-venue-options" class="pt-2.5 border-t border-gray-200/60 dark:border-gray-700/60 space-y-1.5 hidden">
+                            <label for="previous-venue-time-limit" class="font-bold text-[10px] text-gray-500 dark:text-gray-400 uppercase tracking-wider">Visibility Limit (minutes)</label>
+                            <input type="number" id="previous-venue-time-limit" min="1" max="60" class="w-full bg-white dark:bg-gray-700/80 border border-gray-200 dark:border-gray-600 rounded-xl p-2 text-xs text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ==================== PANE 2: HAPTICS & AUDIO ==================== -->
+                <div id="settings-pane-haptics" class="settings-pane space-y-3.5 hidden" data-pane="haptics">
+                    
+                    <!-- Haptic Vibration Engine Card -->
+                    <div class="settings-searchable-item p-3.5 bg-gray-50/80 dark:bg-gray-800/60 border border-gray-200/70 dark:border-gray-700/60 rounded-2xl space-y-3 shadow-2xs">
+                        <div class="flex justify-between items-center">
+                            <div>
+                                <label for="haptic-feedback-toggle" class="font-bold text-sm text-gray-900 dark:text-white flex items-center gap-1.5">
+                                    <span>📳</span>
+                                    <span>Haptic Vibration Engine</span>
+                                </label>
+                                <span class="text-[11px] text-gray-500 dark:text-gray-400 block">Tactile response on taps, swipes, cards & alerts</span>
+                            </div>
+                            <button id="haptic-feedback-toggle" class="relative inline-flex items-center h-6 rounded-full w-11 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-gray-800 flex-shrink-0">
+                                <span class="sr-only">Enable Haptic Feedback</span>
+                                <span class="inline-block w-4 h-4 transform bg-white rounded-full transition-transform"></span>
+                            </button>
+                        </div>
+                        
+                        <!-- Vibration Intensity & Signature Tester sub-panel -->
+                        <div id="haptic-options-panel" class="pt-2.5 border-t border-gray-200/60 dark:border-gray-700/60 space-y-3">
+                            <!-- Intensity Mode Selector -->
+                            <div class="flex items-center justify-between">
+                                <span class="text-xs font-bold text-gray-700 dark:text-gray-300">Motor Intensity</span>
+                                <div class="inline-flex rounded-xl p-0.5 bg-gray-200/80 dark:bg-gray-900" role="group">
+                                    <button type="button" class="haptic-intensity-btn px-2.5 py-1 text-xs font-medium rounded-lg transition-all" data-intensity="gentle">Gentle</button>
+                                    <button type="button" class="haptic-intensity-btn px-2.5 py-1 text-xs font-medium rounded-lg transition-all" data-intensity="normal">Normal</button>
+                                    <button type="button" class="haptic-intensity-btn px-2.5 py-1 text-xs font-medium rounded-lg transition-all" data-intensity="strong">Strong</button>
+                                </div>
+                            </div>
+
+                            <!-- Vibration Profiles Studio Tester -->
+                            <div class="space-y-1.5">
+                                <span class="text-[11px] font-bold text-gray-600 dark:text-gray-400 block">Test Tactile Signatures:</span>
+                                <div class="grid grid-cols-3 gap-1.5">
+                                    <button id="test-vibrate-tap-btn" type="button" class="px-2 py-2 text-xs font-semibold bg-white dark:bg-gray-700/80 hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-xl border border-gray-200/80 dark:border-gray-600 shadow-2xs active:scale-95 transition-all text-center">👆 Tap</button>
+                                    <button id="test-vibrate-select-btn" type="button" class="px-2 py-2 text-xs font-semibold bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 hover:bg-indigo-100 dark:hover:bg-indigo-900/80 rounded-xl border border-indigo-200 dark:border-indigo-800 shadow-2xs active:scale-95 transition-all text-center">🔘 Select</button>
+                                    <button id="test-vibrate-impact-btn" type="button" class="px-2 py-2 text-xs font-semibold bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 hover:bg-blue-100 dark:hover:bg-blue-900/80 rounded-xl border border-blue-200 dark:border-blue-800 shadow-2xs active:scale-95 transition-all text-center">💥 Impact</button>
+                                    <button id="test-vibrate-success-btn" type="button" class="px-2 py-2 text-xs font-semibold bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 hover:bg-emerald-100 dark:hover:bg-emerald-900/80 rounded-xl border border-emerald-200 dark:border-emerald-800 shadow-2xs active:scale-95 transition-all text-center">✨ Success</button>
+                                    <button id="test-vibrate-golden-btn" type="button" class="px-2 py-2 text-xs font-semibold bg-amber-50 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 hover:bg-amber-100 dark:hover:bg-amber-900/80 rounded-xl border border-amber-200 dark:border-amber-800 shadow-2xs active:scale-95 transition-all text-center">🏆 Golden</button>
+                                    <button id="test-vibrate-alert-btn" type="button" class="px-2 py-2 text-xs font-semibold bg-rose-50 dark:bg-rose-950/60 text-rose-700 dark:text-rose-300 hover:bg-rose-100 dark:hover:bg-rose-900/80 rounded-xl border border-rose-200 dark:border-rose-800 shadow-2xs active:scale-95 transition-all text-center">🚨 Alarm</button>
+                                </div>
+                            </div>
+
+                            <div id="haptic-browser-warning" class="hidden p-2.5 rounded-xl bg-amber-50 dark:bg-amber-950/50 border border-amber-200 dark:border-amber-800 text-[11px] text-amber-800 dark:text-amber-300 leading-tight">
+                                ⚠️ <strong>Firefox Android Notice:</strong> Mozilla deprecated the Vibration API across Firefox mobile (v129+). For tactile vibrations, open SyncUp in <strong>Chrome</strong>, <strong>Edge</strong>, <strong>Samsung Internet</strong>, or install to Home Screen from Chrome.
+                            </div>
+                            <p class="text-[10px] text-gray-500 dark:text-gray-400 leading-tight">
+                                💡 <em>Ensure <strong>"Touch feedback / Haptic feedback"</strong> is enabled in Android Settings ➔ Sound & Vibration.</em>
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Class Transition Notifications & Chimes -->
+                    <div class="settings-searchable-item flex flex-col p-3.5 bg-gray-50/80 dark:bg-gray-800/60 border border-gray-200/70 dark:border-gray-700/60 rounded-2xl space-y-3 shadow-2xs">
+                        <div class="flex justify-between items-center w-full">
+                            <div>
+                                <label for="transition-alerts-toggle" class="font-bold text-sm text-gray-900 dark:text-white flex items-center gap-1.5">
+                                    <span>🔔</span>
+                                    <span>Class Transition Alerts</span>
+                                </label>
+                                <span class="text-[11px] text-gray-500 dark:text-gray-400 block">Push notifications before class starts</span>
+                            </div>
+                            <button id="transition-alerts-toggle" class="relative inline-flex items-center h-6 rounded-full w-11 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-gray-800 flex-shrink-0">
                                 <span class="sr-only">Enable Class Transition Alerts</span>
                                 <span class="inline-block w-4 h-4 transform bg-white rounded-full transition-transform"></span>
                             </button>
                         </div>
-                        <div id="transition-alerts-options" class="space-y-2.5 pt-2 border-t border-gray-200 dark:border-gray-600 hidden">
+                        <div id="transition-alerts-options" class="space-y-3 pt-2.5 border-t border-gray-200/60 dark:border-gray-700/60 hidden">
                             <div class="flex justify-between items-center">
-                                <label for="audio-chime-toggle" class="text-sm font-medium">Play Audio Chime</label>
+                                <div>
+                                    <label for="audio-chime-toggle" class="text-xs font-bold text-gray-800 dark:text-gray-200 block">Audio Chime Synthesizer</label>
+                                    <span class="text-[10px] text-gray-500">Play dual-tone transition chime</span>
+                                </div>
                                 <button id="audio-chime-toggle" class="relative inline-flex items-center h-5 rounded-full w-9 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500">
                                     <span class="sr-only">Enable Audio Chime</span>
                                     <span class="inline-block w-3.5 h-3.5 transform bg-white rounded-full transition-transform"></span>
                                 </button>
                             </div>
                             <div class="space-y-1">
-                                <label for="alert-lead-time" class="text-xs font-medium text-gray-500 dark:text-gray-400">Advance Notice (minutes)</label>
-                                <input type="number" id="alert-lead-time" min="1" max="15" class="w-full bg-gray-200 dark:bg-gray-600 border-gray-300 dark:border-gray-500 rounded-md p-1.5 text-xs focus:ring-indigo-500 focus:border-indigo-500">
+                                <label for="alert-lead-time" class="text-[10px] font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Advance Notice Window (minutes)</label>
+                                <input type="number" id="alert-lead-time" min="1" max="15" class="w-full bg-white dark:bg-gray-700/80 border border-gray-200 dark:border-gray-600 rounded-xl p-2 text-xs text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:outline-none">
                             </div>
                         </div>
                     </div>
+                </div>
 
-                    <!-- Visual & UI Customization Controls (Option 6) -->
-                    <!-- Mobile Bottom Sheets Toggle -->
-                    <div class="flex justify-between items-center p-3 bg-gray-100 dark:bg-gray-700 rounded-lg">
-                        <div>
-                            <label for="bottom-sheets-toggle" class="font-medium text-sm block">Mobile Bottom Sheets</label>
-                            <span class="text-[11px] text-gray-500 dark:text-gray-400 block">Slide-up sheets on mobile screens</span>
-                        </div>
-                        <button id="bottom-sheets-toggle" class="relative inline-flex items-center h-6 rounded-full w-11 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-gray-800">
-                            <span class="sr-only">Enable Mobile Bottom Sheets</span>
-                            <span class="inline-block w-4 h-4 transform bg-white rounded-full transition-transform"></span>
-                        </button>
-                    </div>
-
-                    <!-- Glassmorphism & Ambient Glow Toggle -->
-                    <div class="flex justify-between items-center p-3 bg-gray-100 dark:bg-gray-700 rounded-lg">
-                        <div>
-                            <label for="glassmorphic-glow-toggle" class="font-medium text-sm block">Glassmorphic Glow</label>
-                            <span class="text-[11px] text-gray-500 dark:text-gray-400 block">Frosted cards & status ambient aura</span>
-                        </div>
-                        <button id="glassmorphic-glow-toggle" class="relative inline-flex items-center h-6 rounded-full w-11 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-gray-800">
-                            <span class="sr-only">Enable Glassmorphic Glow</span>
-                            <span class="inline-block w-4 h-4 transform bg-white rounded-full transition-transform"></span>
-                        </button>
-                    </div>
-
-                    <!-- Card Micro-Interactions Toggle -->
-                    <div class="flex justify-between items-center p-3 bg-gray-100 dark:bg-gray-700 rounded-lg">
-                        <div>
-                            <label for="card-animations-toggle" class="font-medium text-sm block">Card Micro-Interactions</label>
-                            <span class="text-[11px] text-gray-500 dark:text-gray-400 block">Tactile press & hover elevation</span>
-                        </div>
-                        <button id="card-animations-toggle" class="relative inline-flex items-center h-6 rounded-full w-11 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-gray-800">
-                            <span class="sr-only">Enable Card Micro-Interactions</span>
-                            <span class="inline-block w-4 h-4 transform bg-white rounded-full transition-transform"></span>
-                        </button>
-                    </div>
-
-                    <!-- Haptic Feedback (Android Vibration Motor) -->
-                    <div class="p-3 bg-gray-100 dark:bg-gray-700 rounded-lg space-y-2.5">
-                        <div class="flex justify-between items-center">
+                <!-- ==================== PANE 3: DIRECTORY & GROUPS ==================== -->
+                <div id="settings-pane-directory" class="settings-pane space-y-4 hidden" data-pane="directory">
+                    
+                    <!-- Section Timetables Card -->
+                    <div class="settings-searchable-item p-3.5 bg-gray-50/80 dark:bg-gray-800/60 border border-gray-200/70 dark:border-gray-700/60 rounded-2xl space-y-3 shadow-2xs">
+                        <div class="flex justify-between items-center border-b border-gray-200/60 dark:border-gray-700/60 pb-2">
                             <div>
-                                <label for="haptic-feedback-toggle" class="font-medium text-sm block flex items-center gap-1.5">
-                                    <span>📳</span>
-                                    <span>Haptic Vibration</span>
-                                </label>
-                                <span class="text-[11px] text-gray-500 dark:text-gray-400 block">Tactile response on taps, swipes & alerts</span>
+                                <h3 class="font-bold text-sm text-gray-900 dark:text-white">Section Timetables</h3>
+                                <p class="text-[11px] text-gray-500">Import section schedules (.json)</p>
                             </div>
-                            <button id="haptic-feedback-toggle" class="relative inline-flex items-center h-6 rounded-full w-11 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-gray-800">
-                                <span class="sr-only">Enable Haptic Feedback</span>
-                                <span class="inline-block w-4 h-4 transform bg-white rounded-full transition-transform"></span>
-                            </button>
+                            <span class="text-[11px] font-bold px-2 py-0.5 bg-indigo-100 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300 rounded-md">Upload</span>
                         </div>
-                        
-                        <!-- Vibration Test & Troubleshooting sub-panel -->
-                        <div id="haptic-options-panel" class="pt-2 border-t border-gray-200/60 dark:border-gray-600/60 space-y-2">
-                            <div class="flex items-center justify-between flex-wrap gap-2">
-                                <span class="text-xs font-semibold text-gray-700 dark:text-gray-300">Test Motor:</span>
-                                <div class="flex items-center gap-1.5">
-                                    <button id="test-vibrate-light-btn" type="button" class="px-2.5 py-1 text-xs font-semibold bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-lg border border-gray-200 dark:border-gray-600 shadow-2xs active:scale-95 transition-all">Light (50ms)</button>
-                                    <button id="test-vibrate-medium-btn" type="button" class="px-2.5 py-1 text-xs font-semibold bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 hover:bg-indigo-100 dark:hover:bg-indigo-900 rounded-lg border border-indigo-200 dark:border-indigo-800 shadow-2xs active:scale-95 transition-all">Medium (80ms)</button>
-                                    <button id="test-vibrate-pulse-btn" type="button" class="px-2.5 py-1 text-xs font-semibold bg-purple-50 dark:bg-purple-950/60 text-purple-700 dark:text-purple-300 hover:bg-purple-100 dark:hover:bg-purple-900 rounded-lg border border-purple-200 dark:border-purple-800 shadow-2xs active:scale-95 transition-all">Pulse ⚡</button>
+                        <form id="add-section-form" class="space-y-2.5">
+                            <input type="file" id="timetable-file" accept=".json" required class="w-full text-xs text-gray-500 file:mr-3 file:py-1.5 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-indigo-50 dark:file:bg-indigo-900/60 file:text-indigo-700 dark:file:text-indigo-300 hover:file:bg-indigo-100 dark:hover:file:bg-indigo-800">
+                            <button type="submit" class="w-full bg-indigo-600 text-white py-2 rounded-xl hover:bg-indigo-700 transition-colors font-semibold text-xs shadow-xs active:scale-[0.98]">Add Section Timetable</button>
+                        </form>
+                        <div class="pt-2">
+                            <span class="text-[10px] font-bold uppercase tracking-wider text-gray-400 block mb-1.5">Configured Sections</span>
+                            <div id="sections-list" class="space-y-2"></div>
+                        </div>
+                    </div>
+
+                    <!-- Friends Directory Card -->
+                    <div class="settings-searchable-item p-3.5 bg-gray-50/80 dark:bg-gray-800/60 border border-gray-200/70 dark:border-gray-700/60 rounded-2xl space-y-3 shadow-2xs">
+                        <div class="border-b border-gray-200/60 dark:border-gray-700/60 pb-2">
+                            <h3 class="font-bold text-sm text-gray-900 dark:text-white">Add Friend</h3>
+                            <p class="text-[11px] text-gray-500">Link a friend's name to their college section</p>
+                        </div>
+                        <form id="add-friend-form" class="space-y-2.5">
+                            <input type="text" id="new-friend-name" placeholder="Friend's Name" required class="w-full bg-white dark:bg-gray-700/80 border border-gray-200 dark:border-gray-600 rounded-xl p-2 text-xs text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                            <select id="friend-section-select" required class="w-full bg-white dark:bg-gray-700/80 border border-gray-200 dark:border-gray-600 rounded-xl p-2 text-xs text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                                <option value="">Select a section</option>
+                            </select>
+                            <button type="submit" class="w-full bg-indigo-600 text-white py-2 rounded-xl hover:bg-indigo-700 transition-colors font-semibold text-xs shadow-xs active:scale-[0.98]">Add Friend</button>
+                        </form>
+                    </div>
+
+                    <!-- Manage Custom Groups Card -->
+                    <div class="settings-searchable-item p-3.5 bg-gray-50/80 dark:bg-gray-800/60 border border-gray-200/70 dark:border-gray-700/60 rounded-2xl space-y-3 shadow-2xs">
+                        <div class="border-b border-gray-200/60 dark:border-gray-700/60 pb-2">
+                            <h3 class="font-bold text-sm text-gray-900 dark:text-white">Custom Groups</h3>
+                            <p class="text-[11px] text-gray-500">Combine friends from different sections into a group</p>
+                        </div>
+                        <form id="add-group-form" class="space-y-2.5">
+                            <input type="text" id="new-group-name" placeholder="Group Name (e.g. Squad, Roommates)" required class="w-full bg-white dark:bg-gray-700/80 border border-gray-200 dark:border-gray-600 rounded-xl p-2 text-xs text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                            <div class="p-2.5 bg-white dark:bg-gray-700/80 border border-gray-200 dark:border-gray-600 rounded-xl">
+                                <p class="text-xs font-bold text-gray-700 dark:text-gray-300 mb-1.5">Select Members:</p>
+                                <div id="group-friends-select-container" class="space-y-1.5 max-h-36 overflow-y-auto pr-1">
+                                    <p class="text-xs text-gray-500 dark:text-gray-400">Add some friends first to create a group.</p>
                                 </div>
                             </div>
-                            <p class="text-[10px] text-gray-500 dark:text-gray-400 leading-tight">
-                                💡 <em>Android tip: Ensure <strong>"Touch feedback / Haptic feedback"</strong> is turned ON in your Android System Settings ➔ Sound & Vibration.</em>
-                            </p>
+                            <button type="submit" class="w-full bg-purple-600 text-white py-2 rounded-xl hover:bg-purple-700 transition-colors font-semibold text-xs shadow-xs active:scale-[0.98]">Create Group</button>
+                        </form>
+                        <div class="pt-2">
+                            <span class="text-[10px] font-bold uppercase tracking-wider text-gray-400 block mb-1.5">Active Groups</span>
+                            <div id="groups-list" class="space-y-2"></div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Manage Sections -->
-                <div class="mb-6">
-                    <h3 class="font-semibold mb-2 border-b border-gray-200 dark:border-gray-600 pb-1">Manage Sections</h3>
-                    <form id="add-section-form" class="space-y-3 mt-3">
-                        <input type="file" id="timetable-file" accept=".json" required class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 dark:file:bg-indigo-900 file:text-indigo-700 dark:file:text-indigo-300 hover:file:bg-indigo-100 dark:hover:file:bg-indigo-800">
-                        <button type="submit" class="w-full bg-indigo-600 text-white py-2 rounded-md hover:bg-indigo-700 transition-colors font-semibold">Add Local Section</button>
-                    </form>
-                    <div id="sections-list" class="mt-4 space-y-2"></div>
-                </div>
-
-                <!-- Manage Friends -->
-                <div class="mb-6">
-                    <h3 class="font-semibold mb-2 border-b border-gray-200 dark:border-gray-600 pb-1">Manage Friends</h3>
-                    <form id="add-friend-form" class="space-y-3 mt-3">
-                        <input type="text" id="new-friend-name" placeholder="Friend's Name" required class="w-full bg-gray-100 dark:bg-gray-700 border-gray-300 dark:border-gray-600 rounded-md p-2 focus:ring-indigo-500 focus:border-indigo-500">
-                        <select id="friend-section-select" required class="w-full bg-gray-100 dark:bg-gray-700 border-gray-300 dark:border-gray-600 rounded-md p-2 focus:ring-indigo-500 focus:border-indigo-500">
-                            <option value="">Select a section</option>
-                        </select>
-                        <button type="submit" class="w-full bg-indigo-600 text-white py-2 rounded-md hover:bg-indigo-700 transition-colors font-semibold">Add Friend</button>
-                    </form>
-                </div>
-
-                <!-- START: Manage Groups -->
-                <div class="mb-6">
-                    <h3 class="font-semibold mb-2 border-b border-gray-200 dark:border-gray-600 pb-1">Manage Groups</h3>
-                    <form id="add-group-form" class="space-y-3 mt-3">
-                        <input type="text" id="new-group-name" placeholder="Group Name" required class="w-full bg-gray-100 dark:bg-gray-700 border-gray-300 dark:border-gray-600 rounded-md p-2 focus:ring-indigo-500 focus:border-indigo-500">
-                        <div class="p-2 bg-gray-100 dark:bg-gray-700 rounded-md">
-                            <p class="text-sm font-medium mb-2">Select Members:</p>
-                            <div id="group-friends-select-container" class="space-y-2 max-h-32 overflow-y-auto">
-                                <!-- Friend checkboxes will be injected here -->
-                                <p class="text-xs text-gray-500 dark:text-gray-400">Add some friends first to create a group.</p>
-                            </div>
+                <!-- ==================== PANE 4: DATA & TOOLS ==================== -->
+                <div id="settings-pane-data" class="settings-pane space-y-3.5 hidden" data-pane="data">
+                    
+                    <!-- Time Debugging / Simulator -->
+                    <div class="settings-searchable-item p-3.5 bg-gray-50/80 dark:bg-gray-800/60 border border-gray-200/70 dark:border-gray-700/60 rounded-2xl space-y-2.5 shadow-2xs">
+                        <div class="border-b border-gray-200/60 dark:border-gray-700/60 pb-2">
+                            <h3 class="font-bold text-sm text-gray-900 dark:text-white flex items-center gap-1.5">
+                                <span>⏰</span>
+                                <span>Time Travel Simulator</span>
+                            </h3>
+                            <p class="text-[11px] text-gray-500">Override the clock to preview future schedules & periods</p>
                         </div>
-                        <button type="submit" class="w-full bg-purple-600 text-white py-2 rounded-md hover:bg-purple-700 transition-colors font-semibold">Create Group</button>
-                    </form>
-                    <div id="groups-list" class="mt-4 space-y-2"></div>
-                </div>
-                <!-- END: Manage Groups -->
-
-                <!-- Time Debugging -->
-                <div class="mb-6">
-                    <h3 class="font-semibold mb-2 border-b border-gray-200 dark:border-gray-600 pb-1">Time Debugging</h3>
-                    <div class="space-y-3 mt-3">
-                        <p class="text-xs text-gray-500 dark:text-gray-400">Manually set the current time to test the schedule.</p>
-                        <input type="datetime-local" id="debug-time-input" class="w-full bg-gray-100 dark:bg-gray-700 border-gray-300 dark:border-gray-600 rounded-md p-2 focus:ring-indigo-500 focus:border-indigo-500">
-                        <button id="reset-time-btn" class="w-full bg-gray-500 text-white py-2 rounded-md hover:bg-gray-600 transition-colors font-semibold">Reset to Real-Time</button>
+                        <input type="datetime-local" id="debug-time-input" class="w-full bg-white dark:bg-gray-700/80 border border-gray-200 dark:border-gray-600 rounded-xl p-2 text-xs text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                        <button id="reset-time-btn" class="w-full bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600 py-2 rounded-xl transition-colors font-semibold text-xs">Reset to Real-Time Clock</button>
                     </div>
-                </div>
 
-                <!-- Advanced Settings -->
-                <div>
-                    <h3 class="font-semibold mb-2 border-b border-gray-200 dark:border-gray-600 pb-1">Advanced</h3>
-                    <div class="space-y-3 mt-3">
-                        <div class="flex justify-between items-center">
-                            <label for="debug-mode-toggle" class="font-medium">Enable Debugging</label>
-                            <input type="checkbox" id="debug-mode-toggle" class="rounded text-indigo-600 focus:ring-indigo-500 h-5 w-5">
+                    <!-- Backup & Restore -->
+                    <div class="settings-searchable-item p-3.5 bg-gray-50/80 dark:bg-gray-800/60 border border-gray-200/70 dark:border-gray-700/60 rounded-2xl space-y-2.5 shadow-2xs">
+                        <div class="border-b border-gray-200/60 dark:border-gray-700/60 pb-2">
+                            <h3 class="font-bold text-sm text-gray-900 dark:text-white flex items-center gap-1.5">
+                                <span>💾</span>
+                                <span>Backup & Restore</span>
+                            </h3>
+                            <p class="text-[11px] text-gray-500">Export or import your complete configuration and friends list</p>
                         </div>
-                        <div class="grid grid-cols-2 gap-2">
-                             <button id="export-data-btn" class="w-full bg-gray-500 text-white py-2 rounded-md hover:bg-gray-600 transition-colors font-semibold">Export Data</button>
-                             <label class="w-full bg-gray-500 text-white py-2 px-4 rounded-md hover:bg-gray-600 transition-colors font-semibold text-center cursor-pointer">
-                                Import Data
+                        <div class="grid grid-cols-2 gap-2 pt-1">
+                            <button id="export-data-btn" class="w-full bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 py-2 rounded-xl hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors font-semibold text-xs">Export JSON</button>
+                            <label class="w-full bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 py-2 px-3 rounded-xl hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors font-semibold text-xs text-center cursor-pointer">
+                                Import JSON
                                 <input type="file" id="import-data-file" accept=".json" class="hidden">
-                             </label>
+                            </label>
                         </div>
-                        <button id="clear-data-btn" class="w-full bg-red-600 text-white py-2 rounded-md hover:bg-red-700 transition-colors font-semibold">Clear All Data</button>
+                    </div>
+
+                    <!-- Developer Debug Mode -->
+                    <div class="settings-searchable-item flex justify-between items-center p-3.5 bg-gray-50/80 dark:bg-gray-800/60 border border-gray-200/70 dark:border-gray-700/60 rounded-2xl shadow-2xs">
+                        <div>
+                            <label for="debug-mode-toggle" class="font-bold text-sm text-gray-900 dark:text-white block">Console Debug Logs</label>
+                            <span class="text-[11px] text-gray-500 dark:text-gray-400">Log diagnostics & calculation matrix</span>
+                        </div>
+                        <input type="checkbox" id="debug-mode-toggle" class="rounded text-indigo-600 focus:ring-indigo-500 h-5 w-5">
+                    </div>
+
+                    <!-- Danger Zone -->
+                    <div class="settings-searchable-item p-3.5 bg-red-50/80 dark:bg-red-950/30 border border-red-200/80 dark:border-red-900/60 rounded-2xl space-y-2 shadow-2xs">
+                        <h3 class="font-bold text-xs text-red-700 dark:text-red-300 uppercase tracking-wider">Danger Zone</h3>
+                        <p class="text-[11px] text-red-600/80 dark:text-red-400/80">Erase all local sections, custom groups, friends, and settings.</p>
+                        <button id="clear-data-btn" class="w-full bg-red-600 text-white py-2 rounded-xl hover:bg-red-700 transition-colors font-semibold text-xs shadow-xs active:scale-[0.98]">Clear All Data</button>
                     </div>
                 </div>
+
             </div>
-            <!-- ===== CREDIT SECTION ADDED HERE ===== -->
-            <div class="mt-6 pt-4 border-t border-gray-200 dark:border-gray-700 text-center">
-                <p class="text-xs text-gray-500 dark:text-gray-400">
-                    Vibe Coded by Jayant Goyal
-                </p>
+
+            <!-- Modern Footer -->
+            <div class="px-5 py-3 border-t border-gray-200/70 dark:border-gray-800/70 bg-gray-50/50 dark:bg-gray-900/50 flex items-center justify-between text-[11px] text-gray-500 dark:text-gray-400 flex-shrink-0">
+                <span class="font-medium">Vibe Coded by <strong>Jayant Goyal</strong></span>
+                <span class="px-2 py-0.5 rounded-full bg-gray-200/60 dark:bg-gray-800 text-[10px] font-bold text-indigo-600 dark:text-indigo-400">SyncUp v16</span>
             </div>
-            <!-- ===== END OF CREDIT SECTION ===== -->
         </div>
     </div>
 
@@ -1235,9 +1375,14 @@ document.addEventListener('DOMContentLoaded', () => {
     const cardAnimationsToggle = document.getElementById('card-animations-toggle');
     const hapticFeedbackToggle = document.getElementById('haptic-feedback-toggle');
     const hapticOptionsPanel = document.getElementById('haptic-options-panel');
-    const testVibrateLightBtn = document.getElementById('test-vibrate-light-btn');
-    const testVibrateMediumBtn = document.getElementById('test-vibrate-medium-btn');
-    const testVibratePulseBtn = document.getElementById('test-vibrate-pulse-btn');
+    const hapticIntensityBtns = document.querySelectorAll('.haptic-intensity-btn');
+    const testVibrateTapBtn = document.getElementById('test-vibrate-tap-btn');
+    const testVibrateSelectBtn = document.getElementById('test-vibrate-select-btn');
+    const testVibrateImpactBtn = document.getElementById('test-vibrate-impact-btn');
+    const testVibrateSuccessBtn = document.getElementById('test-vibrate-success-btn');
+    const testVibrateGoldenBtn = document.getElementById('test-vibrate-golden-btn');
+    const testVibrateAlertBtn = document.getElementById('test-vibrate-alert-btn');
+    const hapticBrowserWarning = document.getElementById('haptic-browser-warning');
 
     // Layout Mode Toggle elements
     const layoutToggleBtn = document.getElementById('layout-toggle-btn');
@@ -1545,6 +1690,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     }
                     if (typeof parsedState.settings.hapticFeedbackEnabled === 'undefined') {
                         parsedState.settings.hapticFeedbackEnabled = true;
+                    }
+                    if (typeof parsedState.settings.hapticIntensity === 'undefined') {
+                        parsedState.settings.hapticIntensity = 'normal';
                     }
 
                     Object.assign(state, parsedState);
@@ -1901,11 +2049,32 @@ document.addEventListener('DOMContentLoaded', () => {
                 hapticFeedbackToggle.classList.add('bg-indigo-600');
                 hapticFeedbackToggle.lastElementChild.classList.add('translate-x-5');
                 if (hapticOptionsPanel) hapticOptionsPanel.classList.remove('hidden');
+                if (hapticBrowserWarning) {
+                    const isFirefox = navigator.userAgent.toLowerCase().includes('firefox');
+                    const hasVibrate = 'vibrate' in navigator;
+                    if (isFirefox || !hasVibrate) {
+                        hapticBrowserWarning.classList.remove('hidden');
+                    } else {
+                        hapticBrowserWarning.classList.add('hidden');
+                    }
+                }
             } else {
                 hapticFeedbackToggle.classList.remove('bg-indigo-600');
                 hapticFeedbackToggle.lastElementChild.classList.remove('translate-x-5');
                 if (hapticOptionsPanel) hapticOptionsPanel.classList.add('hidden');
             }
+        }
+
+        // Update intensity buttons active state
+        if (hapticIntensityBtns) {
+            const currentIntensity = state.settings.hapticIntensity || 'normal';
+            hapticIntensityBtns.forEach(btn => {
+                if (btn.dataset.intensity === currentIntensity) {
+                    btn.className = 'haptic-intensity-btn px-2.5 py-1 text-xs font-bold rounded-md bg-indigo-600 text-white shadow-2xs transition-all';
+                } else {
+                    btn.className = 'haptic-intensity-btn px-2.5 py-1 text-xs font-medium rounded-md text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-all';
+                }
+            });
         }
     };
 
@@ -1918,39 +2087,76 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         try {
-            let pattern = 50;
+            const intensity = state.settings.hapticIntensity || 'normal';
+            const scale = intensity === 'gentle' ? 0.8 : (intensity === 'strong' ? 1.4 : 1.0);
+
+            const scaleVal = (ms) => Math.max(35, Math.round(ms * scale));
+            const scalePattern = (arr) => arr.map((val, idx) => idx % 2 === 0 ? scaleVal(val) : Math.max(20, Math.round(val * 0.9)));
+
+            let pattern = scaleVal(50);
             switch (type) {
-                case 'selection':
+                case 'tap':
                 case 'light':
-                    pattern = 50; // Increased to 50ms for reliable physical motor response
+                case 'dot':
+                    pattern = scaleVal(45);
+                    break;
+                case 'selection':
+                case 'toggle':
+                    pattern = scalePattern([40, 30, 45]);
+                    break;
+                case 'swipe':
+                    pattern = scaleVal(40);
                     break;
                 case 'click':
                 case 'medium':
-                    pattern = 80; // 80ms solid tactile bump
+                case 'impact':
+                case 'modal':
+                    pattern = scaleVal(80);
                     break;
-                case 'strong':
-                    pattern = 150;
+                case 'heavy':
+                case 'pin':
+                case 'highlight':
+                case 'press':
+                    pattern = scaleVal(120);
                     break;
                 case 'success':
-                    pattern = [60, 50, 90]; // Tactile double pulse
+                case 'celebrate':
+                case 'copy':
+                    pattern = scalePattern([50, 35, 65, 35, 90]);
+                    break;
+                case 'golden':
+                case 'winner':
+                    pattern = scalePattern([50, 30, 50, 30, 80, 40, 120]);
+                    break;
+                case 'destructive':
+                case 'delete':
+                case 'remove':
+                case 'clear':
+                    pattern = scalePattern([100, 50, 45]);
+                    break;
+                case 'travelReset':
+                    pattern = scalePattern([40, 25, 40]);
                     break;
                 case 'alert':
                 case 'transition':
-                    pattern = [150, 70, 150]; // Two strong warning pulses
+                case 'alarm':
+                    pattern = scalePattern([150, 60, 150, 60, 200]);
                     break;
                 case 'warning':
-                    pattern = [70, 40, 70, 40, 70];
+                    pattern = scalePattern([70, 40, 70, 40, 70]);
                     break;
                 default:
-                    if (typeof type === 'number' || Array.isArray(type)) {
-                        pattern = type;
+                    if (typeof type === 'number') {
+                        pattern = scaleVal(type);
+                    } else if (Array.isArray(type)) {
+                        pattern = scalePattern(type);
                     } else {
-                        pattern = 50;
+                        pattern = scaleVal(50);
                     }
                     break;
             }
             const result = navigator.vibrate(pattern);
-            logger(`Haptic vibration [${type}] fired:`, pattern, 'Result:', result);
+            logger(`Haptic [${type} - ${intensity}] fired:`, pattern, 'Result:', result);
             return result;
         } catch (e) {
             logger("Vibration error:", e);
@@ -2078,14 +2284,18 @@ document.addEventListener('DOMContentLoaded', () => {
     const renderSettings = () => {
         // Render Sections
         sectionsList.innerHTML = '';
-        Object.keys(state.sections).forEach(name => {
+        const secKeys = Object.keys(state.sections);
+        if (secKeys.length === 0) {
+            sectionsList.innerHTML = '<p class="text-xs text-gray-400 dark:text-gray-500 italic py-2">No section timetables imported yet.</p>';
+        }
+        secKeys.forEach(name => {
             const section = state.sections[name];
             const sectionDiv = document.createElement('div');
-            sectionDiv.className = 'flex flex-col p-2.5 bg-gray-100 dark:bg-gray-700 rounded-lg space-y-2';
+            sectionDiv.className = 'flex flex-col p-3 bg-white/80 dark:bg-gray-800/80 border border-gray-200/70 dark:border-gray-700/60 rounded-2xl space-y-2.5 shadow-2xs transition-all hover:border-indigo-300 dark:hover:border-indigo-800';
             
-            const pinIcon = section.pinned ? `<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 16 16" fill="currentColor"><path d="M4.146.146A.5.5 0 0 1 4.5 0h7a.5.5 0 0 1 .5.5c0 .68-.342 1.174-.646 1.479-.126.125-.25.224-.354.298v4.431l.078.048c.203.127.476.314.751.555C12.36 7.775 13 8.527 13 9.5a.5.5 0 0 1-.5.5h-4v4.5c0 .276-.224 1.5-.5 1.5s-.5-1.224-.5-1.5V10h-4a.5.5 0 0 1-.5-.5c0-.973.64-1.725 1.17-2.189A6 6 0 0 1 5 6.708V2.277a3 3 0 0 1-.354-.298C4.342 1.674 4 1.179 4 .5a.5.5 0 0 1 .146-.354m1.58 1.408-.002-.001zm-.002-.001.002.001A.5.5 0 0 1 6 2v5a.5.5 0 0 1-.276.447h-.002l-.012.007-.054.03a5 5 0 0 0-.827.58c-.318.278-.585.596-.725.936h7.792c-.14-.34-.407-.658-.725-.936a5 5 0 0 0-.881-.61l-.012-.006h-.002A.5.5 0 0 1 10 7V2a.5.5 0 0 1 .295-.458 1.8 1.8 0 0 0 .351-.271c.08-.08.155-.17.214-.271H5.14q.091.15.214.271a1.8 1.8 0 0 0 .37.282"/></svg>` : `<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 16 16" stroke="currentColor" stroke-width="1.2"><path d="M4.146.146A.5.5 0 0 1 4.5 0h7a.5.5 0 0 1 .5.5c0 .68-.342 1.174-.646 1.479-.126.125-.25.224-.354.298v4.431l.078.048c.203.127.476.314.751.555C12.36 7.775 13 8.527 13 9.5a.5.5 0 0 1-.5.5h-4v4.5c0 .276-.224 1.5-.5 1.5s-.5-1.224-.5-1.5V10h-4a.5.5 0 0 1-.5-.5c0-.973.64-1.725 1.17-2.189A6 6 0 0 1 5 6.708V2.277a3 3 0 0 1-.354-.298C4.342 1.674 4 1.179 4 .5a.5.5 0 0 1 .146-.354z"/></svg>`;
-            const highlightIcon = section.highlighted ? `<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" /></svg>` : `<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.783-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" /></svg>`;
-            const localIndicator = section.isLocal ? `<span class="text-xs text-gray-400 dark:text-gray-500 ml-2">(Local)</span>` : '';
+            const pinIcon = section.pinned ? `<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 16 16" fill="currentColor"><path d="M4.146.146A.5.5 0 0 1 4.5 0h7a.5.5 0 0 1 .5.5c0 .68-.342 1.174-.646 1.479-.126.125-.25.224-.354.298v4.431l.078.048c.203.127.476.314.751.555C12.36 7.775 13 8.527 13 9.5a.5.5 0 0 1-.5.5h-4v4.5c0 .276-.224 1.5-.5 1.5s-.5-1.224-.5-1.5V10h-4a.5.5 0 0 1-.5-.5c0-.973.64-1.725 1.17-2.189A6 6 0 0 1 5 6.708V2.277a3 3 0 0 1-.354-.298C4.342 1.674 4 1.179 4 .5a.5.5 0 0 1 .146-.354m1.58 1.408-.002-.001zm-.002-.001.002.001A.5.5 0 0 1 6 2v5a.5.5 0 0 1-.276.447h-.002l-.012.007-.054.03a5 5 0 0 0-.827.58c-.318.278-.585.596-.725.936h7.792c-.14-.34-.407-.658-.725-.936a5 5 0 0 0-.881-.61l-.012-.006h-.002A.5.5 0 0 1 10 7V2a.5.5 0 0 1 .295-.458 1.8 1.8 0 0 0 .351-.271c.08-.08.155-.17.214-.271H5.14q.091.15.214.271a1.8 1.8 0 0 0 .37.282"/></svg>` : `<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 16 16" stroke="currentColor" stroke-width="1.2"><path d="M4.146.146A.5.5 0 0 1 4.5 0h7a.5.5 0 0 1 .5.5c0 .68-.342 1.174-.646 1.479-.126.125-.25.224-.354.298v4.431l.078.048c.203.127.476.314.751.555C12.36 7.775 13 8.527 13 9.5a.5.5 0 0 1-.5.5h-4v4.5c0 .276-.224 1.5-.5 1.5s-.5-1.224-.5-1.5V10h-4a.5.5 0 0 1-.5-.5c0-.973.64-1.725 1.17-2.189A6 6 0 0 1 5 6.708V2.277a3 3 0 0 1-.354-.298C4.342 1.674 4 1.179 4 .5a.5.5 0 0 1 .146-.354z"/></svg>`;
+            const highlightIcon = section.highlighted ? `<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" /></svg>` : `<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.783-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" /></svg>`;
+            const localIndicator = section.isLocal ? `<span class="text-[11px] font-bold px-1.5 py-0.2 rounded bg-indigo-50 dark:bg-indigo-950 text-indigo-600 dark:text-indigo-400 ml-1.5">Local</span>` : '';
             const activeColor = section.color || 'default';
 
             const swatchesHtml = Object.keys(COLOR_PALETTES).map(cKey => `
@@ -2094,16 +2304,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
             sectionDiv.innerHTML = `
                 <div class="flex justify-between items-center w-full">
-                    <div><span class="font-medium text-sm">${escapeHTML(name)}</span>${localIndicator}</div>
-                    <div class="flex items-center space-x-1.5">
-                        <button data-section="${escapeHTML(name)}" class="highlight-section-btn text-gray-400 hover:text-amber-500 p-1 rounded-full ${section.highlighted ? 'text-amber-400' : ''}">${highlightIcon}</button>
-                        <button data-section="${escapeHTML(name)}" class="pin-section-btn text-gray-400 hover:text-indigo-500 p-1 rounded-full ${section.pinned ? 'text-indigo-500' : ''}">${pinIcon}</button>
-                        <button data-section="${escapeHTML(name)}" class="remove-section-btn text-red-500 hover:text-red-700 p-1 rounded-full"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" /></svg></button>
+                    <div class="flex items-center"><span class="font-bold text-xs sm:text-sm text-gray-800 dark:text-gray-100">${escapeHTML(name)}</span>${localIndicator}</div>
+                    <div class="flex items-center space-x-1">
+                        <button data-section="${escapeHTML(name)}" class="highlight-section-btn p-1.5 rounded-lg text-gray-400 hover:text-amber-500 hover:bg-gray-100 dark:hover:bg-gray-700/60 ${section.highlighted ? 'text-amber-400' : ''}" title="Toggle Highlight">${highlightIcon}</button>
+                        <button data-section="${escapeHTML(name)}" class="pin-section-btn p-1.5 rounded-lg text-gray-400 hover:text-indigo-500 hover:bg-gray-100 dark:hover:bg-gray-700/60 ${section.pinned ? 'text-indigo-500' : ''}" title="Toggle Pin">${pinIcon}</button>
+                        <button data-section="${escapeHTML(name)}" class="remove-section-btn p-1.5 rounded-lg text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950/40" title="Delete Section"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"/></svg></button>
                     </div>
                 </div>
-                <div class="flex items-center space-x-1.5 pt-1 border-t border-gray-200/50 dark:border-gray-600/50">
-                    <span class="text-[10px] uppercase tracking-wider font-semibold text-gray-400">Palette:</span>
-                    <div class="flex items-center space-x-1">${swatchesHtml}</div>
+                <div class="flex items-center space-x-2 pt-2 border-t border-gray-200/50 dark:border-gray-700/50">
+                    <span class="text-[10px] uppercase tracking-wider font-bold text-gray-400">Palette:</span>
+                    <div class="flex items-center space-x-1.5">${swatchesHtml}</div>
                 </div>`;
             sectionsList.appendChild(sectionDiv);
         });
@@ -2130,24 +2340,28 @@ document.addEventListener('DOMContentLoaded', () => {
                 sectionData.friends.forEach(friendName => {
                     const value = `${friendName}|${sectionName}`;
                     const label = document.createElement('label');
-                    label.className = "flex items-center space-x-2 text-sm p-1 rounded hover:bg-gray-200 dark:hover:bg-gray-600";
-                    label.innerHTML = `<input type="checkbox" name="group-members" value="${escapeHTML(value)}" class="rounded text-indigo-600 focus:ring-indigo-500 h-4 w-4"><span>${escapeHTML(friendName)}</span>`;
+                    label.className = "flex items-center space-x-2 text-xs p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700/60";
+                    label.innerHTML = `<input type="checkbox" name="group-members" value="${escapeHTML(value)}" class="rounded text-indigo-600 focus:ring-indigo-500 h-3.5 w-3.5"><span class="text-gray-800 dark:text-gray-200">${escapeHTML(friendName)}</span>`;
                     groupFriendsSelectContainer.appendChild(label);
                 });
             }
         });
         if (totalFriends === 0) {
-            groupFriendsSelectContainer.innerHTML = `<p class="text-xs text-gray-500 dark:text-gray-400">Add some friends first to create a group.</p>`;
+            groupFriendsSelectContainer.innerHTML = `<p class="text-xs text-gray-400 dark:text-gray-500 py-1 italic">Add friends above first to create groups.</p>`;
         }
 
         // Render Groups List
         groupsList.innerHTML = '';
-        Object.keys(state.groups).forEach(name => {
+        const groupKeys = Object.keys(state.groups);
+        if (groupKeys.length === 0) {
+            groupsList.innerHTML = '<p class="text-xs text-gray-400 dark:text-gray-500 italic py-2">No custom groups created yet.</p>';
+        }
+        groupKeys.forEach(name => {
             const group = state.groups[name];
             const groupDiv = document.createElement('div');
-            groupDiv.className = 'flex flex-col p-2.5 bg-gray-100 dark:bg-gray-700 rounded-lg space-y-2';
-            const pinIcon = group.pinned ? `<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 16 16" fill="currentColor"><path d="M4.146.146A.5.5 0 0 1 4.5 0h7a.5.5 0 0 1 .5.5c0 .68-.342 1.174-.646 1.479-.126.125-.25.224-.354.298v4.431l.078.048c.203.127.476.314.751.555C12.36 7.775 13 8.527 13 9.5a.5.5 0 0 1-.5.5h-4v4.5c0 .276-.224 1.5-.5 1.5s-.5-1.224-.5-1.5V10h-4a.5.5 0 0 1-.5-.5c0-.973.64-1.725 1.17-2.189A6 6 0 0 1 5 6.708V2.277a3 3 0 0 1-.354-.298C4.342 1.674 4 1.179 4 .5a.5.5 0 0 1 .146-.354m1.58 1.408-.002-.001zm-.002-.001.002.001A.5.5 0 0 1 6 2v5a.5.5 0 0 1-.276.447h-.002l-.012.007-.054.03a5 5 0 0 0-.827.58c-.318.278-.585.596-.725.936h7.792c-.14-.34-.407-.658-.725-.936a5 5 0 0 0-.881-.61l-.012-.006h-.002A.5.5 0 0 1 10 7V2a.5.5 0 0 1 .295-.458 1.8 1.8 0 0 0 .351-.271c.08-.08.155-.17.214-.271H5.14q.091.15.214.271a1.8 1.8 0 0 0 .37.282"/></svg>` : `<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 16 16" stroke="currentColor" stroke-width="1.2"><path d="M4.146.146A.5.5 0 0 1 4.5 0h7a.5.5 0 0 1 .5.5c0 .68-.342 1.174-.646 1.479-.126.125-.25.224-.354.298v4.431l.078.048c.203.127.476.314.751.555C12.36 7.775 13 8.527 13 9.5a.5.5 0 0 1-.5.5h-4v4.5c0 .276-.224 1.5-.5 1.5s-.5-1.224-.5-1.5V10h-4a.5.5 0 0 1-.5-.5c0-.973.64-1.725 1.17-2.189A6 6 0 0 1 5 6.708V2.277a3 3 0 0 1-.354-.298C4.342 1.674 4 1.179 4 .5a.5.5 0 0 1 .146-.354z"/></svg>`;
-            const highlightIcon = group.highlighted ? `<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" /></svg>` : `<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.783-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" /></svg>`;
+            groupDiv.className = 'flex flex-col p-3 bg-white/80 dark:bg-gray-800/80 border border-gray-200/70 dark:border-gray-700/60 rounded-2xl space-y-2.5 shadow-2xs transition-all hover:border-purple-300 dark:hover:border-purple-800';
+            const pinIcon = group.pinned ? `<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 16 16" fill="currentColor"><path d="M4.146.146A.5.5 0 0 1 4.5 0h7a.5.5 0 0 1 .5.5c0 .68-.342 1.174-.646 1.479-.126.125-.25.224-.354.298v4.431l.078.048c.203.127.476.314.751.555C12.36 7.775 13 8.527 13 9.5a.5.5 0 0 1-.5.5h-4v4.5c0 .276-.224 1.5-.5 1.5s-.5-1.224-.5-1.5V10h-4a.5.5 0 0 1-.5-.5c0-.973.64-1.725 1.17-2.189A6 6 0 0 1 5 6.708V2.277a3 3 0 0 1-.354-.298C4.342 1.674 4 1.179 4 .5a.5.5 0 0 1 .146-.354m1.58 1.408-.002-.001zm-.002-.001.002.001A.5.5 0 0 1 6 2v5a.5.5 0 0 1-.276.447h-.002l-.012.007-.054.03a5 5 0 0 0-.827.58c-.318.278-.585.596-.725.936h7.792c-.14-.34-.407-.658-.725-.936a5 5 0 0 0-.881-.61l-.012-.006h-.002A.5.5 0 0 1 10 7V2a.5.5 0 0 1 .295-.458 1.8 1.8 0 0 0 .351-.271c.08-.08.155-.17.214-.271H5.14q.091.15.214.271a1.8 1.8 0 0 0 .37.282"/></svg>` : `<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 16 16" stroke="currentColor" stroke-width="1.2"><path d="M4.146.146A.5.5 0 0 1 4.5 0h7a.5.5 0 0 1 .5.5c0 .68-.342 1.174-.646 1.479-.126.125-.25.224-.354.298v4.431l.078.048c.203.127.476.314.751.555C12.36 7.775 13 8.527 13 9.5a.5.5 0 0 1-.5.5h-4v4.5c0 .276-.224 1.5-.5 1.5s-.5-1.224-.5-1.5V10h-4a.5.5 0 0 1-.5-.5c0-.973.64-1.725 1.17-2.189A6 6 0 0 1 5 6.708V2.277a3 3 0 0 1-.354-.298C4.342 1.674 4 1.179 4 .5a.5.5 0 0 1 .146-.354z"/></svg>`;
+            const highlightIcon = group.highlighted ? `<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" /></svg>` : `<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.783-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" /></svg>`;
             const activeColor = group.color || 'default';
 
             const swatchesHtml = Object.keys(COLOR_PALETTES).map(cKey => `
@@ -2156,16 +2370,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
             groupDiv.innerHTML = `
                 <div class="flex justify-between items-center w-full">
-                    <div><span class="font-medium text-sm">${escapeHTML(name)}</span> <span class="text-xs text-gray-500">(${group.members.length} members)</span></div>
-                    <div class="flex items-center space-x-1.5">
-                        <button data-group="${escapeHTML(name)}" class="highlight-group-btn text-gray-400 hover:text-amber-500 p-1 rounded-full ${group.highlighted ? 'text-amber-400' : ''}">${highlightIcon}</button>
-                        <button data-group="${escapeHTML(name)}" class="pin-group-btn text-gray-400 hover:text-indigo-500 p-1 rounded-full ${group.pinned ? 'text-indigo-500' : ''}">${pinIcon}</button>
-                        <button data-group="${escapeHTML(name)}" class="remove-group-btn text-red-500 hover:text-red-700 p-1 rounded-full"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" /></svg></button>
+                    <div><span class="font-bold text-xs sm:text-sm text-gray-800 dark:text-gray-100">${escapeHTML(name)}</span> <span class="text-[11px] text-gray-500 dark:text-gray-400">(${group.members.length} members)</span></div>
+                    <div class="flex items-center space-x-1">
+                        <button data-group="${escapeHTML(name)}" class="highlight-group-btn p-1.5 rounded-lg text-gray-400 hover:text-amber-500 hover:bg-gray-100 dark:hover:bg-gray-700/60 ${group.highlighted ? 'text-amber-400' : ''}" title="Toggle Highlight">${highlightIcon}</button>
+                        <button data-group="${escapeHTML(name)}" class="pin-group-btn p-1.5 rounded-lg text-gray-400 hover:text-indigo-500 hover:bg-gray-100 dark:hover:bg-gray-700/60 ${group.pinned ? 'text-indigo-500' : ''}" title="Toggle Pin">${pinIcon}</button>
+                        <button data-group="${escapeHTML(name)}" class="remove-group-btn p-1.5 rounded-lg text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950/40" title="Delete Group"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"/></svg></button>
                     </div>
                 </div>
-                <div class="flex items-center space-x-1.5 pt-1 border-t border-gray-200/50 dark:border-gray-600/50">
-                    <span class="text-[10px] uppercase tracking-wider font-semibold text-gray-400">Palette:</span>
-                    <div class="flex items-center space-x-1">${swatchesHtml}</div>
+                <div class="flex items-center space-x-2 pt-2 border-t border-gray-200/50 dark:border-gray-700/50">
+                    <span class="text-[10px] uppercase tracking-wider font-bold text-gray-400">Palette:</span>
+                    <div class="flex items-center space-x-1.5">${swatchesHtml}</div>
                 </div>`;
             groupsList.appendChild(groupDiv);
         });
@@ -3710,13 +3924,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 const sectionName = timetable.timetableInfo?.section;
                 if (!sectionName) throw new Error("Timetable must contain a 'timetableInfo.section' property.");
                 if (state.sections[sectionName]) throw new Error(`Section "${sectionName}" already exists.`);
-                if (!timetable.schedule || !timetable.timeSlots) throw new Error("Invalid timetable format.");
-
-                state.sections[sectionName] = { timetable, friends: [], pinned: false, highlighted: false, isLocal: true };
+                state.sections[sectionName] = { timetable, friends: [], pinned: false, highlighted: false, isLocal: true, color: 'default' };
                 saveState();
                 renderSettings();
                 renderDashboard();
                 addSectionForm.reset();
+                triggerHaptic('success');
                 showToast(`Local section "${sectionName}" added successfully.`);
             } catch (error) {
                 showToast(`Error: ${error.message}`, 'error');
@@ -3731,6 +3944,7 @@ document.addEventListener('DOMContentLoaded', () => {
             `Remove Section "${name}"?`,
             'This will also remove all friends and group associations with this section. This action cannot be undone.',
             () => {
+                triggerHaptic('destructive');
                 if (state.sections[name] && !state.sections[name].isLocal) {
                     if (!state.removedSections) state.removedSections = [];
                     state.removedSections.push(name);
@@ -3748,6 +3962,7 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     const handlePinSection = (name) => {
+        triggerHaptic('heavy');
         state.sections[name].pinned = !state.sections[name].pinned;
         saveState();
         renderSettings();
@@ -3756,6 +3971,7 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     const handleHighlightSection = (name) => {
+        triggerHaptic('heavy');
         state.sections[name].highlighted = !state.sections[name].highlighted;
         saveState();
         renderSettings();
@@ -3775,6 +3991,7 @@ document.addEventListener('DOMContentLoaded', () => {
             showToast(`${name} is already in section ${section}.`, 'error');
             return;
         }
+        triggerHaptic('success');
         state.sections[section].friends.push(name);
         saveState();
         renderDashboard();
@@ -3788,6 +4005,7 @@ document.addEventListener('DOMContentLoaded', () => {
             `Remove ${friend}?`,
             `This will also remove them from any groups they are in.`,
             () => {
+                triggerHaptic('destructive');
                 const friendsList = state.sections[section].friends;
                 const index = friendsList.indexOf(friend);
                 if (index > -1) {
@@ -3825,6 +4043,7 @@ document.addEventListener('DOMContentLoaded', () => {
             return { name: memberName, section: sectionName };
         });
 
+        triggerHaptic('success');
         state.groups[name] = { members, pinned: false, highlighted: false, color: 'default' };
         saveState();
         renderSettings();
@@ -3838,6 +4057,7 @@ document.addEventListener('DOMContentLoaded', () => {
             `Remove Group "${name}"?`,
             'This action cannot be undone.',
             () => {
+                triggerHaptic('destructive');
                 delete state.groups[name];
                 saveState();
                 renderSettings();
@@ -3848,6 +4068,7 @@ document.addEventListener('DOMContentLoaded', () => {
     };
     
     const handlePinGroup = (name) => {
+        triggerHaptic('heavy');
         state.groups[name].pinned = !state.groups[name].pinned;
         saveState();
         renderSettings();
@@ -3856,13 +4077,13 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     const handleHighlightGroup = (name) => {
+        triggerHaptic('heavy');
         state.groups[name].highlighted = !state.groups[name].highlighted;
         saveState();
         renderSettings();
         renderDashboard();
         showToast(state.groups[name].highlighted ? `Highlighted ${name}.` : `Removed highlight from ${name}.`);
     };
-
 
     const handleDebugTimeChange = (e) => {
         state.debugTime = e.target.value ? new Date(e.target.value) : null;
@@ -3873,6 +4094,7 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     const handleResetTime = () => {
+        triggerHaptic('travelReset');
         state.debugTime = null;
         debugTimeInput.value = '';
         saveState();
@@ -5150,6 +5372,14 @@ document.addEventListener('DOMContentLoaded', () => {
         const cellData = currentHeatmapMatrixMap.get(cellId);
         if (!cellData) return;
 
+        if (cellData.freePercent === 100) {
+            triggerHaptic('golden');
+        } else if (cellData.freePercent > 0) {
+            triggerHaptic('impact');
+        } else {
+            triggerHaptic('tap');
+        }
+
         const day = cellData.day;
         const time = cellData.slotTime;
         const period = cellData.slotIdx;
@@ -5586,16 +5816,16 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     // --- EVENT LISTENERS ---
-    settingsBtn.addEventListener('click', () => toggleSettingsPanel(true));
-    addSectionShortcut.addEventListener('click', () => toggleSettingsPanel(true));
-    closeSettingsBtn.addEventListener('click', () => toggleSettingsPanel(false));
-    settingsPanel.addEventListener('click', (e) => e.target === settingsPanel && toggleSettingsPanel(false));
-    closeWelcomeModalBtn.addEventListener('click', () => welcomeModal.classList.add('hidden'));
-    closeChangelogModalBtn.addEventListener('click', () => changelogModal.classList.add('hidden'));
+    settingsBtn.addEventListener('click', () => { triggerHaptic('medium'); toggleSettingsPanel(true); });
+    addSectionShortcut.addEventListener('click', () => { triggerHaptic('medium'); toggleSettingsPanel(true); });
+    closeSettingsBtn.addEventListener('click', () => { triggerHaptic('tap'); toggleSettingsPanel(false); });
+    settingsPanel.addEventListener('click', (e) => e.target === settingsPanel && (triggerHaptic('tap'), toggleSettingsPanel(false)));
+    closeWelcomeModalBtn.addEventListener('click', () => { triggerHaptic('tap'); welcomeModal.classList.add('hidden'); });
+    closeChangelogModalBtn.addEventListener('click', () => { triggerHaptic('tap'); changelogModal.classList.add('hidden'); });
     
     // Modal Close Buttons
-    closeTimelineModalBtn.addEventListener('click', () => timelineModal.classList.add('hidden'));
-    closeDailyTimelineModalBtn.addEventListener('click', () => dailyTimelineModal.classList.add('hidden'));
+    closeTimelineModalBtn.addEventListener('click', () => { triggerHaptic('tap'); timelineModal.classList.add('hidden'); });
+    closeDailyTimelineModalBtn.addEventListener('click', () => { triggerHaptic('tap'); dailyTimelineModal.classList.add('hidden'); });
     
     // Daily Timeline Button
     dailyTimelineBtn.addEventListener('click', openDailyTimelineModal);
@@ -5603,16 +5833,16 @@ document.addEventListener('DOMContentLoaded', () => {
     // Who's Free Now Buttons
     if (whosFreeBtn) whosFreeBtn.addEventListener('click', openWhosFreeModal);
     if (whosFreeMobileBtn) whosFreeMobileBtn.addEventListener('click', openWhosFreeModal);
-    if (closeWhosFreeModalBtn) closeWhosFreeModalBtn.addEventListener('click', () => whosFreeModal.classList.add('hidden'));
-    if (dismissWhosFreeBtn) dismissWhosFreeBtn.addEventListener('click', () => whosFreeModal.classList.add('hidden'));
-    if (whosFreeModal) whosFreeModal.addEventListener('click', (e) => e.target === whosFreeModal && whosFreeModal.classList.add('hidden'));
+    if (closeWhosFreeModalBtn) closeWhosFreeModalBtn.addEventListener('click', () => { triggerHaptic('tap'); whosFreeModal.classList.add('hidden'); });
+    if (dismissWhosFreeBtn) dismissWhosFreeBtn.addEventListener('click', () => { triggerHaptic('tap'); whosFreeModal.classList.add('hidden'); });
+    if (whosFreeModal) whosFreeModal.addEventListener('click', (e) => e.target === whosFreeModal && (triggerHaptic('tap'), whosFreeModal.classList.add('hidden')));
     if (shareWhosFreeBtn) shareWhosFreeBtn.addEventListener('click', shareWhosFreeList);
 
     // Weekly Heatmap Matrix Buttons
     if (heatmapBtn) heatmapBtn.addEventListener('click', openHeatmapModal);
-    if (closeHeatmapModalBtn) closeHeatmapModalBtn.addEventListener('click', () => heatmapModal.classList.add('hidden'));
-    if (dismissHeatmapBtn) dismissHeatmapBtn.addEventListener('click', () => heatmapModal.classList.add('hidden'));
-    if (heatmapModal) heatmapModal.addEventListener('click', (e) => e.target === heatmapModal && heatmapModal.classList.add('hidden'));
+    if (closeHeatmapModalBtn) closeHeatmapModalBtn.addEventListener('click', () => { triggerHaptic('tap'); heatmapModal.classList.add('hidden'); });
+    if (dismissHeatmapBtn) dismissHeatmapBtn.addEventListener('click', () => { triggerHaptic('tap'); heatmapModal.classList.add('hidden'); });
+    if (heatmapModal) heatmapModal.addEventListener('click', (e) => e.target === heatmapModal && (triggerHaptic('tap'), heatmapModal.classList.add('hidden')));
     if (heatmapMatrixContainer) {
         heatmapMatrixContainer.addEventListener('click', (e) => {
             const btn = e.target.closest('.heatmap-cell-btn');
@@ -5625,12 +5855,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Smart Meetup Finder Buttons
     meetupFinderBtn.addEventListener('click', openMeetupModal);
-    closeMeetupModalBtn.addEventListener('click', () => meetupModal.classList.add('hidden'));
-    meetupModal.addEventListener('click', (e) => e.target === meetupModal && meetupModal.classList.add('hidden'));
+    closeMeetupModalBtn.addEventListener('click', () => { triggerHaptic('tap'); meetupModal.classList.add('hidden'); });
+    meetupModal.addEventListener('click', (e) => e.target === meetupModal && (triggerHaptic('tap'), meetupModal.classList.add('hidden')));
 
     meetupDaySelector.addEventListener('click', (e) => {
         const btn = e.target.closest('.meetup-day-btn');
         if (btn) {
+            triggerHaptic('selection');
             selectedMeetupDayIndex = parseInt(btn.dataset.dayIndex, 10);
             renderMeetupDaySelector();
             renderMeetupResults();
@@ -5640,6 +5871,7 @@ document.addEventListener('DOMContentLoaded', () => {
     meetupParticipantsContainer.addEventListener('click', (e) => {
         const chip = e.target.closest('.meetup-participant-chip');
         if (chip) {
+            triggerHaptic('selection');
             const key = chip.dataset.key;
             if (selectedMeetupParticipants.has(key)) {
                 selectedMeetupParticipants.delete(key);
@@ -5652,6 +5884,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     meetupSelectAllBtn.addEventListener('click', () => {
+        triggerHaptic('selection');
         Object.keys(state.sections).forEach(secName => {
             selectedMeetupParticipants.add(`section:${secName}`);
             (state.sections[secName].friends || []).forEach(f => {
@@ -5663,6 +5896,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     meetupClearAllBtn.addEventListener('click', () => {
+        triggerHaptic('destructive');
         selectedMeetupParticipants.clear();
         renderMeetupParticipants();
         renderMeetupResults();
@@ -5671,20 +5905,21 @@ document.addEventListener('DOMContentLoaded', () => {
     copyMeetupScheduleBtn.addEventListener('click', copyMeetupSchedule);
 
     // Lecture Details Modal Close Events
-    closeLectureDetailsModalBtn.addEventListener('click', () => lectureDetailsModal.classList.add('hidden'));
-    dismissLectureDetailsBtn.addEventListener('click', () => lectureDetailsModal.classList.add('hidden'));
-    lectureDetailsModal.addEventListener('click', (e) => e.target === lectureDetailsModal && lectureDetailsModal.classList.add('hidden'));
+    closeLectureDetailsModalBtn.addEventListener('click', () => { triggerHaptic('tap'); lectureDetailsModal.classList.add('hidden'); });
+    dismissLectureDetailsBtn.addEventListener('click', () => { triggerHaptic('tap'); lectureDetailsModal.classList.add('hidden'); });
+    lectureDetailsModal.addEventListener('click', (e) => e.target === lectureDetailsModal && (triggerHaptic('tap'), lectureDetailsModal.classList.add('hidden')));
 
     // Image Export Modal Event Listeners
-    if (closeImageExportModalBtn) closeImageExportModalBtn.addEventListener('click', () => imageExportModal.classList.add('hidden'));
-    if (dismissImageExportBtn) dismissImageExportBtn.addEventListener('click', () => imageExportModal.classList.add('hidden'));
-    if (imageExportModal) imageExportModal.addEventListener('click', (e) => e.target === imageExportModal && imageExportModal.classList.add('hidden'));
+    if (closeImageExportModalBtn) closeImageExportModalBtn.addEventListener('click', () => { triggerHaptic('tap'); imageExportModal.classList.add('hidden'); });
+    if (dismissImageExportBtn) dismissImageExportBtn.addEventListener('click', () => { triggerHaptic('tap'); imageExportModal.classList.add('hidden'); });
+    if (imageExportModal) imageExportModal.addEventListener('click', (e) => e.target === imageExportModal && (triggerHaptic('tap'), imageExportModal.classList.add('hidden')));
     if (downloadTimetablePngBtn) downloadTimetablePngBtn.addEventListener('click', downloadTimetableImage);
     if (shareTimetablePngBtn) shareTimetablePngBtn.addEventListener('click', shareTimetableImage);
-    if (exportThemeDarkBtn) exportThemeDarkBtn.addEventListener('click', () => { currentExportTheme = 'dark'; renderExportImage(); });
-    if (exportThemeLightBtn) exportThemeLightBtn.addEventListener('click', () => { currentExportTheme = 'light'; renderExportImage(); });
+    if (exportThemeDarkBtn) exportThemeDarkBtn.addEventListener('click', () => { triggerHaptic('selection'); currentExportTheme = 'dark'; renderExportImage(); });
+    if (exportThemeLightBtn) exportThemeLightBtn.addEventListener('click', () => { triggerHaptic('selection'); currentExportTheme = 'light'; renderExportImage(); });
 
     countdownToggle.addEventListener('click', () => {
+        triggerHaptic('selection');
         state.settings.showCountdownTimer = !state.settings.showCountdownTimer;
         applyCountdownSetting();
         saveState();
@@ -5693,6 +5928,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (bottomSheetsToggle) {
         bottomSheetsToggle.addEventListener('click', () => {
+            triggerHaptic('selection');
             state.settings.bottomSheetsEnabled = !state.settings.bottomSheetsEnabled;
             applyBottomSheetsSetting();
             saveState();
@@ -5702,6 +5938,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (glassmorphicGlowToggle) {
         glassmorphicGlowToggle.addEventListener('click', () => {
+            triggerHaptic('selection');
             state.settings.glassmorphicGlowEnabled = !state.settings.glassmorphicGlowEnabled;
             applyGlassmorphicGlowSetting();
             saveState();
@@ -5711,6 +5948,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (cardAnimationsToggle) {
         cardAnimationsToggle.addEventListener('click', () => {
+            triggerHaptic('selection');
             state.settings.cardAnimationsEnabled = !state.settings.cardAnimationsEnabled;
             applyCardAnimationsSetting();
             saveState();
@@ -5732,36 +5970,57 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    if (testVibrateLightBtn) {
-        testVibrateLightBtn.addEventListener('click', () => {
-            const res = triggerHaptic('light');
-            if (!('vibrate' in navigator)) {
-                showToast('Vibration API not supported on this browser.', 'error');
-            } else {
-                showToast('Light pulse (50ms) fired');
-            }
+    if (hapticIntensityBtns) {
+        hapticIntensityBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                state.settings.hapticIntensity = btn.dataset.intensity;
+                applyHapticFeedbackSetting();
+                saveState();
+                triggerHaptic('selection');
+                showToast(`Haptic intensity set to ${btn.dataset.intensity.toUpperCase()}`);
+            });
         });
     }
 
-    if (testVibrateMediumBtn) {
-        testVibrateMediumBtn.addEventListener('click', () => {
-            const res = triggerHaptic('medium');
-            if (!('vibrate' in navigator)) {
-                showToast('Vibration API not supported on this browser.', 'error');
-            } else {
-                showToast('Medium bump (80ms) fired');
-            }
+    if (testVibrateTapBtn) {
+        testVibrateTapBtn.addEventListener('click', () => {
+            triggerHaptic('tap');
+            showToast('👆 Tap signature (45ms)');
         });
     }
 
-    if (testVibratePulseBtn) {
-        testVibratePulseBtn.addEventListener('click', () => {
-            const res = triggerHaptic('success');
-            if (!('vibrate' in navigator)) {
-                showToast('Vibration API not supported on this browser.', 'error');
-            } else {
-                showToast('Double pulse [60, 50, 90ms] fired');
-            }
+    if (testVibrateSelectBtn) {
+        testVibrateSelectBtn.addEventListener('click', () => {
+            triggerHaptic('selection');
+            showToast('🔘 Select double-bump [40, 30, 45ms]');
+        });
+    }
+
+    if (testVibrateImpactBtn) {
+        testVibrateImpactBtn.addEventListener('click', () => {
+            triggerHaptic('impact');
+            showToast('💥 Impact pulse (80ms)');
+        });
+    }
+
+    if (testVibrateSuccessBtn) {
+        testVibrateSuccessBtn.addEventListener('click', () => {
+            triggerHaptic('success');
+            showToast('✨ Success upbeat fanfare');
+        });
+    }
+
+    if (testVibrateGoldenBtn) {
+        testVibrateGoldenBtn.addEventListener('click', () => {
+            triggerHaptic('golden');
+            showToast('🏆 Golden window celebration fanfare!');
+        });
+    }
+
+    if (testVibrateAlertBtn) {
+        testVibrateAlertBtn.addEventListener('click', () => {
+            triggerHaptic('alert');
+            showToast('🚨 Class transition warning alarm');
         });
     }
 
@@ -5788,6 +6047,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     audioChimeToggle.addEventListener('click', () => {
+        triggerHaptic('selection');
         state.settings.audioChimeEnabled = !state.settings.audioChimeEnabled;
         if (state.settings.audioChimeEnabled) playChime();
         applyAudioChimeSetting();
@@ -5807,12 +6067,14 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     darkModeToggle.addEventListener('click', () => {
+        triggerHaptic('selection');
         state.settings.darkMode = !state.settings.darkMode;
         applyTheme();
         saveState();
     });
 
     ledIndicatorToggle.addEventListener('click', () => {
+        triggerHaptic('selection');
         state.settings.ledIndicatorEnabled = !state.settings.ledIndicatorEnabled;
         applyLedIndicatorSetting();
         saveState();
@@ -5820,6 +6082,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     cardTimelineToggle.addEventListener('click', () => {
+        triggerHaptic('selection');
         state.settings.cardTimelineEnabled = !state.settings.cardTimelineEnabled;
         applyCardTimelineSetting();
         saveState();
@@ -5828,6 +6091,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     timelineStyleBtns.forEach(btn => {
         btn.addEventListener('click', (e) => {
+            triggerHaptic('selection');
             state.settings.cardTimelineStyle = e.target.dataset.style;
             applyCardTimelineSetting();
             saveState();
@@ -5836,6 +6100,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     
     previousVenueToggle.addEventListener('click', () => {
+        triggerHaptic('selection');
         state.settings.previousVenueWidgetEnabled = !state.settings.previousVenueWidgetEnabled;
         applyPreviousVenueSetting();
         saveState();
@@ -5864,6 +6129,87 @@ document.addEventListener('DOMContentLoaded', () => {
     exportDataBtn.addEventListener('click', handleExportData);
     importDataFile.addEventListener('change', handleImportData);
 
+    // --- SETTINGS REDESIGN TAB SWITCHER & LIVE SEARCH ---
+    const settingsTabBtns = document.querySelectorAll('.settings-tab-btn');
+    const settingsPanes = document.querySelectorAll('.settings-pane');
+    const settingsSearchInput = document.getElementById('settings-search-input');
+    const settingsClearSearchBtn = document.getElementById('settings-clear-search-btn');
+
+    const switchSettingsTab = (tabName) => {
+        settingsTabBtns.forEach(btn => {
+            const isActive = btn.dataset.tab === tabName;
+            if (isActive) {
+                btn.className = 'settings-tab-btn flex-1 py-1.5 px-2 text-xs font-semibold rounded-xl transition-all shadow-xs bg-indigo-600 text-white dark:bg-indigo-500';
+            } else {
+                btn.className = 'settings-tab-btn flex-1 py-1.5 px-2 text-xs font-medium rounded-xl transition-all text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-200/60 dark:hover:bg-gray-700/60';
+            }
+        });
+
+        settingsPanes.forEach(pane => {
+            if (pane.dataset.pane === tabName) {
+                pane.classList.remove('hidden');
+            } else {
+                pane.classList.add('hidden');
+            }
+        });
+    };
+
+    if (settingsTabBtns) {
+        settingsTabBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                triggerHaptic('selection');
+                switchSettingsTab(btn.dataset.tab);
+            });
+        });
+    }
+
+    if (settingsSearchInput) {
+        settingsSearchInput.addEventListener('input', (e) => {
+            const term = e.target.value.trim().toLowerCase();
+            if (settingsClearSearchBtn) {
+                if (term.length > 0) {
+                    settingsClearSearchBtn.classList.remove('hidden');
+                } else {
+                    settingsClearSearchBtn.classList.add('hidden');
+                }
+            }
+            
+            if (!term) {
+                const activeBtn = document.querySelector('.settings-tab-btn.bg-indigo-600, .settings-tab-btn.bg-indigo-500') || settingsTabBtns[0];
+                if (activeBtn) switchSettingsTab(activeBtn.dataset.tab);
+                document.querySelectorAll('.settings-searchable-item').forEach(item => {
+                    item.classList.remove('hidden');
+                });
+                return;
+            }
+
+            // Reveal matching items across all settings panes
+            settingsPanes.forEach(pane => pane.classList.remove('hidden'));
+            document.querySelectorAll('.settings-searchable-item').forEach(item => {
+                const text = (item.textContent || '').toLowerCase();
+                if (text.includes(term)) {
+                    item.classList.remove('hidden');
+                } else {
+                    item.classList.add('hidden');
+                }
+            });
+        });
+
+        if (settingsClearSearchBtn) {
+            settingsClearSearchBtn.addEventListener('click', () => {
+                triggerHaptic('tap');
+                settingsSearchInput.value = '';
+                settingsClearSearchBtn.classList.add('hidden');
+                const activeBtn = document.querySelector('.settings-tab-btn.bg-indigo-600, .settings-tab-btn.bg-indigo-500') || settingsTabBtns[0];
+                if (activeBtn) switchSettingsTab(activeBtn.dataset.tab);
+                document.querySelectorAll('.settings-searchable-item').forEach(item => {
+                    item.classList.remove('hidden');
+                });
+                settingsSearchInput.focus();
+            });
+        }
+    }
+
     debugModeToggle.addEventListener('change', (e) => {
         state.settings.debugMode = e.target.checked;
         saveState();
@@ -5875,6 +6221,7 @@ document.addEventListener('DOMContentLoaded', () => {
         themeColorSelector.addEventListener('click', (e) => {
             const btn = e.target.closest('.theme-picker-btn');
             if (btn) {
+                triggerHaptic('selection');
                 const selectedTheme = btn.dataset.theme;
                 state.settings.themeColor = selectedTheme;
                 saveState();
@@ -5886,8 +6233,9 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    confirmCancelBtn.addEventListener('click', hideConfirm);
+    confirmCancelBtn.addEventListener('click', () => { triggerHaptic('tap'); hideConfirm(); });
     confirmOkBtn.addEventListener('click', () => {
+        triggerHaptic('destructive');
         if (confirmCallback) confirmCallback();
         hideConfirm();
     });
@@ -5895,6 +6243,7 @@ document.addEventListener('DOMContentLoaded', () => {
     sectionsList.addEventListener('click', (e) => {
         const colorBtn = e.target.closest('.set-section-color-btn');
         if (colorBtn) {
+            triggerHaptic('selection');
             const sectionName = colorBtn.dataset.section;
             const colorKey = colorBtn.dataset.color;
             if (state.sections[sectionName]) {
@@ -5917,6 +6266,7 @@ document.addEventListener('DOMContentLoaded', () => {
     groupsList.addEventListener('click', (e) => {
         const colorBtn = e.target.closest('.set-group-color-btn');
         if (colorBtn) {
+            triggerHaptic('selection');
             const groupName = colorBtn.dataset.group;
             const colorKey = colorBtn.dataset.color;
             if (state.groups[groupName]) {
@@ -5975,6 +6325,7 @@ document.addEventListener('DOMContentLoaded', () => {
         
         const timelineBtn = e.target.closest('.view-timeline-btn');
         if (timelineBtn) {
+            triggerHaptic('medium');
             openTimelineModal(timelineBtn.dataset.groupName);
             return;
         }
@@ -5983,6 +6334,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const exportImgBtn = e.target.closest('.export-timetable-img-btn');
         if (exportImgBtn) {
             e.stopPropagation();
+            triggerHaptic('medium');
             openImageExportModal(exportImgBtn.dataset.section);
             return;
         }
@@ -5991,6 +6343,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const lectureTile = e.target.closest('.lecture-tile-btn');
         if (lectureTile) {
             e.stopPropagation();
+            triggerHaptic('medium');
             openLectureDetailsModal({
                 subject: lectureTile.dataset.subject,
                 venue: lectureTile.dataset.venue,
@@ -6008,6 +6361,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const button = e.target.closest('button[data-day-index]');
         if (!button) return;
 
+        triggerHaptic('selection');
         const groupName = timelineModal.dataset.currentGroup;
         const targetDayIndex = parseInt(button.dataset.dayIndex, 10);
 
@@ -6026,6 +6380,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const button = e.target.closest('button[data-day-index]');
         if (!button) return;
 
+        triggerHaptic('selection');
         const targetDayIndex = parseInt(button.dataset.dayIndex, 10);
         const today = getCurrentTime();
         const currentDayIndex = today.getDay();
@@ -6089,6 +6444,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (clearSearchBtn) {
         clearSearchBtn.addEventListener('click', () => {
+            triggerHaptic('tap');
             if (dashboardSearchInput) dashboardSearchInput.value = '';
             currentSearchQuery = '';
             clearSearchBtn.classList.add('hidden');
@@ -6100,6 +6456,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Availability Filter Button Listeners
     dashboardFilterBtns.forEach(btn => {
         btn.addEventListener('click', (e) => {
+            triggerHaptic('selection');
             const filter = e.currentTarget.dataset.filter;
             currentStatusFilter = filter;
 
