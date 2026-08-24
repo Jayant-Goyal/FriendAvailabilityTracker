@@ -1,5 +1,5 @@
 // A unique name for the cache. Increment this version when you update the app's core files.
-const CACHE_NAME = 'friend-tracker-v3';
+const CACHE_NAME = 'friend-tracker-v13';
 
 // List of core files to cache when the service worker is installed.
 // These are the essential files needed for the app to run offline.
@@ -7,7 +7,7 @@ const urlsToCache = [
   './', // Caches the root URL of the app
   './index.html',
   './manifest.json',
-  './generated-image.jpg' // Added the new app icon to the cache
+  './generated-image.jpg' // App icon
 ];
 
 // --- INSTALL Event ---
@@ -69,18 +69,17 @@ self.addEventListener('fetch', event => {
         return cache.match(event.request).then(cachedResponse => {
           // 2. In the background, fetch a fresh version from the network.
           const fetchPromise = fetch(event.request).then(networkResponse => {
-            // If the fetch is successful, update the cache with the new version.
-            console.log('[Service Worker] Fetched & Caching new version for:', event.request.url);
-            cache.put(event.request, networkResponse.clone());
+            if (networkResponse && networkResponse.status === 200) {
+              console.log('[Service Worker] Fetched & Caching new version for:', event.request.url);
+              cache.put(event.request, networkResponse.clone());
+            }
             return networkResponse;
           }).catch(error => {
             console.log('[Service Worker] Fetch failed; returning offline page instead.', error);
-            // If the network fails, the cached response (if it exists) is already served.
-            // No further action is needed here for this strategy.
+            return cachedResponse || caches.match('./index.html') || caches.match('./');
           });
 
           // Return the cached response if it exists, otherwise wait for the network to respond.
-          // This ensures the user sees content instantly on repeat visits.
           return cachedResponse || fetchPromise;
         });
       })

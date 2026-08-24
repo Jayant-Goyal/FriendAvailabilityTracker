@@ -4,9 +4,9 @@
   "timetableInfo": {
     "title": "TIME-TABLE",
     "section": "DH",
-    "year": "II",
-    "semester": "IV Sem",
-    "type": "LT"
+    "year": "III",
+    "semester": "V Sem",
+    "type": "SEMINAR HALL-1"
   },
   "timeSlots": [
     { "lecture": 1, "time": "8.00-8.50" },
@@ -20,43 +20,42 @@
     {
       "day": "Monday",
       "classes": [
-        { "lecture": 1, "subject": "DBMS Lab", "venue": "VIB 407", "faculty": "Mr. Sameep", "span": 2 },
-        { "lecture": 3, "subject": "Computer Organization and Design", "venue": "NYB 312", "faculty": "Mr. Piyush" },
-        { "lecture": 4, "subject": "Java", "venue": "NYB 312", "faculty": "Mr. Ved Prakash" },
-        { "lecture": 5, "details": null },
-        { "lecture": 6, "details": null }
+        { "lecture": 1, "subject": "DAA Lab", "venue": "VIB 511", "faculty": "Mr. Pushpendra Sharma", "span": 2 },
+        { "lecture": 3, "subject": "FLAT", "venue": "SEMINAR HALL-1", "faculty": "Ms. Pragya Bharti" },
+        { "lecture": 4, "subject": "IP", "venue": "SEMINAR HALL-1", "faculty": "Mr. Jay" },
+        { "lecture": 5, "subject": "Digital Forensic", "venue": "SEMINAR HALL-1", "faculty": "NF7" },
+        { "lecture": 6, "subject": "ML", "venue": "SEMINAR HALL-1", "faculty": "NF8" }
       ]
     },
     {
       "day": "Tuesday",
       "classes": [
-        { "lecture": 1, "details": null },
-        { "lecture": 2, "details": null },
-        { "lecture": 3, "details": null },
-        { "lecture": 4, "details": null },
-        { "lecture": 5, "subject": "Database Management System", "venue": "NYB 312", "faculty": "Mr. Sameep" },
-        { "lecture": 6, "subject": "Java", "venue": "KAB 302", "faculty": "Mr. Ved Prakash" }
+        { "lecture": 1, "subject": "FLAT", "venue": "SEMINAR HALL-1", "faculty": "Ms. Pragya Bharti" },
+        { "lecture": 2, "subject": "DAA", "venue": "SEMINAR HALL-1", "faculty": "Mr. Pushpendra Sharma" },
+        { "lecture": 3, "subject": "ML", "venue": "SEMINAR HALL-1", "faculty": "NF8" },
+        { "lecture": 4, "subject": "Digital Forensic", "venue": "SEMINAR HALL-1", "faculty": "NF7" },
+        { "lecture": 5, "subject": "IP Lab", "venue": "VIB 511", "faculty": "Mr. Jay", "span": 2 }
       ]
     },
     {
       "day": "Wednesday",
       "classes": [
-        { "lecture": 1, "details": null },
-        { "lecture": 2, "details": null },
-        { "lecture": 3, "subject": "Artificial Neural Network", "venue": "NYB 204", "faculty": "Mr. Ankit Taneja" },
-        { "lecture": 4, "subject": "Database Management System", "venue": "NYB 204", "faculty": "Mr. Sameep" },
-        { "lecture": 5, "subject": "Java Lab", "venue": "VIB 411", "faculty": "Mr. Ved Prakash", "span": 2 }
+        { "lecture": 1, "subject": "IP", "venue": "SEMINAR HALL-1", "faculty": "Mr. Jay" },
+        { "lecture": 2, "subject": "FLAT", "venue": "SEMINAR HALL-1", "faculty": "Ms. Pragya Bharti" },
+        { "lecture": 3, "subject": "ML Lab", "venue": "VIB 508", "faculty": "NF8", "span": 2 },
+        { "lecture": 5, "subject": "DAA", "venue": "SEMINAR HALL-1", "faculty": "Mr. Pushpendra Sharma" },
+        { "lecture": 6, "subject": "Digital Forensic", "venue": "SEMINAR HALL-1", "faculty": "NF7" }
       ]
     },
     {
       "day": "Thursday",
       "classes": [
-        { "lecture": 1, "details": null },
-        { "lecture": 2, "details": null },
-        { "lecture": 3, "subject": "Artificial Neural Network", "venue": "NYB 203", "faculty": "Mr. Ankit Taneja" },
-        { "lecture": 4, "subject": "Computer Organization and Design", "venue": "NYB 203", "faculty": "Mr. Piyush" },
-        { "lecture": 5, "subject": "Java", "venue": "VIB 411", "faculty": "Mr. Ved Prakash" },
-        { "lecture": 6, "subject": "Database Management System", "venue": "VIB 308", "faculty": "Mr. Sameep" }
+        { "lecture": 1, "subject": "DAA", "venue": "SEMINAR HALL-1", "faculty": "Mr. Pushpendra Sharma" },
+        { "lecture": 2, "subject": "ML", "venue": "SEMINAR HALL-1", "faculty": "NF8" },
+        { "lecture": 3, "subject": "IP", "venue": "SEMINAR HALL-1", "faculty": "Mr. Jay" },
+        { "lecture": 4, "details": null },
+        { "lecture": 5, "details": null },
+        { "lecture": 6, "details": null }
       ]
     },
     {
@@ -65,28 +64,31 @@
         { "lecture": 1, "details": null },
         { "lecture": 2, "details": null },
         { "lecture": 3, "details": null },
-        { "lecture": 4, "subject": "Computer Organization and Design", "venue": "NYB 003", "faculty": "Mr. Piyush" },
-        { "lecture": 5, "subject": "Life Skills (Aptitude)", "venue": "NIB 602", "faculty": "Dr. Ramjash Gurjar" },
+        { "lecture": 4, "details": null },
+        { "lecture": 5, "details": null },
         { "lecture": 6, "details": null }
       ]
     },
     {
       "day": "Saturday",
       "classes": [
-        { "lecture": 1, "subject": "Life Skills (Aptitude)", "venue": "VIB 207", "faculty": "Dr. Ramjash Gurjar" },
-        { "lecture": 2, "subject": "DBMS Tutorial", "venue": "VIB 207", "faculty": "Mr. Sameep" },
-        { "lecture": 3, "subject": "ANN Lab", "venue": "VIB 411", "faculty": "Mr. Ankit Taneja", "span": 2 },
-        { "lecture": 5, "subject": "Artificial Neural Network", "venue": "VIB 013", "faculty": "Mr. Ankit Taneja" },
+        { "lecture": 1, "details": null },
+        { "lecture": 2, "details": null },
+        { "lecture": 3, "details": null },
+        { "lecture": 4, "details": null },
+        { "lecture": 5, "details": null },
         { "lecture": 6, "details": null }
       ]
     }
   ],
   "faculty": [
-    { "name": "Dr. Ramjash Gurjar", "subject": "Life Skills (Aptitude)" },
-    { "name": "Mr. Piyush", "subject": "Computer Organization and Design" },
-    { "name": "Mr. Sameep", "subject": "Database Management System" },
-    { "name": "Mr. Ankit Taneja", "subject": "Artificial Neural Network" },
-    { "name": "Mr. Ved Prakash", "subject": "Java" }
+    { "subject": "FLAT", "faculty": "Ms. Pragya Bharti" },
+    { "subject": "DAA", "faculty": "Mr. Pushpendra Sharma" },
+    { "subject": "IP", "faculty": "Mr. Jay" },
+    { "subject": "ML", "faculty": "NF8" },
+    { "subject": "Digital Forensic", "faculty": "NF7" },
+    { "subject": "DAA Lab", "faculty": "Mr. Pushpendra Sharma" },
+    { "subject": "IP Lab", "faculty": "Mr. Jay" },
+    { "subject": "ML Lab", "faculty": "NF8" }
   ]
 }
-
