@@ -713,6 +713,29 @@
                 border-bottom-color: rgba(255, 255, 255, 0.12) !important;
             }
         }
+
+        /* 8. Tabular Numbers & Zero-Jitter Card Header Stability */
+        .card-status-col {
+            min-width: 125px;
+            flex-shrink: 0;
+        }
+        @media (min-width: 640px) {
+            .card-status-col {
+                min-width: 140px;
+            }
+        }
+        .card-countdown-badge {
+            font-variant-numeric: tabular-nums;
+            font-feature-settings: "tnum";
+            white-space: nowrap;
+        }
+        .card-countdown-badge .timer-digits {
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+            font-variant-numeric: tabular-nums;
+            font-feature-settings: "tnum";
+            letter-spacing: -0.01em;
+            display: inline-block;
+        }
         /* --- END: VISUAL & UI POLISH --- */
 
     </style>
@@ -3706,6 +3729,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const toggleSettingsPanel = (show) => {
         if (show) {
+            renderSettings();
             settingsPanel.classList.remove('hidden');
             setTimeout(() => {
                 settingsContent.classList.remove('translate-x-full');
@@ -4899,7 +4923,7 @@ document.addEventListener('DOMContentLoaded', () => {
                                     <div class="friends-container ${hasFriends ? 'mt-2 flex flex-wrap gap-1.5' : 'hidden'}">${friendsHtml}</div>
                                 </div>
                                 <!-- Right Column: Status Text & Live Countdown Timer -->
-                                <div class="flex flex-col items-end flex-shrink-0 pt-0.5 text-right">
+                                <div class="card-status-col flex flex-col items-end flex-shrink-0 pt-0.5 text-right">
                                     <div class="flex items-center">
                                         <div class="main-status-text text-right ${textColor} font-bold text-base sm:text-lg whitespace-nowrap">${status.isFree ? 'FREE' : 'IN CLASS'}</div>
                                         ${ledIndicatorHtml}
@@ -4937,7 +4961,7 @@ document.addEventListener('DOMContentLoaded', () => {
                                 </div>
                             </div>
                             <!-- Right Column: Status Text & Live Countdown Timer -->
-                            <div class="flex flex-col items-end flex-shrink-0 pt-0.5 text-right">
+                            <div class="card-status-col flex flex-col items-end flex-shrink-0 pt-0.5 text-right">
                                 <div class="main-status-text text-right ${textColor} font-bold text-base sm:text-lg whitespace-nowrap">${status.isFree ? 'ALL FREE' : 'BUSY'}</div>
                                 <div class="card-countdown-badge mt-1 ${state.settings.showCountdownTimer ? '' : 'hidden'}"></div>
                             </div>
@@ -5198,10 +5222,10 @@ document.addEventListener('DOMContentLoaded', () => {
                             const mins = Math.floor((totalSeconds % 3600) / 60);
                             const secs = totalSeconds % 60;
                             const timeStr = hours > 0 
-                                ? `${hours}h ${mins}m ${secs}s`
-                                : `${mins}m ${secs.toString().padStart(2, '0')}s`;
-                            countdownEl.innerHTML = `<span class="inline-block w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse mr-1"></span><span>${timeStr} in class</span>`;
-                            countdownEl.className = 'card-countdown-badge mt-1 text-[11px] font-semibold px-2 py-0.5 rounded-full bg-red-100/90 dark:bg-red-950/80 text-red-700 dark:text-red-300 inline-flex items-center border border-red-200/60 dark:border-red-800/50 shadow-2xs';
+                                ? `${hours}h ${mins.toString().padStart(2, '0')}m ${secs.toString().padStart(2, '0')}s`
+                                : `${mins.toString().padStart(2, '0')}m ${secs.toString().padStart(2, '0')}s`;
+                            countdownEl.innerHTML = `<span class="inline-block w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse mr-1"></span><span class="timer-digits">${timeStr}</span><span class="ml-1">in class</span>`;
+                            countdownEl.className = 'card-countdown-badge mt-1 text-[11px] font-semibold px-2 py-0.5 rounded-full bg-red-100/90 dark:bg-red-950/80 text-red-700 dark:text-red-300 inline-flex items-center justify-center border border-red-200/60 dark:border-red-800/50 shadow-2xs';
                         }
                     }
                 } else {
@@ -5245,13 +5269,13 @@ document.addEventListener('DOMContentLoaded', () => {
                                 const mins = Math.floor((totalSeconds % 3600) / 60);
                                 const secs = totalSeconds % 60;
                                 const timeStr = hours > 0 
-                                    ? `${hours}h ${mins}m ${secs}s`
-                                    : `${mins}m ${secs.toString().padStart(2, '0')}s`;
-                                countdownEl.innerHTML = `<span class="inline-block w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse mr-1"></span><span>${timeStr} free</span>`;
-                                countdownEl.className = 'card-countdown-badge mt-1 text-[11px] font-semibold px-2 py-0.5 rounded-full bg-green-100/90 dark:bg-green-950/80 text-green-700 dark:text-green-300 inline-flex items-center border border-green-200/60 dark:border-green-800/50 shadow-2xs';
+                                    ? `${hours}h ${mins.toString().padStart(2, '0')}m ${secs.toString().padStart(2, '0')}s`
+                                    : `${mins.toString().padStart(2, '0')}m ${secs.toString().padStart(2, '0')}s`;
+                                countdownEl.innerHTML = `<span class="inline-block w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse mr-1"></span><span class="timer-digits">${timeStr}</span><span class="ml-1">free</span>`;
+                                countdownEl.className = 'card-countdown-badge mt-1 text-[11px] font-semibold px-2 py-0.5 rounded-full bg-green-100/90 dark:bg-green-950/80 text-green-700 dark:text-green-300 inline-flex items-center justify-center border border-green-200/60 dark:border-green-800/50 shadow-2xs';
                             } else {
                                 countdownEl.innerHTML = `<span>Free for the day</span>`;
-                                countdownEl.className = 'card-countdown-badge mt-1 text-[11px] font-semibold px-2 py-0.5 rounded-full bg-green-100/60 dark:bg-green-950/50 text-green-700 dark:text-green-300 inline-flex items-center border border-green-200/40 dark:border-green-800/30';
+                                countdownEl.className = 'card-countdown-badge mt-1 text-[11px] font-semibold px-2 py-0.5 rounded-full bg-green-100/60 dark:bg-green-950/50 text-green-700 dark:text-green-300 inline-flex items-center justify-center border border-green-200/40 dark:border-green-800/30';
                             }
                         }
                     }
@@ -5294,10 +5318,10 @@ document.addEventListener('DOMContentLoaded', () => {
                         const mins = Math.floor((totalSeconds % 3600) / 60);
                         const secs = totalSeconds % 60;
                         const timeStr = hours > 0 
-                            ? `${hours}h ${mins}m ${secs}s` 
-                            : `${mins}m ${secs.toString().padStart(2, '0')}s`;
-                        countdownEl.innerHTML = `<span class="inline-block w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse mr-1"></span><span>${timeStr} busy</span>`;
-                        countdownEl.className = 'card-countdown-badge mt-1 text-[11px] font-semibold px-2 py-0.5 rounded-full bg-red-100/90 dark:bg-red-950/80 text-red-700 dark:text-red-300 inline-flex items-center border border-red-200/60 dark:border-red-800/50 shadow-2xs';
+                            ? `${hours}h ${mins.toString().padStart(2, '0')}m ${secs.toString().padStart(2, '0')}s` 
+                            : `${mins.toString().padStart(2, '0')}m ${secs.toString().padStart(2, '0')}s`;
+                        countdownEl.innerHTML = `<span class="inline-block w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse mr-1"></span><span class="timer-digits">${timeStr}</span><span class="ml-1">busy</span>`;
+                        countdownEl.className = 'card-countdown-badge mt-1 text-[11px] font-semibold px-2 py-0.5 rounded-full bg-red-100/90 dark:bg-red-950/80 text-red-700 dark:text-red-300 inline-flex items-center justify-center border border-red-200/60 dark:border-red-800/50 shadow-2xs';
                     }
                 } else if (earliestNextClass) {
                     const diffMs = earliestNextClass.startTime.getTime() - now.getTime();
@@ -5307,13 +5331,13 @@ document.addEventListener('DOMContentLoaded', () => {
                         const mins = Math.floor((totalSeconds % 3600) / 60);
                         const secs = totalSeconds % 60;
                         const timeStr = hours > 0 
-                            ? `${hours}h ${mins}m ${secs}s` 
-                            : `${mins}m ${secs.toString().padStart(2, '0')}s`;
-                        countdownEl.innerHTML = `<span class="inline-block w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse mr-1"></span><span>${timeStr} all free</span>`;
-                        countdownEl.className = 'card-countdown-badge mt-1 text-[11px] font-semibold px-2 py-0.5 rounded-full bg-green-100/90 dark:bg-green-950/80 text-green-700 dark:text-green-300 inline-flex items-center border border-green-200/60 dark:border-green-800/50 shadow-2xs';
+                            ? `${hours}h ${mins.toString().padStart(2, '0')}m ${secs.toString().padStart(2, '0')}s` 
+                            : `${mins.toString().padStart(2, '0')}m ${secs.toString().padStart(2, '0')}s`;
+                        countdownEl.innerHTML = `<span class="inline-block w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse mr-1"></span><span class="timer-digits">${timeStr}</span><span class="ml-1">all free</span>`;
+                        countdownEl.className = 'card-countdown-badge mt-1 text-[11px] font-semibold px-2 py-0.5 rounded-full bg-green-100/90 dark:bg-green-950/80 text-green-700 dark:text-green-300 inline-flex items-center justify-center border border-green-200/60 dark:border-green-800/50 shadow-2xs';
                     } else {
                         countdownEl.innerHTML = `<span>All free today</span>`;
-                        countdownEl.className = 'card-countdown-badge mt-1 text-[11px] font-semibold px-2 py-0.5 rounded-full bg-green-100/60 dark:bg-green-950/50 text-green-700 dark:text-green-300 inline-flex items-center border border-green-200/40 dark:border-green-800/30';
+                        countdownEl.className = 'card-countdown-badge mt-1 text-[11px] font-semibold px-2 py-0.5 rounded-full bg-green-100/60 dark:bg-green-950/50 text-green-700 dark:text-green-300 inline-flex items-center justify-center border border-green-200/40 dark:border-green-800/30';
                     }
                 }
             }
@@ -8680,16 +8704,11 @@ document.addEventListener('DOMContentLoaded', () => {
         updateDebugIndicator();
         initGyroscope();
         
-        // INSTANT LOAD: Render immediately using locally cached data in localStorage
-        renderSettings();
+        // INSTANT LOAD: Render dashboard once using locally cached data in localStorage
         renderDashboard();
         
         // BACKGROUND FETCH: Check for remote timetable updates asynchronously without blocking the UI
-        fetchAndUpdateTimetables().then(() => {
-            renderDashboard();
-            renderSettings();
-            updateDashboardStatuses();
-        }).catch(console.error);
+        fetchAndUpdateTimetables().catch(console.error);
         
         // Start smart clock & status loops
         startAppLoops();

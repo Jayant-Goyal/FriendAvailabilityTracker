@@ -1,11 +1,12 @@
 // A unique name for the cache. Increment this version when you update the app's core files.
-const CACHE_NAME = 'friend-tracker-v47';
+const CACHE_NAME = 'friend-tracker-v50';
 
 // List of core files to cache when the service worker is installed.
 // These are the essential files needed for the app to run offline.
 const urlsToCache = [
   './', // Caches the root URL of the app
   './index.html',
+  'https://cdn.tailwindcss.com',
   './manifest.json',
   './timetables.json',
   './TimeTables/DF.json',
