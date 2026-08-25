@@ -537,9 +537,15 @@
             background-image: radial-gradient(at 50% 0%, rgba(139, 92, 246, 0.2) 0px, transparent 60%), radial-gradient(at 100% 100%, rgba(6, 182, 212, 0.15) 0px, transparent 60%) !important;
         }
         body.ambient-cyberpunk .bg-white\/90, 
-        body.ambient-cyberpunk .dark\:bg-gray-800\/90 {
-            background-color: rgba(13, 16, 28, 0.88) !important;
-            border-color: rgba(139, 92, 246, 0.3) !important;
+        body.ambient-cyberpunk .dark\:bg-gray-800\/90,
+        body.ambient-cyberpunk #sort-dropdown-menu,
+        body.ambient-cyberpunk #reorder-modal > div {
+            background-color: rgba(13, 16, 28, 0.95) !important;
+            border-color: rgba(139, 92, 246, 0.35) !important;
+        }
+        body.ambient-cyberpunk .reorder-item-row {
+            background-color: rgba(22, 27, 46, 0.85) !important;
+            border-color: rgba(139, 92, 246, 0.25) !important;
         }
 
         body.ambient-matcha {
@@ -547,9 +553,15 @@
             background-image: radial-gradient(at 50% 0%, rgba(52, 211, 153, 0.18) 0px, transparent 65%), radial-gradient(at 0% 100%, rgba(16, 185, 129, 0.12) 0px, transparent 50%) !important;
         }
         body.ambient-matcha .bg-white\/90, 
-        body.ambient-matcha .dark\:bg-gray-800\/90 {
-            background-color: rgba(16, 26, 20, 0.88) !important;
-            border-color: rgba(52, 211, 153, 0.25) !important;
+        body.ambient-matcha .dark\:bg-gray-800\/90,
+        body.ambient-matcha #sort-dropdown-menu,
+        body.ambient-matcha #reorder-modal > div {
+            background-color: rgba(16, 26, 20, 0.95) !important;
+            border-color: rgba(52, 211, 153, 0.3) !important;
+        }
+        body.ambient-matcha .reorder-item-row {
+            background-color: rgba(24, 38, 30, 0.85) !important;
+            border-color: rgba(52, 211, 153, 0.2) !important;
         }
 
         body.ambient-sunset {
@@ -557,9 +569,15 @@
             background-image: radial-gradient(at 50% 0%, rgba(244, 114, 182, 0.2) 0px, transparent 60%), radial-gradient(at 100% 80%, rgba(251, 146, 60, 0.15) 0px, transparent 50%) !important;
         }
         body.ambient-sunset .bg-white\/90, 
-        body.ambient-sunset .dark\:bg-gray-800\/90 {
-            background-color: rgba(26, 16, 32, 0.88) !important;
-            border-color: rgba(244, 114, 182, 0.25) !important;
+        body.ambient-sunset .dark\:bg-gray-800\/90,
+        body.ambient-sunset #sort-dropdown-menu,
+        body.ambient-sunset #reorder-modal > div {
+            background-color: rgba(26, 16, 32, 0.95) !important;
+            border-color: rgba(244, 114, 182, 0.3) !important;
+        }
+        body.ambient-sunset .reorder-item-row {
+            background-color: rgba(38, 24, 46, 0.85) !important;
+            border-color: rgba(244, 114, 182, 0.2) !important;
         }
 
         body.ambient-crimson {
@@ -567,9 +585,15 @@
             background-image: radial-gradient(at 50% 0%, rgba(225, 29, 72, 0.2) 0px, transparent 60%), radial-gradient(at 0% 100%, rgba(244, 63, 94, 0.12) 0px, transparent 50%) !important;
         }
         body.ambient-crimson .bg-white\/90, 
-        body.ambient-crimson .dark\:bg-gray-800\/90 {
-            background-color: rgba(26, 10, 16, 0.88) !important;
-            border-color: rgba(244, 63, 94, 0.25) !important;
+        body.ambient-crimson .dark\:bg-gray-800\/90,
+        body.ambient-crimson #sort-dropdown-menu,
+        body.ambient-crimson #reorder-modal > div {
+            background-color: rgba(26, 10, 16, 0.95) !important;
+            border-color: rgba(244, 63, 94, 0.3) !important;
+        }
+        body.ambient-crimson .reorder-item-row {
+            background-color: rgba(38, 16, 24, 0.85) !important;
+            border-color: rgba(244, 63, 94, 0.2) !important;
         }
 
         body.ambient-midnight {
@@ -577,9 +601,15 @@
             background-image: none !important;
         }
         body.ambient-midnight .bg-white\/90, 
-        body.ambient-midnight .dark\:bg-gray-800\/90 {
-            background-color: rgba(14, 14, 14, 0.95) !important;
-            border-color: rgba(255, 255, 255, 0.1) !important;
+        body.ambient-midnight .dark\:bg-gray-800\/90,
+        body.ambient-midnight #sort-dropdown-menu,
+        body.ambient-midnight #reorder-modal > div {
+            background-color: rgba(14, 14, 14, 0.98) !important;
+            border-color: rgba(255, 255, 255, 0.12) !important;
+        }
+        body.ambient-midnight .reorder-item-row {
+            background-color: rgba(22, 22, 22, 0.9) !important;
+            border-color: rgba(255, 255, 255, 0.08) !important;
         }
 
         /* 6. Floating Dynamic Island Styles & Bottom Clear Scrolling */
@@ -791,13 +821,56 @@
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
                     </button>
                 </div>
-                <div class="flex items-center space-x-2 self-start sm:self-auto">
+                <div class="flex items-center space-x-1.5 sm:space-x-2 self-start sm:self-auto">
                     <!-- Status Filter Buttons -->
                     <div class="flex items-center space-x-1 bg-gray-200/70 dark:bg-gray-800/80 p-1 rounded-xl shadow-inner border border-gray-200 dark:border-gray-700/50 text-xs font-medium">
-                        <button data-filter="all" class="dashboard-filter-btn px-3 py-1.5 rounded-lg transition-all font-semibold bg-white dark:bg-gray-700 text-indigo-600 dark:text-indigo-400 shadow-sm">All</button>
-                        <button data-filter="free" class="dashboard-filter-btn px-3 py-1.5 rounded-lg transition-all font-semibold text-gray-600 dark:text-gray-300 hover:text-green-600 dark:hover:text-green-400">Free Now</button>
-                        <button data-filter="busy" class="dashboard-filter-btn px-3 py-1.5 rounded-lg transition-all font-semibold text-gray-600 dark:text-gray-300 hover:text-red-600 dark:hover:text-red-400">In Class</button>
+                        <button data-filter="all" class="dashboard-filter-btn px-2.5 sm:px-3 py-1.5 rounded-lg transition-all font-semibold bg-white dark:bg-gray-700 text-indigo-600 dark:text-indigo-400 shadow-sm">All</button>
+                        <button data-filter="free" class="dashboard-filter-btn px-2.5 sm:px-3 py-1.5 rounded-lg transition-all font-semibold text-gray-600 dark:text-gray-300 hover:text-green-600 dark:hover:text-green-400">Free</button>
+                        <button data-filter="busy" class="dashboard-filter-btn px-2.5 sm:px-3 py-1.5 rounded-lg transition-all font-semibold text-gray-600 dark:text-gray-300 hover:text-red-600 dark:hover:text-red-400">In Class</button>
                     </div>
+
+                    <!-- Card Sort Dropdown -->
+                    <div class="relative inline-block text-left" id="sort-dropdown-wrapper">
+                        <button id="sort-menu-btn" type="button" class="p-2 sm:px-2.5 sm:py-1.5 rounded-xl bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700/80 hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200 text-xs font-semibold transition-all shadow-xs flex items-center space-x-1.5 cursor-pointer" title="Change Card Sorting Order">
+                            <svg class="w-3.5 h-3.5 text-indigo-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4h13M3 8h9m-9 4h6m4 0l4-4m0 0l4 4m-4-4v12"/></svg>
+                            <span id="current-sort-label" class="hidden sm:inline">Default</span>
+                            <svg class="w-3 h-3 text-gray-400 hidden sm:inline" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                        </button>
+                        <!-- Dropdown Menu -->
+                        <div id="sort-dropdown-menu" class="hidden absolute right-0 mt-1.5 w-56 rounded-2xl bg-white/95 dark:bg-gray-800/95 border border-gray-200/90 dark:border-gray-700 shadow-xl z-50 p-1.5 text-xs space-y-0.5 backdrop-blur-xl text-gray-800 dark:text-gray-200">
+                            <div class="px-2.5 py-1 text-[10px] font-extrabold uppercase tracking-wider text-gray-400 dark:text-gray-400">Sort Order</div>
+                            <button data-sort="default" class="sort-option-btn w-full flex items-center justify-between px-2.5 py-1.5 rounded-xl text-left text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700/70 transition-colors">
+                                <span class="flex items-center space-x-2 font-medium"><span>🌟</span> <span>Status Priority (Default)</span></span>
+                                <span class="sort-check text-indigo-500 font-bold hidden">✓</span>
+                            </button>
+                            <button data-sort="alphabetical" class="sort-option-btn w-full flex items-center justify-between px-2.5 py-1.5 rounded-xl text-left text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700/70 transition-colors">
+                                <span class="flex items-center space-x-2 font-medium"><span>🔤</span> <span>Alphabetical (A → Z)</span></span>
+                                <span class="sort-check text-indigo-500 font-bold hidden">✓</span>
+                            </button>
+                            <button data-sort="custom" class="sort-option-btn w-full flex items-center justify-between px-2.5 py-1.5 rounded-xl text-left text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700/70 transition-colors">
+                                <span class="flex items-center space-x-2 font-medium"><span>📌</span> <span>Custom Fixed Order</span></span>
+                                <span class="sort-check text-indigo-500 font-bold hidden">✓</span>
+                            </button>
+                            <button data-sort="freeFirst" class="sort-option-btn w-full flex items-center justify-between px-2.5 py-1.5 rounded-xl text-left text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700/70 transition-colors">
+                                <span class="flex items-center space-x-2 font-medium"><span>🟢</span> <span>Free Now First</span></span>
+                                <span class="sort-check text-indigo-500 font-bold hidden">✓</span>
+                            </button>
+                            <button data-sort="endingSoonest" class="sort-option-btn w-full flex items-center justify-between px-2.5 py-1.5 rounded-xl text-left text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700/70 transition-colors">
+                                <span class="flex items-center space-x-2 font-medium"><span>⏱️</span> <span>Ending Soonest</span></span>
+                                <span class="sort-check text-indigo-500 font-bold hidden">✓</span>
+                            </button>
+                            <button data-sort="memberCount" class="sort-option-btn w-full flex items-center justify-between px-2.5 py-1.5 rounded-xl text-left text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700/70 transition-colors">
+                                <span class="flex items-center space-x-2 font-medium"><span>👥</span> <span>Most Friends First</span></span>
+                                <span class="sort-check text-indigo-500 font-bold hidden">✓</span>
+                            </button>
+                            <div class="border-t border-gray-200/80 dark:border-gray-700/80 my-1"></div>
+                            <button id="open-reorder-modal-btn" type="button" class="w-full flex items-center space-x-2 px-2.5 py-1.5 rounded-xl text-left text-indigo-600 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-950/60 transition-colors font-semibold">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+                                <span>Edit Custom Order...</span>
+                            </button>
+                        </div>
+                    </div>
+
                     <!-- Layout Mode Toggle (Expanded Grid vs Compact List) -->
                     <button id="layout-toggle-btn" class="p-2 rounded-xl bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700/80 hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-300 transition-all shadow-xs flex items-center justify-center" title="Toggle Compact List / Card Grid View">
                         <svg id="layout-icon-compact" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
@@ -1067,6 +1140,28 @@
                                     <span class="inline-block w-3.5 h-3.5 transform bg-white rounded-full transition-transform"></span>
                                 </button>
                             </div>
+                        </div>
+                    </div>
+
+                    <!-- Card Sort Order & Custom Arrangement -->
+                    <div class="settings-searchable-item flex flex-col p-3.5 bg-gray-50/80 dark:bg-gray-800/60 border border-gray-200/70 dark:border-gray-700/60 rounded-2xl space-y-2.5 shadow-2xs">
+                        <div class="flex justify-between items-center w-full">
+                            <div>
+                                <label class="font-bold text-sm text-gray-900 dark:text-white block">Card Sort Order</label>
+                                <span class="text-[11px] text-gray-500 dark:text-gray-400">Dashboard card sequence & custom arrangement</span>
+                            </div>
+                            <button id="settings-reorder-btn" type="button" class="px-2.5 py-1 text-xs font-semibold rounded-lg bg-indigo-50 dark:bg-indigo-950/70 border border-indigo-200 dark:border-indigo-800 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-100 dark:hover:bg-indigo-900/80 transition-all flex items-center space-x-1 cursor-pointer">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+                                <span>Reorder</span>
+                            </button>
+                        </div>
+                        <div class="grid grid-cols-2 sm:grid-cols-3 gap-1.5 pt-1" id="settings-sort-selector">
+                            <button data-sort="default" class="settings-sort-btn py-1.5 px-2 text-xs rounded-xl bg-indigo-600 text-white font-semibold transition-all shadow-xs text-center">🌟 Default</button>
+                            <button data-sort="alphabetical" class="settings-sort-btn py-1.5 px-2 text-xs rounded-xl bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 font-semibold transition-all hover:bg-gray-300 dark:hover:bg-gray-600 text-center">🔤 A → Z</button>
+                            <button data-sort="custom" class="settings-sort-btn py-1.5 px-2 text-xs rounded-xl bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 font-semibold transition-all hover:bg-gray-300 dark:hover:bg-gray-600 text-center">📌 Custom</button>
+                            <button data-sort="freeFirst" class="settings-sort-btn py-1.5 px-2 text-xs rounded-xl bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 font-semibold transition-all hover:bg-gray-300 dark:hover:bg-gray-600 text-center">🟢 Free First</button>
+                            <button data-sort="endingSoonest" class="settings-sort-btn py-1.5 px-2 text-xs rounded-xl bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 font-semibold transition-all hover:bg-gray-300 dark:hover:bg-gray-600 text-center">⏱️ Next Event</button>
+                            <button data-sort="memberCount" class="settings-sort-btn py-1.5 px-2 text-xs rounded-xl bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 font-semibold transition-all hover:bg-gray-300 dark:hover:bg-gray-600 text-center">👥 Most Friends</button>
                         </div>
                     </div>
 
@@ -1941,6 +2036,48 @@
     </div>
     <!-- END: Friend Avatar Customizer Modal -->
 
+    <!-- START: Custom Card Order / Reorder Modal -->
+    <div id="reorder-modal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 hidden flex items-center justify-center p-3 sm:p-4">
+        <div class="bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 rounded-3xl shadow-2xl w-full max-w-lg overflow-hidden border border-gray-100 dark:border-gray-700 flex flex-col max-h-[85vh]">
+            <!-- Header -->
+            <div class="relative bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 p-4 sm:p-5 text-white flex-shrink-0 flex items-center justify-between">
+                <div>
+                    <h3 class="text-xl font-extrabold text-white flex items-center gap-2">
+                        <span>📌</span>
+                        <span>Custom Card Order</span>
+                    </h3>
+                    <p class="text-xs text-indigo-100 mt-0.5">Use the ▲/▼ buttons to arrange your fixed card order</p>
+                </div>
+                <button id="close-reorder-modal" class="p-1.5 rounded-full bg-black/20 hover:bg-black/40 text-white transition-colors" title="Close">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+
+            <!-- List Body -->
+            <div class="p-3 sm:p-4 overflow-y-auto flex-grow space-y-2 bg-gray-50/50 dark:bg-gray-900/40" id="reorder-items-list">
+                <!-- Reorder items injected here dynamically -->
+            </div>
+
+            <!-- Footer Actions -->
+            <div class="p-3 sm:p-4 bg-gray-50 dark:bg-gray-900 border-t border-gray-100 dark:border-gray-700 flex items-center justify-between gap-2 flex-shrink-0">
+                <button id="reorder-reset-btn" type="button" class="px-3 py-2 text-xs font-semibold text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors">
+                    Reset Order
+                </button>
+                <div class="flex items-center space-x-2">
+                    <button id="cancel-reorder-btn" type="button" class="px-3.5 py-2 bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-800 dark:text-gray-200 font-semibold rounded-xl text-xs transition-all">
+                        Cancel
+                    </button>
+                    <button id="save-reorder-btn" type="button" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl text-xs transition-all shadow-xs">
+                        Apply & Save
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- END: Custom Card Order / Reorder Modal -->
+
     <!-- START: Floating Dynamic Island Status Widget -->
     <div id="floating-status-island" class="hidden">
         <div id="dynamic-island-pill-btn" class="dynamic-island-pill flex items-center space-x-2.5">
@@ -2013,8 +2150,10 @@ document.addEventListener('DOMContentLoaded', () => {
             socialInsightsEnabled: true,
             hapticFeedbackEnabled: true,
             friendAvatarStyle: 'pill',
-            liveLockScreenEnabled: false
+            liveLockScreenEnabled: false,
+            cardSortOrder: 'default'
         },
+        customCardOrder: [], // ['group:Study Buddies', 'section:CSE-A', ...]
         friendAvatars: {}, // { friendName: { emoji: '⚡', customInitials: 'JS', gradient: 'from-indigo-500 to-purple-600' } }
         debugTime: null,
         remoteTimetablesVersion: 0,
@@ -2225,6 +2364,26 @@ document.addEventListener('DOMContentLoaded', () => {
     const dashboardSearchInput = document.getElementById('dashboard-search-input');
     const clearSearchBtn = document.getElementById('clear-search-btn');
     const dashboardFilterBtns = document.querySelectorAll('.dashboard-filter-btn');
+
+    // Card Sorting & Reorder Modal elements
+    const sortDropdownWrapper = document.getElementById('sort-dropdown-wrapper');
+    const sortMenuBtn = document.getElementById('sort-menu-btn');
+    const sortDropdownMenu = document.getElementById('sort-dropdown-menu');
+    const currentSortLabel = document.getElementById('current-sort-label');
+    const openReorderModalBtn = document.getElementById('open-reorder-modal-btn');
+    const settingsReorderBtn = document.getElementById('settings-reorder-btn');
+    const reorderModal = document.getElementById('reorder-modal');
+    const closeReorderModalBtn = document.getElementById('close-reorder-modal');
+    const cancelReorderBtn = document.getElementById('cancel-reorder-btn');
+    const saveReorderBtn = document.getElementById('save-reorder-btn');
+    const reorderResetBtn = document.getElementById('reorder-reset-btn');
+    const reorderItemsList = document.getElementById('reorder-items-list');
+
+    const ALL_MODAL_ELEMENT_IDS = [
+        'timeline-modal', 'daily-timeline-modal', 'whos-free-modal', 'meetup-modal',
+        'heatmap-modal', 'lecture-details-modal', 'image-export-modal', 'analytics-modal',
+        'friend-avatar-modal', 'reorder-modal', 'confirm-modal', 'welcome-modal', 'changelog-modal'
+    ];
 
     let currentSearchQuery = '';
     let currentStatusFilter = 'all'; // 'all', 'free', 'busy'
@@ -2551,6 +2710,12 @@ document.addEventListener('DOMContentLoaded', () => {
                     }
                     if (typeof parsedState.settings.liveLockScreenEnabled === 'undefined') {
                         parsedState.settings.liveLockScreenEnabled = false;
+                    }
+                    if (typeof parsedState.settings.cardSortOrder === 'undefined') {
+                        parsedState.settings.cardSortOrder = 'default';
+                    }
+                    if (!parsedState.customCardOrder) {
+                        parsedState.customCardOrder = [];
                     }
                     if (!parsedState.friendAvatars) {
                         parsedState.friendAvatars = {};
@@ -2917,11 +3082,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    const ALL_MODAL_ELEMENT_IDS = [
-        'welcome-modal', 'changelog-modal', 'timeline-modal', 'daily-timeline-modal',
-        'meetup-modal', 'whos-free-modal', 'heatmap-modal', 'lecture-details-modal', 'image-export-modal', 'analytics-modal'
-    ];
-
     const applyAmbientTheme = () => {
         const ambient = state.settings.ambientTheme || 'default';
         document.body.classList.remove('ambient-cyberpunk', 'ambient-matcha', 'ambient-sunset', 'ambient-crimson', 'ambient-midnight');
@@ -3140,6 +3300,41 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
+    const applyCardSortSetting = () => {
+        const currentSort = state.settings.cardSortOrder || 'default';
+        
+        // Update header sort button label
+        if (currentSortLabel) {
+            currentSortLabel.textContent = getSortOrderLabel(currentSort);
+        }
+
+        // Update active check in sort dropdown
+        document.querySelectorAll('.sort-option-btn').forEach(btn => {
+            const isMatch = btn.dataset.sort === currentSort;
+            const check = btn.querySelector('.sort-check');
+            if (check) {
+                check.classList.toggle('hidden', !isMatch);
+            }
+            if (isMatch) {
+                btn.classList.add('bg-indigo-50', 'dark:bg-indigo-950/70', 'text-indigo-600', 'dark:text-indigo-400', 'font-semibold');
+                btn.classList.remove('text-gray-700', 'dark:text-gray-200');
+            } else {
+                btn.classList.remove('bg-indigo-50', 'dark:bg-indigo-950/70', 'text-indigo-600', 'dark:text-indigo-400', 'font-semibold');
+                btn.classList.add('text-gray-700', 'dark:text-gray-200');
+            }
+        });
+
+        // Update settings modal sort buttons
+        document.querySelectorAll('.settings-sort-btn').forEach(btn => {
+            const isMatch = btn.dataset.sort === currentSort;
+            if (isMatch) {
+                btn.className = 'settings-sort-btn py-1.5 px-2 text-xs rounded-xl bg-indigo-600 text-white font-semibold transition-all shadow-xs text-center';
+            } else {
+                btn.className = 'settings-sort-btn py-1.5 px-2 text-xs rounded-xl bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 font-semibold transition-all hover:bg-gray-300 dark:hover:bg-gray-600 text-center';
+            }
+        });
+    };
+
     // --- AVATAR & FRIEND PROFILE HELPERS ---
     const getAvatarGradient = (name = '') => {
         const gradients = [
@@ -3178,7 +3373,7 @@ document.addEventListener('DOMContentLoaded', () => {
         return DEFAULT_EMOJIS[Math.abs(hash) % DEFAULT_EMOJIS.length];
     };
 
-    const renderFriendBadgeHtml = (friendName, sectionName = '', options = { removable: true, interactive: true }) => {
+    const renderFriendBadgeHtml = (friendName, sectionName = '', options = { removable: false, interactive: true }) => {
         const avatarStyle = state.settings.friendAvatarStyle || 'pill';
         const customData = state.friendAvatars && state.friendAvatars[friendName] ? state.friendAvatars[friendName] : null;
         const emoji = customData?.emoji || getAutoEmojiForName(friendName);
@@ -3637,6 +3832,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
         debugModeToggle.checked = state.settings.debugMode;
+        applyCardSortSetting();
     };
 
     const updateCardHeight = (cardElement) => {
@@ -4357,8 +4553,114 @@ document.addEventListener('DOMContentLoaded', () => {
             </div>
         `;
     };
-    // --- END: Day Schedule (3rd View) Template Helper ---
+    // --- CARD SORTING LOGIC ---
+    const getSortOrderLabel = (sortOrder = state.settings.cardSortOrder || 'default') => {
+        switch (sortOrder) {
+            case 'alphabetical': return 'A → Z';
+            case 'custom': return 'Custom';
+            case 'freeFirst': return 'Free First';
+            case 'endingSoonest': return 'Ending Soonest';
+            case 'memberCount': return 'Most Friends';
+            case 'default':
+            default: return 'Default';
+        }
+    };
 
+    const sortStatuses = (statusesList, sortOrder = state.settings.cardSortOrder || 'default') => {
+        const sorted = [...statusesList];
+        const now = getCurrentTime();
+
+        switch (sortOrder) {
+            case 'alphabetical':
+                sorted.sort((a, b) => {
+                    // Pinned cards first
+                    if (a.isPinned !== b.isPinned) return a.isPinned ? -1 : 1;
+                    return a.name.localeCompare(b.name, undefined, { numeric: true, sensitivity: 'base' });
+                });
+                break;
+
+            case 'custom': {
+                const customOrder = state.customCardOrder || [];
+                sorted.sort((a, b) => {
+                    // Pinned cards float to top
+                    if (a.isPinned !== b.isPinned) return a.isPinned ? -1 : 1;
+                    const keyA = `${a.type}:${a.name}`;
+                    const keyB = `${b.type}:${b.name}`;
+                    const indexA = customOrder.indexOf(keyA);
+                    const indexB = customOrder.indexOf(keyB);
+                    if (indexA !== -1 && indexB !== -1) return indexA - indexB;
+                    if (indexA !== -1) return -1;
+                    if (indexB !== -1) return 1;
+                    return a.name.localeCompare(b.name, undefined, { numeric: true });
+                });
+                break;
+            }
+
+            case 'freeFirst':
+                sorted.sort((a, b) => {
+                    if (a.isPinned !== b.isPinned) return a.isPinned ? -1 : 1;
+                    if (a.isFree !== b.isFree) return a.isFree ? -1 : 1;
+                    return a.name.localeCompare(b.name, undefined, { numeric: true });
+                });
+                break;
+
+            case 'endingSoonest':
+                sorted.sort((a, b) => {
+                    if (a.isPinned !== b.isPinned) return a.isPinned ? -1 : 1;
+                    const getRemainingMs = (item) => {
+                        if (item.type === 'section') {
+                            const sec = state.sections[item.name];
+                            if (!sec || !sec.timetable) return 999999999;
+                            const cur = getClassAtTime(sec.timetable, now);
+                            if (cur) {
+                                return Math.max(0, cur.endTime.getTime() - now.getTime());
+                            } else {
+                                const next = getNextClass(sec.timetable, now);
+                                return next ? Math.max(0, next.startTime.getTime() - now.getTime()) : 888888888;
+                            }
+                        }
+                        return 500000000;
+                    };
+                    const remA = getRemainingMs(a);
+                    const remB = getRemainingMs(b);
+                    if (remA !== remB) return remA - remB;
+                    return a.name.localeCompare(b.name, undefined, { numeric: true });
+                });
+                break;
+
+            case 'memberCount':
+                sorted.sort((a, b) => {
+                    if (a.isPinned !== b.isPinned) return a.isPinned ? -1 : 1;
+                    const countA = a.type === 'section' ? (state.sections[a.name]?.friends?.length || 0) : (state.groups[a.name]?.members?.length || 0);
+                    const countB = b.type === 'section' ? (state.sections[b.name]?.friends?.length || 0) : (state.groups[b.name]?.members?.length || 0);
+                    if (countA !== countB) return countB - countA;
+                    return a.name.localeCompare(b.name, undefined, { numeric: true });
+                });
+                break;
+
+            case 'default':
+            default:
+                sorted.sort((a, b) => {
+                    const getSortOrder = (item) => {
+                        if (item.isPinned && item.type === 'group') return 0;
+                        if (item.isPinned && item.type === 'section') return 1;
+                        if (item.type === 'group') return 2;
+                        if (item.type === 'section') return 3;
+                        return 4;
+                    };
+
+                    const orderA = getSortOrder(a);
+                    const orderB = getSortOrder(b);
+
+                    if (orderA !== orderB) return orderA - orderB;
+                    if (a.isFree !== b.isFree) return a.isFree ? -1 : 1;
+                    return a.name.localeCompare(b.name, undefined, { numeric: true });
+                });
+                break;
+        }
+
+        return sorted;
+    };
 
     const renderDashboard = () => {
         const statuses = calculateAllStatusesAndGroups();
@@ -4375,7 +4677,7 @@ document.addEventListener('DOMContentLoaded', () => {
         noSectionsMessage.classList.add('hidden');
 
         // Filter statuses based on current search query and status filter
-                        const query = currentSearchQuery.trim().toLowerCase();
+        const query = currentSearchQuery.trim().toLowerCase();
         let filteredStatuses = statuses.filter(item => {
             if (currentStatusFilter === 'free' && !item.isFree) return false;
             if (currentStatusFilter === 'busy' && item.isFree) return false;
@@ -4439,22 +4741,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
         dashboard.innerHTML = '';
 
-        filteredStatuses.sort((a, b) => {
-            const getSortOrder = (item) => {
-                if (item.isPinned && item.type === 'group') return 0;
-                if (item.isPinned && item.type === 'section') return 1;
-                if (item.type === 'group') return 2;
-                if (item.type === 'section') return 3;
-                return 4;
-            };
-
-            const orderA = getSortOrder(a);
-            const orderB = getSortOrder(b);
-
-            if (orderA !== orderB) return orderA - orderB;
-            if (a.isFree !== b.isFree) return a.isFree ? -1 : 1;
-            return a.name.localeCompare(b.name);
-        });
+        // Apply active card sorting order
+        filteredStatuses = sortStatuses(filteredStatuses);
 
         const now = getCurrentTime();
 
@@ -4522,7 +4810,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (status.type === 'section') {
                 const friendsList = state.sections[status.name]?.friends || [];
                 const hasFriends = friendsList.length > 0;
-                const friendsHtml = hasFriends ? friendsList.map(friend => renderFriendBadgeHtml(friend, status.name)).join(' ') : '';
+                const friendsHtml = hasFriends ? friendsList.map(friend => renderFriendBadgeHtml(friend, status.name, { removable: false, interactive: true })).join(' ') : '';
                 
                 const ledIndicatorHtml = state.settings.ledIndicatorEnabled ? `<div class="led-indicator led-${status.ledColor}"></div>` : '';
                 
@@ -4678,25 +4966,10 @@ document.addEventListener('DOMContentLoaded', () => {
     };
     
     const updateDashboardStatuses = () => {
-        const statuses = calculateAllStatusesAndGroups();
+        let statuses = calculateAllStatusesAndGroups();
 
         // Sort statuses to get the correct visual order
-        statuses.sort((a, b) => {
-            const getSortOrder = (item) => {
-                if (item.isPinned && item.type === 'group') return 0;
-                if (item.isPinned && item.type === 'section') return 1;
-                if (item.type === 'group') return 2;
-                if (item.type === 'section') return 3;
-                return 4;
-            };
-
-            const orderA = getSortOrder(a);
-            const orderB = getSortOrder(b);
-
-            if (orderA !== orderB) return orderA - orderB;
-            if (a.isFree !== b.isFree) return a.isFree ? -1 : 1;
-            return a.name.localeCompare(b.name);
-        });
+        statuses = sortStatuses(statuses);
         
         const now = getCurrentTime();
         const nowMinutes = now.getHours() * 60 + now.getMinutes();
@@ -7478,6 +7751,137 @@ document.addEventListener('DOMContentLoaded', () => {
         heatmapInspector.classList.remove('hidden');
     };
 
+    // --- CUSTOM CARD ORDER / REORDER MODAL LOGIC ---
+    let currentReorderList = [];
+
+    const openCustomCardReorderModal = () => {
+        triggerHaptic('medium');
+        
+        // Close sort dropdown if open
+        if (sortDropdownMenu) sortDropdownMenu.classList.add('hidden');
+
+        // Gather all existing items
+        const allItems = [];
+        for (const gName in (state.groups || {})) {
+            allItems.push({
+                type: 'group',
+                name: gName,
+                isPinned: state.groups[gName].pinned,
+                color: state.groups[gName].color || 'default'
+            });
+        }
+        for (const sName in (state.sections || {})) {
+            allItems.push({
+                type: 'section',
+                name: sName,
+                isPinned: state.sections[sName].pinned,
+                color: state.sections[sName].color || 'default'
+            });
+        }
+
+        // Build list based on saved customCardOrder or default order
+        let order = [...(state.customCardOrder || [])];
+        
+        // Filter out items that no longer exist
+        order = order.filter(key => {
+            const [type, name] = key.split(':');
+            return (type === 'section' && state.sections[name]) || (type === 'group' && state.groups[name]);
+        });
+
+        // Add any missing items
+        allItems.forEach(item => {
+            const key = `${item.type}:${item.name}`;
+            if (!order.includes(key)) {
+                order.push(key);
+            }
+        });
+
+        // If order was empty, default to standard sort
+        if (order.length === 0) {
+            const sortedDefault = sortStatuses(calculateAllStatusesAndGroups(), 'default');
+            order = sortedDefault.map(item => `${item.type}:${item.name}`);
+        }
+
+        currentReorderList = order;
+        renderReorderModalList();
+        if (reorderModal) reorderModal.classList.remove('hidden');
+    };
+
+    const renderReorderModalList = () => {
+        if (!reorderItemsList) return;
+
+        if (currentReorderList.length === 0) {
+            reorderItemsList.innerHTML = `
+                <div class="text-center py-8 text-xs text-gray-500 dark:text-gray-400">
+                    No sections or groups available to reorder.
+                </div>
+            `;
+            return;
+        }
+
+        reorderItemsList.innerHTML = currentReorderList.map((key, idx) => {
+            const [type, name] = key.split(':');
+            const item = (type === 'section' ? state.sections[name] : state.groups[name]) || {};
+            const palette = COLOR_PALETTES[item.color] || COLOR_PALETTES.default;
+            const isPinned = item.pinned;
+            const isFirst = idx === 0;
+            const isLast = idx === currentReorderList.length - 1;
+
+            return `
+                <div class="reorder-item-row flex items-center justify-between p-2.5 sm:p-3 rounded-2xl bg-white/90 dark:bg-gray-700/80 border border-gray-200/90 dark:border-gray-600/70 shadow-2xs transition-all hover:border-indigo-300 dark:hover:border-indigo-500" data-key="${escapeHTML(key)}" data-index="${idx}">
+                    <div class="flex items-center space-x-2.5 min-w-0 flex-1 pr-2">
+                        <span class="text-xs font-bold text-gray-400 dark:text-gray-400 w-5 text-center flex-shrink-0">${idx + 1}</span>
+                        <span class="w-2.5 h-2.5 rounded-full ${palette.dotClass} flex-shrink-0"></span>
+                        <div class="min-w-0 flex-1">
+                            <div class="flex items-center space-x-1.5">
+                                <span class="font-bold text-xs sm:text-sm text-gray-800 dark:text-gray-100 truncate">${escapeHTML(name)}</span>
+                                ${isPinned ? '<span class="text-[11px] text-amber-500 flex-shrink-0" title="Pinned card">★</span>' : ''}
+                                <span class="text-[9px] font-extrabold uppercase px-1.5 py-0.2 rounded ${type === 'group' ? 'bg-purple-100 dark:bg-purple-900/60 text-purple-700 dark:text-purple-300' : 'bg-indigo-100 dark:bg-indigo-900/60 text-indigo-700 dark:text-indigo-300'} flex-shrink-0">${type}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex items-center space-x-1 flex-shrink-0">
+                        <button type="button" class="reorder-move-up-btn p-1.5 rounded-xl bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-gray-200 dark:hover:bg-gray-600 border border-gray-200 dark:border-gray-600/70 shadow-2xs transition-all ${isFirst ? 'opacity-25 cursor-not-allowed pointer-events-none' : 'cursor-pointer'}" data-index="${idx}" title="Move Up">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 15l7-7 7 7"/></svg>
+                        </button>
+                        <button type="button" class="reorder-move-down-btn p-1.5 rounded-xl bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-gray-200 dark:hover:bg-gray-600 border border-gray-200 dark:border-gray-600/70 shadow-2xs transition-all ${isLast ? 'opacity-25 cursor-not-allowed pointer-events-none' : 'cursor-pointer'}" data-index="${idx}" title="Move Down">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"/></svg>
+                        </button>
+                    </div>
+                </div>
+            `;
+        }).join('');
+    };
+
+    const handleReorderMove = (index, direction) => {
+        const targetIndex = index + direction;
+        if (targetIndex < 0 || targetIndex >= currentReorderList.length) return;
+        triggerHaptic('selection');
+        const temp = currentReorderList[index];
+        currentReorderList[index] = currentReorderList[targetIndex];
+        currentReorderList[targetIndex] = temp;
+        renderReorderModalList();
+    };
+
+    const saveCustomCardOrder = () => {
+        triggerHaptic('success');
+        state.customCardOrder = [...currentReorderList];
+        state.settings.cardSortOrder = 'custom';
+        saveState();
+        applyCardSortSetting();
+        renderDashboard();
+        if (reorderModal) reorderModal.classList.add('hidden');
+        showToast('📌 Custom card order saved and applied!');
+    };
+
+    const resetCustomCardOrder = () => {
+        triggerHaptic('light');
+        const sortedDefault = sortStatuses(calculateAllStatusesAndGroups(), 'default');
+        currentReorderList = sortedDefault.map(item => `${item.type}:${item.name}`);
+        renderReorderModalList();
+        showToast('Order reset to default sequence');
+    };
+
     // --- LAYOUT MODE SWITCHER ---
     const toggleLayoutMode = () => {
         triggerHaptic('light');
@@ -8272,6 +8676,7 @@ document.addEventListener('DOMContentLoaded', () => {
         applyHapticFeedbackSetting();
         applyFriendAvatarStyleSetting();
         applyLiveLockscreenSetting();
+        applyCardSortSetting();
         updateDebugIndicator();
         initGyroscope();
         
@@ -9291,6 +9696,82 @@ document.addEventListener('DOMContentLoaded', () => {
             renderDashboard();
         });
     });
+
+    // Card Sort Menu & Dropdown Listeners
+    if (sortMenuBtn) {
+        sortMenuBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            triggerHaptic('tap');
+            if (sortDropdownMenu) {
+                sortDropdownMenu.classList.toggle('hidden');
+            }
+        });
+    }
+
+    // Close sort dropdown on click outside
+    document.addEventListener('click', (e) => {
+        if (sortDropdownMenu && !sortDropdownMenu.classList.contains('hidden')) {
+            if (!e.target.closest('#sort-dropdown-wrapper')) {
+                sortDropdownMenu.classList.add('hidden');
+            }
+        }
+    });
+
+    // Sort Option Buttons (in header dropdown)
+    document.querySelectorAll('.sort-option-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const sortMode = btn.dataset.sort;
+            triggerHaptic('selection');
+            state.settings.cardSortOrder = sortMode;
+            saveState();
+            applyCardSortSetting();
+            renderDashboard();
+            if (sortDropdownMenu) sortDropdownMenu.classList.add('hidden');
+            showToast(`Sorted by: ${getSortOrderLabel(sortMode)}`);
+        });
+    });
+
+    // Sort Option Buttons (in Settings panel)
+    document.querySelectorAll('.settings-sort-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const sortMode = btn.dataset.sort;
+            triggerHaptic('selection');
+            state.settings.cardSortOrder = sortMode;
+            saveState();
+            applyCardSortSetting();
+            renderDashboard();
+            showToast(`Sorted by: ${getSortOrderLabel(sortMode)}`);
+        });
+    });
+
+    // Reorder Modal Launchers
+    if (openReorderModalBtn) openReorderModalBtn.addEventListener('click', openCustomCardReorderModal);
+    if (settingsReorderBtn) settingsReorderBtn.addEventListener('click', openCustomCardReorderModal);
+
+    // Reorder Modal Action Buttons
+    if (closeReorderModalBtn) closeReorderModalBtn.addEventListener('click', () => { triggerHaptic('tap'); if (reorderModal) reorderModal.classList.add('hidden'); });
+    if (cancelReorderBtn) cancelReorderBtn.addEventListener('click', () => { triggerHaptic('tap'); if (reorderModal) reorderModal.classList.add('hidden'); });
+    if (reorderModal) reorderModal.addEventListener('click', (e) => e.target === reorderModal && (triggerHaptic('tap'), reorderModal.classList.add('hidden')));
+    if (saveReorderBtn) saveReorderBtn.addEventListener('click', saveCustomCardOrder);
+    if (reorderResetBtn) reorderResetBtn.addEventListener('click', resetCustomCardOrder);
+
+    // Reorder List Delegated Click for Up/Down buttons
+    if (reorderItemsList) {
+        reorderItemsList.addEventListener('click', (e) => {
+            const upBtn = e.target.closest('.reorder-move-up-btn');
+            if (upBtn) {
+                const idx = parseInt(upBtn.dataset.index, 10);
+                handleReorderMove(idx, -1);
+                return;
+            }
+            const downBtn = e.target.closest('.reorder-move-down-btn');
+            if (downBtn) {
+                const idx = parseInt(downBtn.dataset.index, 10);
+                handleReorderMove(idx, 1);
+                return;
+            }
+        });
+    }
 
     // Keyboard Shortcuts (Alt + ArrowLeft / ArrowRight)
     document.addEventListener('keydown', (e) => {
