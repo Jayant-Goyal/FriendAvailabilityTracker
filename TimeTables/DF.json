@@ -57,7 +57,7 @@
         { "lecture": 2, "subject": "FLAT", "venue": "KAB 606", "faculty": "Mr. Vedprakash" },
         { "lecture": 3, "subject": "DAA Lab", "venue": "VIB 511", "faculty": "Dr. Seema Sharma", "span": 2 },
         { "lecture": 5, "subject": "DAA", "venue": "KAB 505", "faculty": "Dr. Seema Sharma" },
-        { "lecture": 6, "subject": "Digital Forensic", "venue": "KAB 505", "faculty": "Mr Aryan Goyal" }
+        { "lecture": 6, "subject": "Digital Forensic", "venue": "KAB 505", "faculty": "Mr. Aryan Goyal" }
       ]
     },
     {
