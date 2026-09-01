@@ -1,5 +1,5 @@
 // A unique name for the cache. Increment this version when you update the app's core files.
-const CACHE_NAME = 'friend-tracker-v51';
+const CACHE_NAME = 'friend-tracker-v52';
 
 // List of core files to cache when the service worker is installed.
 // These are the essential files needed for the app to run offline.
@@ -8,9 +8,6 @@ const urlsToCache = [
   './index.html',
   'https://cdn.tailwindcss.com',
   './manifest.json',
-  './TimeTables/DF.json',
-  './TimeTables/DG.json',
-  './TimeTables/DH.json',
   './generated-image.jpg' // App icon
 ];
 
@@ -65,7 +62,31 @@ self.addEventListener('fetch', event => {
     return;
   }
 
-  // For navigation requests (loading the HTML page), use a "stale-while-revalidate" strategy.
+  const url = event.request.url;
+
+  // 1. For Timetable JSON files and GitHub API requests: ALWAYS NETWORK-FIRST
+  // Fetches latest timetable from server/GitHub, updating cache on success.
+  if (url.includes('/TimeTables/') || url.includes('/timetables/') || url.endsWith('.json') || url.includes('github')) {
+    event.respondWith(
+      fetch(event.request, { cache: 'no-store' })
+        .then(networkResponse => {
+          if (networkResponse && networkResponse.status === 200) {
+            const clone = networkResponse.clone();
+            caches.open(CACHE_NAME).then(cache => {
+              cache.put(event.request, clone);
+            });
+          }
+          return networkResponse;
+        })
+        .catch(() => {
+          // If offline, fallback to cached copy
+          return caches.match(event.request, { ignoreSearch: true });
+        })
+    );
+    return;
+  }
+
+  // 2. For navigation requests (loading the HTML page), use a "stale-while-revalidate" strategy.
   if (event.request.mode === 'navigate') {
     event.respondWith(
       caches.open(CACHE_NAME).then(cache => {
@@ -88,29 +109,25 @@ self.addEventListener('fetch', event => {
         });
       })
     );
-  } else {
-    // For all other requests (CSS, JS, fonts, images, JSON timetables), use cache with network fallback and search param tolerance.
-    event.respondWith(
-      caches.match(event.request, { ignoreSearch: true }).then(response => {
-        // If the resource is in the cache, return it.
-        if (response) {
-          return response;
-        }
-        // If not in the cache, fetch it from the network.
-        return fetch(event.request).then(networkResponse => {
-          if (networkResponse && networkResponse.status === 200) {
-            // And cache the new resource for future use.
-            return caches.open(CACHE_NAME).then(cache => {
-              console.log('[Service Worker] Caching new resource:', event.request.url);
-              cache.put(event.request, networkResponse.clone());
-              return networkResponse;
-            });
-          }
-          return networkResponse;
-        }).catch(() => {
-          return caches.match(event.request, { ignoreSearch: true });
-        });
-      })
-    );
+    return;
   }
+
+  // 3. For all other static assets (CSS, JS, fonts, images), Cache First with Network Fallback.
+  event.respondWith(
+    caches.match(event.request, { ignoreSearch: true }).then(response => {
+      if (response) {
+        return response;
+      }
+      return fetch(event.request).then(networkResponse => {
+        if (networkResponse && networkResponse.status === 200) {
+          caches.open(CACHE_NAME).then(cache => {
+            cache.put(event.request, networkResponse.clone());
+          });
+        }
+        return networkResponse;
+      }).catch(() => {
+        return caches.match(event.request, { ignoreSearch: true });
+      });
+    })
+  );
 });

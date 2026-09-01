@@ -2823,7 +2823,8 @@ document.addEventListener('DOMContentLoaded', () => {
             try {
                 const controller = new AbortController();
                 const timer = setTimeout(() => controller.abort(), timeoutMs);
-                const res = await fetch(`${path}?t=${Date.now()}`, { signal: controller.signal });
+                const separator = path.includes('?') ? '&' : '?';
+                const res = await fetch(`${path}${separator}t=${Date.now()}`, { signal: controller.signal, cache: 'no-store' });
                 clearTimeout(timer);
                 if (res.ok) {
                     const data = await res.json();
@@ -2833,7 +2834,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 try {
                     const controller = new AbortController();
                     const timer = setTimeout(() => controller.abort(), timeoutMs);
-                    const res = await fetch(path, { signal: controller.signal });
+                    const res = await fetch(path, { signal: controller.signal, cache: 'no-store' });
                     clearTimeout(timer);
                     if (res.ok) {
                         const data = await res.json();
@@ -3056,9 +3057,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     `;
                 } else {
                     actionBtns = `
-                        <span class="px-2 py-1 text-[11px] font-medium rounded-lg bg-gray-100 dark:bg-gray-700/50 text-gray-500 dark:text-gray-400 select-none">
-                            ✓ On Dashboard
-                        </span>
+                        <button type="button" data-action="refetch-cloud-section" data-section="${escapeHTML(secName)}" class="px-2.5 py-1 text-xs font-semibold rounded-lg bg-gray-100 hover:bg-indigo-50 dark:bg-gray-700/60 dark:hover:bg-indigo-950/50 text-gray-600 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400 shadow-2xs active:scale-95 transition-all flex items-center gap-1" title="Force refetch fresh timetable from GitHub">
+                            🔄 Refetch
+                        </button>
                     `;
                 }
                 actionBtns += `
@@ -3132,6 +3133,66 @@ document.addEventListener('DOMContentLoaded', () => {
         renderSettings();
         renderDashboard();
         showToast(`Schedule for "${name}" updated to latest version.`, 'success');
+    };
+
+    const handleRefetchSingleSection = async (name) => {
+        triggerHaptic('medium');
+        showToast(`Refetching timetable for "${name}"...`, 'info');
+        
+        let owner = 'jayantgoyal4';
+        let repo = 'FriendAvailabilityTracker';
+        if (window.location.hostname.endsWith('github.io')) {
+            owner = window.location.hostname.split('.')[0];
+            const pathParts = window.location.pathname.split('/').filter(Boolean);
+            if (pathParts.length > 0) repo = pathParts[0];
+        }
+
+        const candidatePaths = [
+            `./TimeTables/${name}.json`,
+            `TimeTables/${name}.json`,
+            `./timetables/${name}.json`,
+            `timetables/${name}.json`,
+            `https://raw.githubusercontent.com/${owner}/${repo}/main/TimeTables/${name}.json`,
+            `./${name}.json`,
+            `${name}.json`
+        ];
+
+        try {
+            const freshTimetable = await fetchJsonWithFallbacks(candidatePaths, 8000);
+            if (freshTimetable && freshTimetable.schedule) {
+                if (!state.sections) state.sections = {};
+                if (state.sections[name]) {
+                    state.sections[name].timetable = freshTimetable;
+                } else {
+                    state.sections[name] = {
+                        timetable: freshTimetable,
+                        friends: [],
+                        pinned: false,
+                        highlighted: false,
+                        isLocal: false,
+                        color: 'default'
+                    };
+                }
+                if (!state.cloudCatalog) state.cloudCatalog = {};
+                state.cloudCatalog[name] = {
+                    timetable: freshTimetable,
+                    signature: JSON.stringify(freshTimetable.schedule || []),
+                    lastSynced: new Date().toISOString()
+                };
+                saveState();
+                renderDashboard();
+                renderSettings();
+                triggerHaptic('success');
+                showToast(`Timetable for "${name}" refetched & updated!`, 'success');
+            } else {
+                triggerHaptic('error');
+                showToast(`Could not refetch "${name}". Timetable file not found.`, 'error');
+            }
+        } catch (err) {
+            logger("Refetch error:", err);
+            triggerHaptic('error');
+            showToast(`Failed to refetch "${name}": ${err.message}`, 'error');
+        }
     };
 
 
@@ -3969,9 +4030,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 <div class="flex justify-between items-center w-full">
                     <div class="flex items-center"><span class="font-bold text-xs sm:text-sm text-gray-800 dark:text-gray-100">${escapeHTML(name)}</span>${localIndicator}</div>
                     <div class="flex items-center space-x-1">
-                        <button data-section="${escapeHTML(name)}" class="highlight-section-btn p-1.5 rounded-lg text-gray-400 hover:text-amber-500 hover:bg-gray-100 dark:hover:bg-gray-700/60 ${section.highlighted ? 'text-amber-400' : ''}" title="Toggle Highlight">${highlightIcon}</button>
-                        <button data-section="${escapeHTML(name)}" class="pin-section-btn p-1.5 rounded-lg text-gray-400 hover:text-indigo-500 hover:bg-gray-100 dark:hover:bg-gray-700/60 ${section.pinned ? 'text-indigo-500' : ''}" title="Toggle Pin">${pinIcon}</button>
-                        <button data-section="${escapeHTML(name)}" class="remove-section-btn p-1.5 rounded-lg text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950/40" title="Delete Section"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"/></svg></button>
+                        <button type="button" data-section="${escapeHTML(name)}" class="refetch-section-btn p-1.5 rounded-lg text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-gray-100 dark:hover:bg-gray-700/60 transition-all active:scale-90" title="Refetch / Sync this section's timetable from GitHub"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg></button>
+                        <button type="button" data-section="${escapeHTML(name)}" class="highlight-section-btn p-1.5 rounded-lg text-gray-400 hover:text-amber-500 hover:bg-gray-100 dark:hover:bg-gray-700/60 ${section.highlighted ? 'text-amber-400' : ''}" title="Toggle Highlight">${highlightIcon}</button>
+                        <button type="button" data-section="${escapeHTML(name)}" class="pin-section-btn p-1.5 rounded-lg text-gray-400 hover:text-indigo-500 hover:bg-gray-100 dark:hover:bg-gray-700/60 ${section.pinned ? 'text-indigo-500' : ''}" title="Toggle Pin">${pinIcon}</button>
+                        <button type="button" data-section="${escapeHTML(name)}" class="remove-section-btn p-1.5 rounded-lg text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950/40" title="Delete Section"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"/></svg></button>
                     </div>
                 </div>
                 <div class="flex items-center space-x-2 pt-2 border-t border-gray-200/50 dark:border-gray-700/50">
@@ -9655,6 +9717,11 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             return;
         }
+        const refetchBtn = e.target.closest('.refetch-section-btn');
+        if (refetchBtn) {
+            handleRefetchSingleSection(refetchBtn.dataset.section);
+            return;
+        }
         const removeBtn = e.target.closest('.remove-section-btn');
         if (removeBtn) handleRemoveSection(removeBtn.dataset.section);
         const pinBtn = e.target.closest('.pin-section-btn');
@@ -9689,6 +9756,11 @@ document.addEventListener('DOMContentLoaded', () => {
         const syncBtn = e.target.closest('[data-action="sync-cloud-section"]');
         if (syncBtn) {
             handleSyncCloudSection(syncBtn.dataset.section);
+            return;
+        }
+        const refetchBtn = e.target.closest('[data-action="refetch-cloud-section"]');
+        if (refetchBtn) {
+            handleRefetchSingleSection(refetchBtn.dataset.section);
             return;
         }
         const removeBtn = e.target.closest('[data-action="remove-cloud-section"]');
