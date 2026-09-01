@@ -1422,6 +1422,28 @@
                 <!-- ==================== PANE 3: DIRECTORY & GROUPS ==================== -->
                 <div id="settings-pane-directory" class="settings-pane space-y-4 hidden" data-pane="directory">
                     
+                    <!-- GitHub Timetables Cloud Catalog Card -->
+                    <div class="settings-searchable-item p-3.5 bg-gray-50/80 dark:bg-gray-800/60 border border-gray-200/70 dark:border-gray-700/60 rounded-2xl space-y-3 shadow-2xs">
+                        <div class="flex justify-between items-center border-b border-gray-200/60 dark:border-gray-700/60 pb-2">
+                            <div>
+                                <h3 class="font-bold text-sm text-gray-900 dark:text-white flex items-center gap-1.5">
+                                    <span class="text-base">☁️</span> GitHub Timetables Catalog
+                                </h3>
+                                <p class="text-[11px] text-gray-500 dark:text-gray-400">Live section schedules synced from cloud</p>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <span id="cloud-catalog-count-badge" class="text-[10px] font-bold px-2 py-0.5 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-md">0 Cloud</span>
+                                <button type="button" id="check-github-btn" class="flex items-center gap-1 text-[11px] font-bold px-2.5 py-1 bg-indigo-100 dark:bg-indigo-950/90 hover:bg-indigo-200 dark:hover:bg-indigo-900 text-indigo-700 dark:text-indigo-300 rounded-lg transition-all active:scale-95 shadow-xs" title="Check GitHub repository for timetable updates">
+                                    <svg id="check-github-icon" class="w-3.5 h-3.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+                                    <span id="check-github-text">Check GitHub</span>
+                                </button>
+                            </div>
+                        </div>
+                        <div id="cloud-catalog-list" class="space-y-2">
+                            <p class="text-xs text-gray-400 dark:text-gray-500 italic py-1">Click "Check GitHub" to discover cloud timetables.</p>
+                        </div>
+                    </div>
+
                     <!-- Section Timetables Card -->
                     <div class="settings-searchable-item p-3.5 bg-gray-50/80 dark:bg-gray-800/60 border border-gray-200/70 dark:border-gray-700/60 rounded-2xl space-y-3 shadow-2xs">
                         <div class="flex justify-between items-center border-b border-gray-200/60 dark:border-gray-700/60 pb-2">
@@ -2179,8 +2201,9 @@ document.addEventListener('DOMContentLoaded', () => {
         customCardOrder: [], // ['group:Study Buddies', 'section:CSE-A', ...]
         friendAvatars: {}, // { friendName: { emoji: '⚡', customInitials: 'JS', gradient: 'from-indigo-500 to-purple-600' } }
         debugTime: null,
-        remoteTimetablesVersion: 0,
-        removedSections: []
+        removedSections: [],
+        cloudCatalog: {}, // { sectionName: { timetable, signature, lastSynced } }
+        notifiedRemoteSections: [] // ['DI', 'DJ']
     };
 
     // --- DOM ELEMENTS ---
@@ -2190,6 +2213,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const closeSettingsBtn = document.getElementById('close-settings-btn');
     const settingsPanel = document.getElementById('settings-panel');
     const settingsContent = document.getElementById('settings-content');
+    const checkGithubBtn = document.getElementById('check-github-btn');
+    const checkGithubIcon = document.getElementById('check-github-icon');
+    const checkGithubText = document.getElementById('check-github-text');
+    const cloudCatalogList = document.getElementById('cloud-catalog-list');
+    const cloudCatalogCountBadge = document.getElementById('cloud-catalog-count-badge');
     const darkModeToggle = document.getElementById('dark-mode-toggle');
     const ledIndicatorToggle = document.getElementById('led-indicator-toggle');
     const cardTimelineToggle = document.getElementById('card-timeline-toggle');
@@ -2527,11 +2555,23 @@ document.addEventListener('DOMContentLoaded', () => {
             });
             logger("Populated state with embedded default fallback timetables (DF, DG, DH).");
         }
+        if (!state.cloudCatalog || Object.keys(state.cloudCatalog).length === 0) {
+            state.cloudCatalog = {};
+            FALLBACK_DEFAULT_TIMETABLES.forEach(timetable => {
+                const sectionName = timetable.timetableInfo?.section;
+                if (sectionName) {
+                    state.cloudCatalog[sectionName] = {
+                        timetable,
+                        signature: JSON.stringify(timetable.schedule || []),
+                        lastSynced: new Date().toISOString()
+                    };
+                }
+            });
+        }
     };
 
     // --- CONSTANTS ---
     const DAYS = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
-    const TIMETABLES_MANIFEST_URL = './timetables.json';
 
     const COLOR_PALETTES = {
         default: {
@@ -2743,6 +2783,12 @@ document.addEventListener('DOMContentLoaded', () => {
                     if (!parsedState.friendAvatars) {
                         parsedState.friendAvatars = {};
                     }
+                    if (!parsedState.cloudCatalog) {
+                        parsedState.cloudCatalog = {};
+                    }
+                    if (!parsedState.notifiedRemoteSections) {
+                        parsedState.notifiedRemoteSections = [];
+                    }
 
                     // Migrate timeline style to supported options if needed
                     const validTimelineStyles = ['modern', 'capsules', 'pips', 'neon'];
@@ -2799,135 +2845,147 @@ document.addEventListener('DOMContentLoaded', () => {
         return null;
     };
 
-    // --- CENTRALIZED TIMETABLE MANAGEMENT ---
-    const fetchAndUpdateTimetables = async () => {
+    // --- GITHUB TIMETABLES CLOUD CATALOG & USER-CONTROLLED SYNC ---
+    const fetchGitHubTimetableCatalog = async (isManual = false) => {
         const isFirstVisit = !localStorage.getItem('syncUpHasVisited');
         const sectionsCount = Object.keys(state.sections || {}).length;
         const needsInitialPopulate = sectionsCount === 0;
         let hasChanges = false;
+        const changelog = { added: [], updated: [], removed: [] };
+
+        if (isManual) {
+            checkGithubIcon?.classList.add('animate-spin');
+            if (checkGithubText) checkGithubText.textContent = 'Checking...';
+            if (checkGithubBtn) checkGithubBtn.disabled = true;
+        }
 
         try {
-            const manifest = await fetchJsonWithFallbacks([
-                './timetables.json',
-                'timetables.json',
-                './TimeTables/timetables.json',
-                './manifest.json'
-            ], 6000) || { version: 16, files: ["DF.json", "DG.json", "DH.json"] };
+            // Auto-detect GitHub repository info if hosted on GitHub Pages
+            let owner = 'jayantgoyal4';
+            let repo = 'FriendAvailabilityTracker';
+            if (window.location.hostname.endsWith('github.io')) {
+                owner = window.location.hostname.split('.')[0];
+                const pathParts = window.location.pathname.split('/').filter(Boolean);
+                if (pathParts.length > 0) {
+                    repo = pathParts[0];
+                }
+            }
 
-            const remoteVersion = manifest.version || 16;
-            const localVersion = state.remoteTimetablesVersion || 0;
-            const targetFiles = (manifest.files && manifest.files.length > 0) ? manifest.files : ["DF.json", "DG.json", "DH.json"];
+            // Step 1: Discover candidate files from GitHub Contents API + local known files
+            let discoveredFiles = new Set(['DF.json', 'DG.json', 'DH.json']);
+            if (state.cloudCatalog) {
+                Object.keys(state.cloudCatalog).forEach(sec => discoveredFiles.add(`${sec}.json`));
+            }
+            // Add standard candidate filenames
+            ['DF.json', 'DG.json', 'DH.json', 'DI.json', 'DJ.json', 'DK.json', 'DL.json', 'DM.json', 'D1.json', 'D2.json', 'D3.json'].forEach(f => discoveredFiles.add(f));
 
-            // Check if remote version is newer, or if we currently have zero sections loaded
-            if (remoteVersion > localVersion || needsInitialPopulate || isFirstVisit) {
-                logger(`Fetching timetable files. Remote: ${remoteVersion}, Local: ${localVersion}, Sections: ${sectionsCount}`);
+            try {
+                const apiRes = await fetchJsonWithFallbacks([
+                    `https://api.github.com/repos/${owner}/${repo}/contents/TimeTables`
+                ], 5000);
+                if (Array.isArray(apiRes)) {
+                    apiRes.forEach(item => {
+                        if (item.name && item.name.endsWith('.json')) {
+                            discoveredFiles.add(item.name);
+                        }
+                    });
+                }
+            } catch (apiErr) {
+                logger("GitHub Contents API unavailable, using candidate probing:", apiErr);
+            }
 
-                const timetablePromises = targetFiles.map(file => {
-                    const candidatePaths = [
-                        `./TimeTables/${file}`,
-                        `./timetables/${file}`,
-                        `TimeTables/${file}`,
-                        `timetables/${file}`,
-                        `./${file}`,
-                        file
-                    ];
-                    return fetchJsonWithFallbacks(candidatePaths, 8000);
+            const targetFiles = Array.from(discoveredFiles);
+
+            // Step 2: Fetch timetable json files
+            const timetablePromises = targetFiles.map(file => {
+                const candidatePaths = [
+                    `./TimeTables/${file}`,
+                    `TimeTables/${file}`,
+                    `./timetables/${file}`,
+                    `timetables/${file}`,
+                    `https://raw.githubusercontent.com/${owner}/${repo}/main/TimeTables/${file}`,
+                    `./${file}`,
+                    file
+                ];
+                return fetchJsonWithFallbacks(candidatePaths, 6000);
+            });
+
+            const fetchedTimetables = (await Promise.all(timetablePromises)).filter(Boolean);
+
+            if (fetchedTimetables.length > 0) {
+                if (!state.cloudCatalog) state.cloudCatalog = {};
+                if (!state.notifiedRemoteSections) state.notifiedRemoteSections = [];
+                if (!state.removedSections) state.removedSections = [];
+
+                fetchedTimetables.forEach(timetable => {
+                    const sectionName = timetable.timetableInfo?.section;
+                    if (!sectionName) return;
+
+                    const scheduleSignature = JSON.stringify(timetable.schedule || []);
+                    state.cloudCatalog[sectionName] = {
+                        timetable,
+                        signature: scheduleSignature,
+                        lastSynced: new Date().toISOString()
+                    };
+
+                    // Active Section on Dashboard:
+                    if (state.sections && state.sections[sectionName]) {
+                        const localSig = JSON.stringify(state.sections[sectionName].timetable?.schedule || []);
+                        if (localSig !== scheduleSignature) {
+                            state.sections[sectionName].timetable = timetable;
+                            changelog.updated.push(sectionName);
+                            hasChanges = true;
+                        }
+                    } 
+                    // Not active on dashboard:
+                    else {
+                        if (needsInitialPopulate || isFirstVisit) {
+                            state.sections[sectionName] = {
+                                timetable,
+                                friends: [],
+                                pinned: false,
+                                highlighted: false,
+                                isLocal: false,
+                                color: 'default'
+                            };
+                            hasChanges = true;
+                        } else if (!state.removedSections.includes(sectionName)) {
+                            // Brand new section discovered on GitHub
+                            if (!state.notifiedRemoteSections.includes(sectionName)) {
+                                state.notifiedRemoteSections.push(sectionName);
+                                showToast(`✨ New section "${sectionName}" available on GitHub! Open Settings to add.`, 'info');
+                            }
+                        }
+                    }
                 });
 
-                const fetchedTimetables = (await Promise.all(timetablePromises)).filter(Boolean);
+                if (isFirstVisit && welcomeModal && (needsInitialPopulate || isFirstVisit)) {
+                    welcomeModal.classList.remove('hidden');
+                }
 
-                if (fetchedTimetables.length > 0) {
-                    if (needsInitialPopulate || isFirstVisit) {
-                        const newSections = { ...(state.sections || {}) };
-                        fetchedTimetables.forEach(timetable => {
-                            const sectionName = timetable.timetableInfo?.section;
-                            if (!sectionName) return;
-                            if (!newSections[sectionName]) {
-                                newSections[sectionName] = {
-                                    timetable,
-                                    friends: [],
-                                    pinned: false,
-                                    highlighted: false,
-                                    isLocal: false,
-                                    color: 'default'
-                                };
-                            } else {
-                                newSections[sectionName].timetable = timetable;
-                            }
-                        });
-                        state.sections = newSections;
-                        if (isFirstVisit && welcomeModal) {
-                            welcomeModal.classList.remove('hidden');
-                        }
-                        hasChanges = true;
-                    } else {
-                        const changelog = { added: [], updated: [], removed: [] };
-                        const oldRemoteSections = Object.keys(state.sections || {}).filter(name => !state.sections[name].isLocal);
-                        const newRemoteTimetables = new Map();
+                if (changelog.updated.length > 0) {
+                    displayChangelog(changelog);
+                    showToast(`Updated ${changelog.updated.length} section schedule(s) from GitHub.`, 'success');
+                }
 
-                        fetchedTimetables.forEach(timetable => {
-                            const sectionName = timetable.timetableInfo?.section;
-                            if (sectionName) {
-                                newRemoteTimetables.set(sectionName, timetable);
-                            }
-                        });
+                localStorage.setItem('syncUpHasVisited', 'true');
+                saveState();
 
-                        for (const [sectionName, timetable] of newRemoteTimetables.entries()) {
-                            if (state.removedSections && state.removedSections.includes(sectionName)) {
-                                continue;
-                            }
-
-                            const existingSection = state.sections[sectionName];
-                            if (existingSection) {
-                                existingSection.timetable = timetable;
-                                changelog.updated.push(sectionName);
-                                hasChanges = true;
-                            } else {
-                                state.sections[sectionName] = {
-                                    timetable,
-                                    friends: [],
-                                    pinned: false,
-                                    highlighted: false,
-                                    isLocal: false,
-                                    color: 'default'
-                                };
-                                changelog.added.push(sectionName);
-                                hasChanges = true;
-                            }
-                        }
-
-                        for (const sectionName of oldRemoteSections) {
-                            if (!newRemoteTimetables.has(sectionName)) {
-                                delete state.sections[sectionName];
-                                changelog.removed.push(sectionName);
-                                hasChanges = true;
-                            }
-                        }
-
-                        if (changelog.added.length > 0 || changelog.updated.length > 0 || changelog.removed.length > 0) {
-                            displayChangelog(changelog);
-                        }
-                    }
-
-                    state.remoteTimetablesVersion = remoteVersion;
-                    localStorage.setItem('syncUpHasVisited', 'true');
-                    saveState();
-                    if (!isFirstVisit && !needsInitialPopulate) {
-                        showToast(`Timetables updated to version ${remoteVersion}.`, 'success');
-                    }
-                } else {
-                    logger("No timetable files could be fetched from server.");
-                    if (Object.keys(state.sections || {}).length === 0) {
-                        populateFallbackSections();
-                        hasChanges = true;
-                    }
+                if (isManual) {
+                    showToast(`GitHub check complete: ${Object.keys(state.cloudCatalog).length} cloud timetables available.`, 'success');
                 }
             } else {
-                logger("Timetables are up to date.");
-                localStorage.setItem('syncUpHasVisited', 'true');
+                logger("No timetable files could be fetched from server/GitHub.");
+                if (Object.keys(state.sections || {}).length === 0) {
+                    populateFallbackSections();
+                    hasChanges = true;
+                }
+                if (isManual) {
+                    showToast("Could not connect to GitHub. Using cached catalog.", "error");
+                }
             }
         } catch (error) {
-            logger("Could not fetch remote timetables:", error);
+            logger("Could not sync GitHub timetables:", error);
             if (Object.keys(state.sections || {}).length === 0) {
                 populateFallbackSections();
                 hasChanges = true;
@@ -2935,12 +2993,145 @@ document.addEventListener('DOMContentLoaded', () => {
             if (isFirstVisit && welcomeModal) {
                 welcomeModal.classList.remove('hidden');
             }
+            if (isManual) {
+                showToast("Error checking GitHub. Please try again.", "error");
+            }
         } finally {
+            if (isManual) {
+                checkGithubIcon?.classList.remove('animate-spin');
+                if (checkGithubText) checkGithubText.textContent = 'Check GitHub';
+                if (checkGithubBtn) checkGithubBtn.disabled = false;
+            }
             if (hasChanges) {
                 renderDashboard();
-                renderSettings();
             }
+            renderCloudTimetableCatalog();
         }
+    };
+
+    const renderCloudTimetableCatalog = () => {
+        if (!cloudCatalogList) return;
+        const catalogKeys = Object.keys(state.cloudCatalog || {});
+        
+        if (cloudCatalogCountBadge) {
+            cloudCatalogCountBadge.textContent = `${catalogKeys.length} Cloud`;
+        }
+
+        if (catalogKeys.length === 0) {
+            cloudCatalogList.innerHTML = '<p class="text-xs text-gray-400 dark:text-gray-500 italic py-2 text-center">No cloud timetables indexed yet. Click "Check GitHub" to scan.</p>';
+            return;
+        }
+
+        cloudCatalogList.innerHTML = '';
+        catalogKeys.sort().forEach(secName => {
+            const item = state.cloudCatalog[secName];
+            const timetable = item.timetable || {};
+            const info = timetable.timetableInfo || {};
+            const isActive = !!(state.sections && state.sections[secName]);
+            
+            const localSig = isActive ? JSON.stringify(state.sections[secName].timetable?.schedule || []) : '';
+            const remoteSig = item.signature || JSON.stringify(timetable.schedule || []);
+            const hasUpdate = isActive && localSig !== remoteSig;
+
+            // Status Badge
+            let statusBadge = '';
+            if (isActive) {
+                if (hasUpdate) {
+                    statusBadge = `<span class="text-[10px] font-bold px-2 py-0.5 rounded-md bg-amber-100 dark:bg-amber-950/80 text-amber-700 dark:text-amber-300 flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse"></span> Update Available</span>`;
+                } else {
+                    statusBadge = `<span class="text-[10px] font-bold px-2 py-0.5 rounded-md bg-emerald-100 dark:bg-emerald-950/80 text-emerald-700 dark:text-emerald-300 flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> Active</span>`;
+                }
+            } else {
+                statusBadge = `<span class="text-[10px] font-bold px-2 py-0.5 rounded-md bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 flex items-center gap-1">☁️ Available</span>`;
+            }
+
+            // Action Buttons
+            let actionBtns = '';
+            if (isActive) {
+                if (hasUpdate) {
+                    actionBtns = `
+                        <button type="button" data-action="sync-cloud-section" data-section="${escapeHTML(secName)}" class="px-2.5 py-1 text-xs font-semibold rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white shadow-xs active:scale-95 transition-all flex items-center gap-1">
+                            🔄 Sync Schedule
+                        </button>
+                    `;
+                } else {
+                    actionBtns = `
+                        <span class="px-2 py-1 text-[11px] font-medium rounded-lg bg-gray-100 dark:bg-gray-700/50 text-gray-500 dark:text-gray-400 select-none">
+                            ✓ On Dashboard
+                        </span>
+                    `;
+                }
+                actionBtns += `
+                    <button type="button" data-action="remove-cloud-section" data-section="${escapeHTML(secName)}" class="p-1.5 text-xs font-semibold rounded-lg text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950/40 transition-all active:scale-95" title="Remove from Dashboard">
+                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"/></svg>
+                    </button>
+                `;
+            } else {
+                actionBtns = `
+                    <button type="button" data-action="add-cloud-section" data-section="${escapeHTML(secName)}" class="px-3 py-1.5 text-xs font-bold rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white shadow-xs active:scale-95 transition-all flex items-center gap-1.5">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/></svg>
+                        Add to Dashboard
+                    </button>
+                `;
+            }
+
+            // Extract subjects
+            const subjects = Array.from(new Set((timetable.schedule || []).flatMap(d => (d.classes || []).map(c => c.subject).filter(Boolean)))).slice(0, 4);
+            const subjectsHtml = subjects.length > 0 ? subjects.map(s => `<span class="text-[10px] px-1.5 py-0.2 rounded bg-gray-100 dark:bg-gray-700/60 text-gray-600 dark:text-gray-300">${escapeHTML(s)}</span>`).join(' ') : '';
+
+            const row = document.createElement('div');
+            row.className = 'flex flex-col sm:flex-row sm:items-center justify-between p-3 bg-white/80 dark:bg-gray-800/80 border border-gray-200/70 dark:border-gray-700/60 rounded-2xl gap-2.5 shadow-2xs transition-all hover:border-indigo-300 dark:hover:border-indigo-800';
+            row.innerHTML = `
+                <div class="flex flex-col space-y-1 min-w-0 flex-1">
+                    <div class="flex items-center gap-2">
+                        <span class="font-bold text-sm text-gray-900 dark:text-white">${escapeHTML(secName)}</span>
+                        ${statusBadge}
+                    </div>
+                    <p class="text-[11px] text-gray-500 dark:text-gray-400 truncate">
+                        ${info.year ? `${escapeHTML(info.year)} Year • ` : ''}${info.semester ? `${escapeHTML(info.semester)} • ` : ''}${info.type || 'Standard Section'}
+                    </p>
+                    ${subjectsHtml ? `<div class="flex flex-wrap gap-1 pt-0.5">${subjectsHtml}</div>` : ''}
+                </div>
+                <div class="flex items-center gap-2 self-end sm:self-center">
+                    ${actionBtns}
+                </div>
+            `;
+            cloudCatalogList.appendChild(row);
+        });
+    };
+
+    const handleAddCloudSection = (name) => {
+        triggerHaptic('success');
+        const item = state.cloudCatalog[name];
+        if (!item || !item.timetable) {
+            showToast(`Could not load section "${name}".`, 'error');
+            return;
+        }
+        if (!state.sections) state.sections = {};
+        state.sections[name] = {
+            timetable: item.timetable,
+            friends: [],
+            pinned: false,
+            highlighted: false,
+            isLocal: false,
+            color: 'default'
+        };
+        state.removedSections = (state.removedSections || []).filter(s => s !== name);
+        saveState();
+        renderSettings();
+        renderDashboard();
+        showToast(`Section "${name}" added to your dashboard!`, 'success');
+    };
+
+    const handleSyncCloudSection = (name) => {
+        triggerHaptic('success');
+        const item = state.cloudCatalog[name];
+        if (!item || !item.timetable || !state.sections[name]) return;
+        state.sections[name].timetable = item.timetable;
+        saveState();
+        renderSettings();
+        renderDashboard();
+        showToast(`Schedule for "${name}" updated to latest version.`, 'success');
     };
 
 
@@ -3733,8 +3924,10 @@ document.addEventListener('DOMContentLoaded', () => {
             settingsPanel.classList.remove('hidden');
             setTimeout(() => {
                 settingsContent.classList.remove('translate-x-full');
+                settingsContent.classList.add('translate-x-0');
             }, 10);
         } else {
+            settingsContent.classList.remove('translate-x-0');
             settingsContent.classList.add('translate-x-full');
             setTimeout(() => {
                 settingsPanel.classList.add('hidden');
@@ -3857,6 +4050,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         debugModeToggle.checked = state.settings.debugMode;
         applyCardSortSetting();
+        renderCloudTimetableCatalog();
     };
 
     const updateCardHeight = (cardElement) => {
@@ -8708,7 +8902,7 @@ document.addEventListener('DOMContentLoaded', () => {
         renderDashboard();
         
         // BACKGROUND FETCH: Check for remote timetable updates asynchronously without blocking the UI
-        fetchAndUpdateTimetables().catch(console.error);
+        fetchGitHubTimetableCatalog(false).catch(console.error);
         
         // Start smart clock & status loops
         startAppLoops();
@@ -9477,6 +9671,29 @@ document.addEventListener('DOMContentLoaded', () => {
         const avatarBadge = e.target.closest('[data-action="edit-avatar"]');
         if (avatarBadge) {
             openFriendAvatarModal(avatarBadge.dataset.friend, avatarBadge.dataset.section);
+            return;
+        }
+    });
+
+    checkGithubBtn?.addEventListener('click', () => {
+        triggerHaptic('tap');
+        fetchGitHubTimetableCatalog(true);
+    });
+
+    cloudCatalogList?.addEventListener('click', (e) => {
+        const addBtn = e.target.closest('[data-action="add-cloud-section"]');
+        if (addBtn) {
+            handleAddCloudSection(addBtn.dataset.section);
+            return;
+        }
+        const syncBtn = e.target.closest('[data-action="sync-cloud-section"]');
+        if (syncBtn) {
+            handleSyncCloudSection(syncBtn.dataset.section);
+            return;
+        }
+        const removeBtn = e.target.closest('[data-action="remove-cloud-section"]');
+        if (removeBtn) {
+            handleRemoveSection(removeBtn.dataset.section);
             return;
         }
     });
