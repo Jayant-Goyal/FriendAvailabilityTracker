@@ -1,21 +1,25 @@
 {
-  "name": "SyncUp",
+  "name": "SyncUp - Friend & Availability Tracker",
   "short_name": "SyncUp",
-  "start_url": ".",
+  "start_url": "./index.html",
+  "scope": "./",
   "display": "standalone",
-  "background_color": "#111827",
-  "theme_color": "#1f2937",
-  "description": "Track the availability of friends based on their class schedules.",
+  "orientation": "portrait-primary",
+  "background_color": "#0f172a",
+  "theme_color": "#0f172a",
+  "description": "Track the availability of friends and class schedules offline-first.",
   "icons": [
     {
       "src": "generated-image.jpg",
       "sizes": "192x192",
-      "type": "image/jpeg"
+      "type": "image/jpeg",
+      "purpose": "any maskable"
     },
     {
       "src": "generated-image.jpg",
       "sizes": "512x512",
-      "type": "image/jpeg"
+      "type": "image/jpeg",
+      "purpose": "any maskable"
     }
   ]
 }
