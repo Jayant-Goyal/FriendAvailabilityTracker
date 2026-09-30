@@ -6,7 +6,7 @@
     "section": "DF",
     "year": "III",
     "semester": "V Sem",
-    "type": "LT"
+    "type": "KAB 505"
   },
   "timeSlots": [
     { "lecture": 1, "time": "8.00-8.50" },
@@ -42,19 +42,19 @@
     {
       "day": "Wednesday",
       "classes": [
-        { "lecture": 1, "details": null },
+        { "lecture": 1, "subject": "ML", "venue": "NIB 613", "faculty": "Mr Rajendra" },
         { "lecture": 2, "details": null },
         { "lecture": 3, "subject": "IP", "venue": "KAB 505", "faculty": "Mr. Jay" },
         { "lecture": 4, "subject": "DAA", "venue": "KAB 505", "faculty": "Dr. Seema Sharma" },
-        { "lecture": 5, "subject": "ML", "venue": "KAB 606", "faculty": "Mr Rajendra" },
-        { "lecture": 6, "subject": "Digital Forensic", "venue": "KAB 606", "faculty": "Mr Aryan Goyal" }
+        { "lecture": 5, "details": null },
+        { "lecture": 6, "details": null }
       ]
     },
     {
       "day": "Thursday",
       "classes": [
-        { "lecture": 1, "subject": "IP", "venue": "KAB 606", "faculty": "Mr. Jay" },
-        { "lecture": 2, "subject": "Digital Forensic", "venue": "KAB 606", "faculty": "Mr Aryan Goyal" },
+        { "lecture": 1, "subject": "IP", "venue": "PRB 406", "faculty": "Mr. Jay" },
+        { "lecture": 2, "subject": "Digital Forensic", "venue": "PRB 406", "faculty": "Mr Aryan Goyal" },
         { "lecture": 3, "subject": "DAA Lab", "venue": "VIB 511", "faculty": "Dr. Seema Sharma", "span": 2 },
         { "lecture": 5, "subject": "DAA", "venue": "KAB 505", "faculty": "Dr. Seema Sharma" },
         { "lecture": 6, "subject": "FLAT", "venue": "KAB 505", "faculty": "Mr. Vedprakash" }
@@ -63,7 +63,7 @@
     {
       "day": "Friday",
       "classes": [
-        { "lecture": 1, "details": null },
+        { "lecture": 1, "subject": "Digital Forensic", "venue": "KAB 505", "faculty": "Mr Aryan Goyal" },
         { "lecture": 2, "subject": "ML", "venue": "KAB 505", "faculty": "Mr Rajendra" },
         { "lecture": 3, "subject": "DAA", "venue": "KAB 505", "faculty": "Dr. Seema Sharma" },
         { "lecture": 4, "subject": "FLAT", "venue": "KAB 505", "faculty": "Mr. Vedprakash" },
