@@ -6,7 +6,7 @@
     "section": "DG",
     "year": "III",
     "semester": "V Sem",
-    "type": "LT"
+    "type": "KAB 505"
   },
   "timeSlots": [
     { "lecture": 1, "time": "8.00-8.50" },
@@ -42,20 +42,20 @@
     {
       "day": "Wednesday",
       "classes": [
-        { "lecture": 1, "details": null },
+        { "lecture": 1, "subject": "ML", "venue": "NYB 314", "faculty": "Ms Jitisha" },
         { "lecture": 2, "details": null },
         { "lecture": 3, "subject": "IP", "venue": "KAB 505", "faculty": "Ms. Garima Sharma" },
         { "lecture": 4, "subject": "DAA", "venue": "KAB 505", "faculty": "Md Salman" },
-        { "lecture": 5, "subject": "ML", "venue": "KAB 606", "faculty": "Ms. Shalini Sharma" },
-        { "lecture": 6, "subject": "Digital Forensic", "venue": "KAB 606", "faculty": "Mr Ankit Taneja" }
+        { "lecture": 5, "details": null },
+        { "lecture": 6, "details": null }
       ]
     },
     {
       "day": "Thursday",
       "classes": [
-        { "lecture": 1, "subject": "IP", "venue": "KAB 606", "faculty": "Ms. Garima Sharma" },
-        { "lecture": 2, "subject": "Digital Forensic", "venue": "KAB 606", "faculty": "Mr Ankit Taneja" },
-        { "lecture": 3, "subject": "ML Lab", "venue": "VIB 508", "faculty": "Ms. Shalini Sharma", "span": 2 },
+        { "lecture": 1, "subject": "IP", "venue": "PRB 406", "faculty": "Ms. Garima Sharma" },
+        { "lecture": 2, "subject": "Digital Forensic", "venue": "PRB 406", "faculty": "Mr Ankit Taneja" },
+        { "lecture": 3, "subject": "ML Lab", "venue": "VIB 508", "faculty": "Ms Jitisha", "span": 2 },
         { "lecture": 5, "subject": "DAA", "venue": "KAB 505", "faculty": "Md Salman" },
         { "lecture": 6, "subject": "FLAT", "venue": "KAB 505", "faculty": "Ms Savita" }
       ]
@@ -63,8 +63,8 @@
     {
       "day": "Friday",
       "classes": [
-        { "lecture": 1, "details": null },
-        { "lecture": 2, "subject": "ML", "venue": "KAB 505", "faculty": "Ms. Shalini Sharma" },
+        { "lecture": 1, "subject": "Digital Forensic", "venue": "KAB 505", "faculty": "Mr Ankit Taneja" },
+        { "lecture": 2, "subject": "ML", "venue": "KAB 505", "faculty": "Ms Jitisha" },
         { "lecture": 3, "subject": "DAA", "venue": "KAB 505", "faculty": "Md Salman" },
         { "lecture": 4, "subject": "FLAT", "venue": "KAB 505", "faculty": "Ms Savita" },
         { "lecture": 5, "subject": "IP Lab", "venue": "VIB 512", "faculty": "Ms. Garima Sharma", "span": 2 }
@@ -77,7 +77,7 @@
         { "lecture": 3, "subject": "FLAT", "venue": "KAB 505", "faculty": "Ms Savita" },
         { "lecture": 4, "subject": "IP", "venue": "KAB 505", "faculty": "Ms. Garima Sharma" },
         { "lecture": 5, "subject": "Digital Forensic", "venue": "KAB 505", "faculty": "Mr Ankit Taneja" },
-        { "lecture": 6, "subject": "ML", "venue": "KAB 505", "faculty": "Ms. Shalini Sharma" }
+        { "lecture": 6, "subject": "ML", "venue": "KAB 505", "faculty": "Ms Jitisha" }
       ]
     }
   ],
@@ -85,9 +85,9 @@
     { "subject": "FLAT", "faculty": "Ms Savita" },
     { "subject": "DAA", "faculty": "Md Salman" },
     { "subject": "IP", "faculty": "Ms. Garima Sharma" },
-    { "subject": "ML", "faculty": "Ms. Shalini Sharma" },
+    { "subject": "ML", "faculty": "Ms Jitisha" },
     { "subject": "Digital Forensic", "faculty": "Mr Ankit Taneja" },
-    { "subject": "ML Lab", "faculty": "Ms. Shalini Sharma" },
+    { "subject": "ML Lab", "faculty": "Ms Jitisha" },
     { "subject": "IP Lab", "faculty": "Ms. Garima Sharma" },
     { "subject": "DAA Lab", "faculty": "Md Salman" }
   ]
